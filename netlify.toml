@@ -1,0 +1,4 @@
+[build]
+  base = "nfl-misery-index/"
+  command = "gatsby build"
+  publish = "public/"
