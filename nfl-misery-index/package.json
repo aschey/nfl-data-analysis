@@ -13,11 +13,15 @@
   },
   "sideEffects": false,
   "dependencies": {
+    "@mdx-js/mdx": "^1.6.18",
+    "@mdx-js/react": "^1.6.18",
+    "@nivo/line": "^0.62.0",
     "@types/typography": "^0.16.3",
-    "gatsby": "^2.24.63",
+    "gatsby": "^2.24.80",
+    "gatsby-plugin-mdx": "^1.2.47",
     "gatsby-plugin-typography": "^2.5.11",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
     "react-typography": "^0.16.19",
     "typography": "^0.16.19",
     "typography-theme-bootstrap": "^0.16.19"

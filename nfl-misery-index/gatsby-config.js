@@ -14,5 +14,6 @@ module.exports = {
         omitGoogleFont: true,
       },
     },
+    'gatsby-plugin-mdx',
   ],
 };
