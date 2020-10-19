@@ -35,6 +35,7 @@ const MyResponsiveLine: React.FC<{ data: Serie[] }> = ({ data }) => (
     pointLabel='y'
     pointLabelYOffset={-12}
     useMesh={true}
+    theme={{ labels: { text: { color: '#aaaaaa' } }, legends: { text: { color: '#aaaaaa' } } }}
     legends={[
       {
         anchor: 'bottom-right',

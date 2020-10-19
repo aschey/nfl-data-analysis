@@ -1,0 +1,11 @@
+text[text-anchor='start'] {
+  fill: #aaa !important;
+}
+
+text[text-anchor='middle'] {
+  fill: #aaa !important;
+}
+
+line {
+  stroke: #aaa !important;
+}
