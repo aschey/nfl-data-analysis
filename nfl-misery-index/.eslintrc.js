@@ -14,7 +14,6 @@ module.exports = {
     quotes: 'off',
     '@typescript-eslint/quotes': [
       2,
-      'backtick',
       {
         avoidEscape: true,
       },
