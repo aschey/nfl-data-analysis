@@ -6,6 +6,10 @@ text[text-anchor='middle'] {
   fill: #aaa !important;
 }
 
+text[text-anchor='end'] {
+  fill: #aaa !important;
+}
+
 line {
   stroke: #aaa !important;
 }
