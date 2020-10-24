@@ -134,3 +134,6 @@ $RECYCLE.BIN/
 ### Gatsby ###
 public
 .cache
+
+# Local Netlify folder
+.netlify

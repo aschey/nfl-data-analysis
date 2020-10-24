@@ -1,6 +1,10 @@
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from cssselect import GenericTranslator, SelectorError
+from lxml.cssselect import CSSSelector
+from lxml import html
+import json
 import urllib
 import time
 import os
@@ -55,4 +59,21 @@ def get_data():
                 raise
 
 
-get_data()
+def get_week_names():
+    all_weeks = dict()
+    for year in range(1922, 2021):
+        print(year)
+        url = f'{base_url}/years/{year}/week_1.htm'
+        response = requests.get(url)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        sel = CSSSelector('a')
+        h = html.fromstring(response.text)
+        weeks = {f'{year} Week {r["href"].split("_")[1].replace(".htm", "")}': f'{year} {r.text}' for r in soup.find_all(
+            'a', href=True) if f'/years/{year}/week' in r['href']}
+        all_weeks = {**all_weeks, **weeks}
+    with open('data/weeks.json', 'w') as f:
+        f.writelines(json.dumps(all_weeks))
+
+
+# get_data()
+get_week_names()
