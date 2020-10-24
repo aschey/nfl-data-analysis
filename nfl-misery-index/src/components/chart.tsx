@@ -1,10 +1,11 @@
 import React from 'react';
 import { ResponsiveLine, Serie, Line } from '@nivo/line';
+import { Score } from '../models/score';
 
-export const MyResponsiveLine: React.FC<{ data: Serie[] }> = ({ data }) => (
+export const MyResponsiveLine: React.FC<{ data: Serie[]; scoreData: Score[] }> = ({ data, scoreData }) => (
   <ResponsiveLine
     data={data}
-    margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+    margin={{ top: 100, right: 150, bottom: 100, left: 60 }}
     xScale={{ type: 'point' }}
     yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
     axisTop={null}
@@ -14,7 +15,7 @@ export const MyResponsiveLine: React.FC<{ data: Serie[] }> = ({ data }) => (
       tickSize: 5,
       tickPadding: 5,
       tickRotation: 0,
-      legend: 'transportation',
+      legend: 'Quarter',
       legendOffset: 36,
       legendPosition: 'middle',
     }}
@@ -23,7 +24,7 @@ export const MyResponsiveLine: React.FC<{ data: Serie[] }> = ({ data }) => (
       tickSize: 5,
       tickPadding: 5,
       tickRotation: 0,
-      legend: 'count',
+      legend: 'Score',
       legendOffset: -40,
       legendPosition: 'middle',
     }}
@@ -36,6 +37,19 @@ export const MyResponsiveLine: React.FC<{ data: Serie[] }> = ({ data }) => (
     pointLabelYOffset={-12}
     useMesh={true}
     theme={{ labels: { text: { color: '#aaaaaa' } }, legends: { text: { color: '#aaaaaa' } } }}
+    tooltip={({ point }) => {
+      const current = scoreData.find(d => d.score1 === point.data.y || d.score2 === point.data.y);
+      if (!current) {
+        return <div />;
+      }
+      return (
+        <div>
+          <div>{`${current.team1}: ${current.team1Score}`}</div>
+          <div>{`${current.team2}: ${current.team2Score}`}</div>
+          <div style={{ width: 200 }}>{current.detail}</div>
+        </div>
+      );
+    }}
     legends={[
       {
         anchor: 'bottom-right',
@@ -64,62 +78,3 @@ export const MyResponsiveLine: React.FC<{ data: Serie[] }> = ({ data }) => (
     ]}
   />
 );
-
-const data: Serie[] = [
-  {
-    id: 'japan',
-    color: 'hsl(121, 70%, 50%)',
-    data: [
-      {
-        x: 'plane',
-        y: 230,
-      },
-      {
-        x: 'helicopter',
-        y: 219,
-      },
-      {
-        x: 'boat',
-        y: 203,
-      },
-      {
-        x: 'train',
-        y: 98,
-      },
-      {
-        x: 'subway',
-        y: 67,
-      },
-      {
-        x: 'bus',
-        y: 18,
-      },
-      {
-        x: 'car',
-        y: 294,
-      },
-      {
-        x: 'moto',
-        y: 265,
-      },
-      {
-        x: 'bicycle',
-        y: 216,
-      },
-      {
-        x: 'horse',
-        y: 271,
-      },
-      {
-        x: 'skateboard',
-        y: 69,
-      },
-      {
-        x: 'others',
-        y: 54,
-      },
-    ],
-  },
-];
-
-export const Chart: React.FC<{}> = () => <MyResponsiveLine data={data} />;

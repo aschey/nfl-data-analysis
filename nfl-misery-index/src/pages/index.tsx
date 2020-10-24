@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Papa from 'papaparse';
-import { Chart, MyResponsiveLine } from '../components/chart';
+import { MyResponsiveLine } from '../components/chart';
 import { Score } from '../models/score';
 import { Datum, Serie } from '@nivo/line';
 import { takeWhile, groupBy, rangeRight } from 'lodash';
@@ -14,6 +14,7 @@ import { Label, Select } from '@rebass/forms';
 const Index: React.FC<{}> = () => {
   const [data, setData] = useState<Score[]>([]);
   const [chartData, setChartData] = useState<Serie[]>([]);
+  const [gameData, setGameData] = useState<Score[]>([]);
   const [year, setYear] = useState(2020);
   const [weeks, setWeeks] = useState<string[]>([]);
   const [week, setWeek] = useState('Week 1');
@@ -28,7 +29,7 @@ const Index: React.FC<{}> = () => {
       complete: results => {
         let csvData = results.data.map<Score>(d => ({
           detail: d.Detail,
-          quarter: parseFloat(d.Quarter),
+          quarter: parseFloat(d.Quarter?.startsWith('OT') ? 5 : d.Quarter),
           date: new Date(d.date),
           score1: Math.round(parseFloat(d.score1) * 100) / 100,
           score2: Math.round(parseFloat(d.score2) * 100) / 100,
@@ -53,6 +54,7 @@ const Index: React.FC<{}> = () => {
       uniq
     )(data);
     setWeeks(grouped);
+    setWeek(grouped[0]);
   }, [year, data]);
 
   useEffect(() => {
@@ -63,44 +65,40 @@ const Index: React.FC<{}> = () => {
     )(data);
 
     setCurrentGames(grouped);
+    setCurrentGame(grouped[0]);
   }, [week, year, data]);
 
   useEffect(() => {
     const game = data.filter(d => d.year === year && d.week === week && d.matchup === currentGame);
-
+    if (game.length === 0) {
+      return;
+    }
+    setGameData(game);
     let lineData1 = game.map<Datum>((g, i) => ({ x: `${g.quarter}.${i}`, y: g.score1 }));
-    let lineData2 = game.map<Datum>((g, i) => ({ x: `${g.quarter}.${i}`, y: g.team1Score - g.team2Score }));
-    let lineData3 = game.map<Datum>((g, i) => ({ x: `${g.quarter}.${i}`, y: g.team1Score }));
-    let lineData4 = game.map<Datum>((g, i) => ({ x: `${g.quarter}.${i}`, y: g.team2Score }));
+    let lineData2 = game.map<Datum>((g, i) => ({ x: `${g.quarter}.${i}`, y: g.score2 }));
 
     setChartData([
       {
-        id: 'Team 1 Index',
+        id: game[0].team1,
         color: 'hsl(121, 70%, 50%)',
         data: lineData1,
       },
-      { id: 'Diff', color: 'hsl(331, 70%, 50%)', data: lineData2 },
       {
-        id: 'Team 1 Score',
+        id: game[0].team2,
         color: 'hsl(201, 70%, 50%)',
-        data: lineData3,
-      },
-      {
-        id: 'Team 2 Score',
-        color: 'hsl(167, 70%, 50%)',
-        data: lineData4,
+        data: lineData2,
       },
     ]);
   }, [year, week, currentGame]);
   return (
-    <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%' }}>
+    <div style={{ position: 'fixed', top: 10, left: 0, width: '100%', height: '100%' }}>
       <Flex>
         <Select style={{ width: 100 }} onChange={e => setYear(parseInt(e.target.value))}>
           {rangeRight(1922, 2021).map(y => (
             <option key={y}>{y}</option>
           ))}
         </Select>
-        <Select style={{ width: 100 }} onChange={e => setWeek(e.target.value)}>
+        <Select style={{ width: 200 }} onChange={e => setWeek(e.target.value)}>
           {weeks.map(w => (
             <option key={w}>{w}</option>
           ))}
@@ -113,7 +111,7 @@ const Index: React.FC<{}> = () => {
       </Flex>
 
       <Flex style={{ width: '100%', height: '100%' }}>
-        <MyResponsiveLine data={chartData} />
+        <MyResponsiveLine data={chartData} scoreData={gameData} />
       </Flex>
     </div>
   );
