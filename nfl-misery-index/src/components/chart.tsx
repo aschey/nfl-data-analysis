@@ -74,7 +74,7 @@ export const ScoreLine: React.FC<{ data: ColoredSerie[]; scoreData: Score[] }> =
       grid: { line: { stroke: '#424141' } },
     }}
     tooltip={({ point }) => {
-      let showTeam1 = point.serieId === scoreData[0].team1;
+      let showTeam1 = point.serieId === 'team1';
       let index = parseInt(point.id.split('.')[1]);
       let current = scoreData[index];
       return (

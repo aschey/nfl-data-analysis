@@ -27,7 +27,7 @@ const Index: React.FC<{}> = () => {
   const [currentGame, setCurrentGame] = useState('');
 
   useEffect(() => {
-    Papa.parse<any>('https://raw.githubusercontent.com/aschey/nfl-data-analysis/main/data/scores_with_index.csv', {
+    Papa.parse<any>('https://nfl-index-data.s3.us-east-2.amazonaws.com/scores_with_index.csv', {
       download: true,
       worker: true,
       header: true,
