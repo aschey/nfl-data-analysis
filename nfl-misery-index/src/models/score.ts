@@ -11,4 +11,5 @@ export interface Score {
   week: string;
   year: number;
   matchup: string;
+  scoringTeam: string;
 }

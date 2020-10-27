@@ -13,8 +13,7 @@ import groupBy from 'lodash/fp/groupBy';
 import mapValues from 'lodash/fp/mapValues';
 import flatMap from 'lodash/fp/flatMap';
 import reduce from 'lodash/fp/reduce';
-import { Box, Flex } from 'rebass';
-import { Label, Select } from '@rebass/forms';
+import { Label, Select, Box, Flex, Styled, Card } from 'theme-ui';
 
 const Index: React.FC<{}> = () => {
   const [data, setData] = useState<Score[]>([]);
@@ -45,6 +44,7 @@ const Index: React.FC<{}> = () => {
           week: d.week,
           year: parseInt(d.year),
           matchup: `${d.team1} vs ${d.team2}`,
+          scoringTeam: d.Tm,
         }));
 
         setData(csvData);
@@ -91,6 +91,7 @@ const Index: React.FC<{}> = () => {
       week: game[0].week,
       year: game[0].year,
       matchup: game[0].matchup,
+      scoringTeam: '',
     });
     setGameData(game);
     let lineData1 = flow(
@@ -107,12 +108,12 @@ const Index: React.FC<{}> = () => {
     setChartData([
       {
         id: 'team1',
-        color: 'hsl(121, 70%, 50%)',
+        color: '#A9E67E',
         data: lineData1,
       },
       {
         id: 'team2',
-        color: 'hsl(201, 70%, 50%)',
+        color: '#5BFC9A',
         data: lineData2,
       },
     ]);
@@ -138,9 +139,42 @@ const Index: React.FC<{}> = () => {
           </Select>
         </Flex>
       </form>
-
       <Flex style={{ width: '100%', height: '100%' }}>
-        <ScoreLine data={chartData} scoreData={gameData} />
+        <div style={{ fontSize: 14, marginTop: 30, marginLeft: 10, marginRight: 10, width: 1000 }}>
+          {gameData.length > 0 ? (
+            <Card>
+              <Styled.table>
+                <thead>
+                  <Styled.tr>
+                    <Styled.th style={{ width: 75 }}>Quarter</Styled.th>
+                    <Styled.th style={{ width: 75 }}>Team</Styled.th>
+                    <Styled.th>Play</Styled.th>
+                    <Styled.th style={{ width: 75 }}>{gameData[0].team1}</Styled.th>
+                    <Styled.th style={{ width: 75 }}>{gameData[0].team2}</Styled.th>
+                    <Styled.th style={{ width: 75 }}>{gameData[0].team1} Index</Styled.th>
+                    <Styled.th style={{ width: 75 }}>{gameData[0].team2} Index</Styled.th>
+                  </Styled.tr>
+                </thead>
+                <tbody>
+                  {gameData.slice(1).map((d, i) => (
+                    <Styled.tr key={i}>
+                      <Styled.td>{d.quarter}</Styled.td>
+                      <Styled.td>{d.scoringTeam}</Styled.td>
+                      <Styled.td>{d.detail}</Styled.td>
+                      <Styled.td>{d.team1Score}</Styled.td>
+                      <Styled.td>{d.team2Score}</Styled.td>
+                      <Styled.td>{d.score1}</Styled.td>
+                      <Styled.td>{d.score2}</Styled.td>
+                    </Styled.tr>
+                  ))}
+                </tbody>
+              </Styled.table>
+            </Card>
+          ) : null}
+        </div>
+        <Card style={{ width: '100%', marginLeft: 10, marginRight: 10, marginTop: 30, marginBottom: 70 }}>
+          <ScoreLine data={chartData} scoreData={gameData} />
+        </Card>
       </Flex>
     </div>
   );

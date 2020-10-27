@@ -33,7 +33,7 @@ export const ScoreLine: React.FC<{ data: ColoredSerie[]; scoreData: Score[] }> =
   <ResponsiveLine
     data={data}
     curve='catmullRom'
-    margin={{ top: 100, right: 150, bottom: 100, left: 60 }}
+    margin={{ right: 150, top: 30, bottom: 50, left: 60 }}
     xScale={{ type: 'linear', min: 1, max: getMax(data) }}
     yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
     axisTop={null}
@@ -67,18 +67,18 @@ export const ScoreLine: React.FC<{ data: ColoredSerie[]; scoreData: Score[] }> =
     pointLabelYOffset={-12}
     useMesh={true}
     theme={{
-      background: '#0e1317',
-      textColor: '#aaaaaa',
-      crosshair: { line: { stroke: '#aaaaaa' } },
-      legends: { text: { fill: '#aaaaaa' } },
-      grid: { line: { stroke: '#424141' } },
+      background: '#001d21',
+      textColor: '#8fa4a6',
+      crosshair: { line: { stroke: '#8fa4a6' } },
+      legends: { text: { fill: '#8fa4a6' } },
+      grid: { line: { stroke: '#233236' } },
     }}
     tooltip={({ point }) => {
       let showTeam1 = point.serieId === 'team1';
       let index = parseInt(point.id.split('.')[1]);
       let current = scoreData[index];
       return (
-        <div style={{ background: 'black', borderRadius: 5, padding: 5, fontSize: 12 }}>
+        <div style={{ background: '#02191c', borderRadius: 5, padding: 5, fontSize: 12 }}>
           <div>{`${current.team1}: ${current.team1Score}`}</div>
           <div>{`${current.team2}: ${current.team2Score}`}</div>
           <div>{`${showTeam1 ? current.team1 : current.team2} Misery Index: ${
