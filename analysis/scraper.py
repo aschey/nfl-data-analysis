@@ -11,7 +11,7 @@ import os
 import random
 import sys
 
-outdir = 'data'
+outdir = 'scraped-data'
 base_url = 'https://www.pro-football-reference.com'
 
 if not os.path.exists(outdir):

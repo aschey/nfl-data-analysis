@@ -37,16 +37,16 @@ const Index: React.FC<{}> = () => {
           date: new Date(d.date),
           score1: Math.round(parseFloat(d.score1) * 100) / 100,
           score2: Math.round(parseFloat(d.score2) * 100) / 100,
-          team1: d.team1,
-          team2: d.team2,
+          team1: d.team1_mascot,
+          team2: d.team2_mascot,
           team1Score: parseFloat(d.team1_score),
           team2Score: parseFloat(d.team2_score),
           week: d.week,
           year: parseInt(d.year),
-          matchup: `${d.team1} vs ${d.team2}`,
+          matchup: `${d.team1_mascot} vs ${d.team2_mascot}`,
           scoringTeam: d.Tm,
         }));
-
+        debugger;
         setData(csvData);
       },
     });
