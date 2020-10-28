@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from 'react';
+/** @jsxRuntime classic */
+/** @jsx jsx */
+import { jsx } from 'theme-ui';
+import { CSSProperties, useEffect, useState } from 'react';
 import Papa from 'papaparse';
 import { ColoredSerie, ScoreLine } from '../components/chart';
 import { Score } from '../models/score';
@@ -7,23 +10,35 @@ import { takeWhile, rangeRight, random } from 'lodash';
 import map from 'lodash/fp/map';
 import filter from 'lodash/fp/filter';
 import flow from 'lodash/fp/flow';
-import uniq from 'lodash/fp/uniq';
+import uniqBy from 'lodash/fp/uniqBy';
 import keys from 'lodash/fp/keys';
 import groupBy from 'lodash/fp/groupBy';
 import mapValues from 'lodash/fp/mapValues';
 import flatMap from 'lodash/fp/flatMap';
 import reduce from 'lodash/fp/reduce';
-import { Label, Select, Box, Flex, Styled, Card } from 'theme-ui';
+import { Label, Box, Flex, Styled, Card, useThemeUI } from 'theme-ui';
+import Select, { OptionsType, Styles, ValueType } from 'react-select';
+
+interface Value {
+  label: string;
+  value: string;
+}
+interface IntValue {
+  label: number;
+  value: number;
+}
 
 const Index: React.FC<{}> = () => {
   const [data, setData] = useState<Score[]>([]);
   const [chartData, setChartData] = useState<ColoredSerie[]>([]);
   const [gameData, setGameData] = useState<Score[]>([]);
-  const [year, setYear] = useState(2020);
-  const [weeks, setWeeks] = useState<string[]>([]);
-  const [week, setWeek] = useState('Week 1');
-  const [currentGames, setCurrentGames] = useState<string[]>([]);
-  const [currentGame, setCurrentGame] = useState('');
+  const [year, setYear] = useState<IntValue>({ value: 2020, label: 2020 });
+  const [weeks, setWeeks] = useState<Value[]>([]);
+  const [week, setWeek] = useState<Value>({ label: 'Week 1', value: 'Week 1' });
+  const [currentGames, setCurrentGames] = useState<Value[]>([]);
+  const [currentGame, setCurrentGame] = useState<Value>({ label: '', value: '' });
+
+  const { theme } = useThemeUI();
 
   useEffect(() => {
     Papa.parse<any>('https://nfl-index-data.s3.us-east-2.amazonaws.com/scores_with_index.csv', {
@@ -46,35 +61,50 @@ const Index: React.FC<{}> = () => {
           matchup: `${d.team1_mascot} vs ${d.team2_mascot}`,
           scoringTeam: d.Tm,
         }));
-        debugger;
+
         setData(csvData);
       },
     });
   }, [setData, setChartData]);
 
   useEffect(() => {
+    if (data.length === 0) {
+      return;
+    }
+
     let grouped = flow(
-      filter<Score>(d => d.year === year),
-      map(d => d.week),
-      uniq
+      filter<Score>(d => d.year === year.value),
+      map(d => ({ label: d.week, value: d.week })),
+      uniqBy(d => d.value)
     )(data);
     setWeeks(grouped);
     setWeek(grouped[0]);
   }, [year, data]);
 
   useEffect(() => {
+    if (data.length === 0) {
+      return;
+    }
+
     let grouped = flow(
-      filter<Score>(d => d.year === year && d.week === week),
-      map(d => d.matchup),
-      uniq
+      filter<Score>(d => d.year === year.value && d.week === week.value),
+      map(d => ({ label: d.matchup, value: d.matchup })),
+      uniqBy(d => d.value)
     )(data);
 
     setCurrentGames(grouped);
+    if (grouped.length === 0) {
+      return;
+    }
     setCurrentGame(grouped[0]);
   }, [week, year, data]);
 
   useEffect(() => {
-    const game = data.filter(d => d.year === year && d.week === week && d.matchup === currentGame);
+    if (data.length === 0) {
+      return;
+    }
+
+    const game = data.filter(d => d.year === year.value && d.week === week.value && d.matchup === currentGame.value);
     if (game.length === 0) {
       return;
     }
@@ -118,25 +148,46 @@ const Index: React.FC<{}> = () => {
       },
     ]);
   }, [year, week, currentGame]);
+
+  const selectStyles: Partial<Styles> = {
+    control: base => ({
+      ...base,
+      background: theme.colors?.background,
+      borderColor: `${theme.colors?.text}22`,
+    }),
+    indicatorSeparator: base => ({ ...base, background: `${theme.colors?.text}55` }),
+    dropdownIndicator: base => ({ ...base, color: `${theme.colors?.text}AA` }),
+    menu: base => ({ ...base, background: theme.colors?.background }),
+    singleValue: base => ({ ...base, color: theme.colors?.text }),
+  };
+
   return (
     <div style={{ position: 'fixed', top: 10, left: 0, width: '100%', height: '100%' }}>
       <form>
         <Flex>
-          <Select style={{ width: 100 }} onChange={e => setYear(parseInt(e.target.value))}>
-            {rangeRight(1922, 2021).map(y => (
-              <option key={y}>{y}</option>
-            ))}
-          </Select>
-          <Select style={{ width: 200 }} onChange={e => setWeek(e.target.value)}>
-            {weeks.map(w => (
-              <option key={w}>{w}</option>
-            ))}
-          </Select>
-          <Select style={{ width: 500 }} onChange={e => setCurrentGame(e.target.value)}>
-            {currentGames.map(c => (
-              <option key={c}>{c}</option>
-            ))}
-          </Select>
+          <Select
+            sx={{ width: 100, marginRight: 10 }}
+            styles={selectStyles}
+            defaultValue={year}
+            is
+            onChange={(value: any) => setYear(value)}
+            options={rangeRight(1922, 2021).map(y => ({ value: y, label: y }))}
+          />
+
+          <Select
+            sx={{ width: 200, marginRight: 10 }}
+            styles={selectStyles}
+            defaultValue={week}
+            options={weeks}
+            onChange={(value: any) => setWeek(value)}
+          />
+          <Select
+            sx={{ width: 500 }}
+            styles={selectStyles}
+            defaultValue={currentGame}
+            options={currentGames}
+            onChange={(value: any) => setCurrentGame(value)}
+          />
         </Flex>
       </form>
       <Flex style={{ width: '100%', height: '100%' }}>

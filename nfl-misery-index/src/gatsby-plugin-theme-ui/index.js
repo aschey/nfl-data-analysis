@@ -1,3 +1,5 @@
+const textColor = '#a7aeb0';
+
 export default {
   space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
   fonts: {
@@ -16,7 +18,7 @@ export default {
     heading: 1.125,
   },
   colors: {
-    text: '#8fa4a6',
+    text: textColor,
     background: '#001d21',
     primary: '#0077CC',
     secondary: '#3300CC',
@@ -101,16 +103,15 @@ export default {
       textAlign: 'left',
       borderBottomStyle: 'solid',
       borderWidth: 1,
-      borderColor: 'rgba(35, 50, 54, 0.7)',
+      borderColor: `${textColor}22`,
     },
     td: {
       textAlign: 'left',
       borderBottomStyle: 'solid',
       borderWidth: 1,
-      borderColor: 'rgba(35, 50, 54, 0.7)',
+      borderColor: `${textColor}22`,
       padding: 2,
     },
-    tr: {},
     img: {
       maxWidth: '100%',
     },
