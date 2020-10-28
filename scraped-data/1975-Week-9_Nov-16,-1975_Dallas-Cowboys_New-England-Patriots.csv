@@ -1,0 +1,12 @@
+,Quarter,Tm,Detail,DAL,NWE
+0,1.0,Cowboys,Toni Fritsch 43 yard field goal,3,0
+1,1.0,Cowboys,Drew Pearson 33 yard pass from Roger Staubach (Toni Fritsch kick),10,0
+2,2.0,Patriots,John Smith 29 yard field goal,10,3
+3,2.0,Patriots,Jim Plunkett 1 yard rush (John Smith kick),10,10
+4,2.0,Cowboys,Drew Pearson 31 yard pass from Roger Staubach (Toni Fritsch kick),17,10
+5,3.0,Cowboys,Doug Dennison 6 yard rush (Toni Fritsch kick),24,10
+6,3.0,Patriots,Russ Francis 37 yard pass from Jim Plunkett (John Smith kick),24,17
+7,4.0,Cowboys,Golden Richards 41 yard pass from Roger Staubach (Toni Fritsch kick),31,17
+8,4.0,Cowboys,Toni Fritsch 26 yard field goal,34,17
+9,4.0,Patriots,Darryl Stingley 13 yard pass from Jim Plunkett (John Smith kick),34,24
+10,4.0,Patriots,Darryl Stingley 5 yard pass from Jim Plunkett (John Smith kick),34,31

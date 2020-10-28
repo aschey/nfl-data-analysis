@@ -1,0 +1,13 @@
+,Quarter,Time,Tm,Detail,DAL,SEA
+0,1.0,8:14,Cowboys,Greg Zuerlein 43 yard field goal,3,0
+1,1.0,6:46,Seahawks,Tyler Lockett 43 yard pass from Russell Wilson (Jason Myers kick),3,7
+2,1.0,6:38,Seahawks,"Safety, Ezekiel Elliott tackled in end zone by Bryan Mone",3,9
+3,1.0,1:44,Cowboys,Ezekiel Elliott 1 yard rush (Greg Zuerlein kick failed),9,9
+4,2.0,6:56,Seahawks,Tyler Lockett 1 yard pass from Russell Wilson (Jason Myers kick),9,16
+5,2.0,6:15,Cowboys,Cedrick Wilson 40 yard pass from Dak Prescott (Greg Zuerlein kick failed),15,16
+6,2.0,0:11,Seahawks,Tyler Lockett 1 yard pass from Russell Wilson (Jason Myers kick),15,23
+7,3.0,14:17,Seahawks,Jacob Hollister 1 yard pass from Russell Wilson (Jason Myers kick),15,30
+8,3.0,5:55,Cowboys,Cedrick Wilson 42 yard pass from Dak Prescott (Greg Zuerlein kick),22,30
+9,4.0,13:13,Cowboys,Michael Gallup 43 yard pass from Dak Prescott (pass failed),28,30
+10,4.0,4:03,Cowboys,Greg Zuerlein 42 yard field goal,31,30
+11,4.0,1:55,Seahawks,D.K. Metcalf 29 yard pass from Russell Wilson (Jacob Hollister pass from Russell Wilson ),31,38

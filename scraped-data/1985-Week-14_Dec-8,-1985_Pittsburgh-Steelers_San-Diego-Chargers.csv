@@ -1,0 +1,17 @@
+,Quarter,Tm,Detail,PIT,SDG
+0,1.0,Chargers,Tim Spencer 12 yard rush (Bob Thomas kick),0,7
+1,1.0,Steelers,Walter Abercrombie 15 yard pass from David Woodley (Gary Anderson kick),7,7
+2,1.0,Chargers,Wes Chandler 36 yard pass from Dan Fouts (Bob Thomas kick),7,14
+3,1.0,Chargers,Pete Holohan 20 yard pass from Dan Fouts (Bob Thomas kick),7,21
+4,2.0,Steelers,Louis Lipps 8 yard pass from David Woodley (Gary Anderson kick),14,21
+5,2.0,Steelers,Gary Anderson 45 yard field goal,17,21
+6,2.0,Chargers,Wes Chandler 75 yard pass from Dan Fouts (Bob Thomas kick),17,28
+7,2.0,Chargers,Buford McGee 3 yard rush,17,34
+8,2.0,Steelers,Gary Anderson 41 yard field goal,20,34
+9,3.0,Steelers,David Woodley 1 yard rush (Gary Anderson kick),27,34
+10,3.0,Steelers,Walter Abercrombie 25 yard pass from David Woodley (Gary Anderson kick),34,34
+11,3.0,Chargers,Buford McGee 7 yard rush (Bob Thomas kick),34,41
+12,4.0,Steelers,Louis Lipps 15 yard rush (Gary Anderson kick),41,41
+13,4.0,Steelers,Gary Anderson 26 yard field goal,44,41
+14,4.0,Chargers,Gary Anderson 2 yard rush,44,47
+15,4.0,Chargers,Jeffery Dale 47 yard interception return (Bob Thomas kick),44,54

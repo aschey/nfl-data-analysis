@@ -1,0 +1,11 @@
+,Quarter,Tm,Detail,DAL,ATL
+0,1.0,Falcons,Tim Mazzetti 38 yard field goal,0,3
+1,1.0,Falcons,Alfred Jenkins 60 yard pass from Steve Bartkowski (Tim Mazzetti kick),0,10
+2,1.0,Cowboys,Rafael Septien 38 yard field goal,3,10
+3,2.0,Cowboys,Billy Joe DuPree 5 yard pass from Danny White (Rafael Septien kick),10,10
+4,2.0,Falcons,Lynn Cain 1 yard rush (Tim Mazzetti kick),10,17
+5,3.0,Falcons,William Andrews 12 yard pass from Steve Bartkowski (Tim Mazzetti kick),10,24
+6,4.0,Cowboys,Robert Newhouse 1 yard rush (Rafael Septien kick),17,24
+7,4.0,Falcons,Tim Mazzetti 34 yard field goal,17,27
+8,4.0,Cowboys,Drew Pearson 14 yard pass from Danny White (Rafael Septien kick),24,27
+9,4.0,Cowboys,Drew Pearson 23 yard pass from Danny White,30,27

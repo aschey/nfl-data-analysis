@@ -1,0 +1,11 @@
+,Quarter,Time,Tm,Detail,DET,GNB
+0,1.0,,Packers,Ryan Longwell 32 yard field goal,0,3
+1,1.0,,Packers,LeRoy Butler 32 yard defensive fumble return (Ryan Longwell kick),0,10
+2,1.0,,Lions,Jason Hanson 47 yard field goal,3,10
+3,2.0,,Packers,Dorsey Levens 4 yard rush (Ryan Longwell kick),3,17
+4,2.0,0:47,Lions,Jason Hanson 43 yard field goal,6,17
+5,3.0,0:47,Lions,Herman Moore 25 yard pass from Scott Mitchell (pass failed),12,17
+6,3.0,0:47,Packers,Antonio Freeman 6 yard pass from Brett Favre (Ryan Longwell kick),12,24
+7,3.0,0:47,Lions,Terry Fair 101 yard kickoff return (Jason Hanson kick),19,24
+8,4.0,0:47,Packers,Roell Preston 100 yard kickoff return (Ryan Longwell kick),19,31
+9,4.0,0:47,Packers,Antonio Freeman 84 yard pass from Brett Favre (Ryan Longwell kick),19,38
