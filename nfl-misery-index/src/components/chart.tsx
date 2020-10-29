@@ -84,7 +84,7 @@ export const ScoreLine: React.FC<{ data: ColoredSerie[]; scoreData: Score[] }> =
         let index = parseInt(point.id.split('.')[1]);
         let current = scoreData[index];
         return (
-          <div style={{ background: '#02191c', borderRadius: 5, padding: 5, fontSize: 12 }}>
+          <div style={{ background: theme.colors?.secondary, borderRadius: 5, padding: 5, fontSize: 12 }}>
             <div>{`${current.team1}: ${current.team1Score}`}</div>
             <div>{`${current.team2}: ${current.team2Score}`}</div>
             <div>{`${showTeam1 ? current.team1 : current.team2} Misery Index: ${

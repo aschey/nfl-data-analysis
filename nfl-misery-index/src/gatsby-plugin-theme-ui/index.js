@@ -1,4 +1,4 @@
-const textColor = '#a7aeb0';
+const textColor = '#c1c1c7';
 
 export default {
   space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
@@ -19,10 +19,12 @@ export default {
   },
   colors: {
     text: textColor,
-    background: '#001d21',
+    background: '#1e232e',
     primary: '#0077CC',
-    secondary: '#3300CC',
+    secondary: '#171b24',
     muted: '#f6f6f6',
+    selected: '#363f54',
+    hover: '#242a38',
   },
   styles: {
     root: {

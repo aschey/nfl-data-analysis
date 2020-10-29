@@ -157,8 +157,23 @@ const Index: React.FC<{}> = () => {
     }),
     indicatorSeparator: base => ({ ...base, background: `${theme.colors?.text}55` }),
     dropdownIndicator: base => ({ ...base, color: `${theme.colors?.text}AA` }),
-    menu: base => ({ ...base, background: theme.colors?.background }),
+    menu: base => ({
+      ...base,
+      background: theme.colors?.background,
+    }),
     singleValue: base => ({ ...base, color: theme.colors?.text }),
+    option: (base, state) => {
+      if (!theme.colors) {
+        return base;
+      }
+      return {
+        ...base,
+        backgroundColor: state.isSelected ? (theme.colors['selected'] as string) : theme.colors?.background,
+        ':hover': {
+          background: theme.colors['hover'],
+        },
+      };
+    },
   };
 
   return (
@@ -223,7 +238,7 @@ const Index: React.FC<{}> = () => {
             </Card>
           ) : null}
         </div>
-        <Card style={{ width: '100%', marginLeft: 10, marginRight: 10, marginTop: 30, marginBottom: 70 }}>
+        <Card sx={{ width: '100%', marginLeft: 10, marginRight: 10, marginTop: 30, marginBottom: 70 }}>
           <ScoreLine data={chartData} scoreData={gameData} />
         </Card>
       </Flex>
