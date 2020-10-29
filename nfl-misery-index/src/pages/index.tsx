@@ -37,6 +37,8 @@ const Index: React.FC<{}> = () => {
   const [week, setWeek] = useState<Value>({ label: 'Week 1', value: 'Week 1' });
   const [currentGames, setCurrentGames] = useState<Value[]>([]);
   const [currentGame, setCurrentGame] = useState<Value>({ label: '', value: '' });
+  const [isTeam1, setIsTeam1] = useState(true);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   const { theme } = useThemeUI();
 
@@ -88,8 +90,12 @@ const Index: React.FC<{}> = () => {
 
     let grouped = flow(
       filter<Score>(d => d.year === year.value && d.week === week.value),
-      map(d => ({ label: d.matchup, value: d.matchup })),
-      uniqBy(d => d.value)
+      uniqBy(d => d.matchup),
+      map(d => [
+        { label: `${d.team1} (vs ${d.team2})`, value: d.team1 },
+        { label: `${d.team2} (vs ${d.team1})`, value: d.team2 },
+      ]),
+      flatMap(d => d)
     )(data);
 
     setCurrentGames(grouped);
@@ -104,7 +110,12 @@ const Index: React.FC<{}> = () => {
       return;
     }
 
-    const game = data.filter(d => d.year === year.value && d.week === week.value && d.matchup === currentGame.value);
+    const game = data.filter(
+      d =>
+        d.year === year.value &&
+        d.week === week.value &&
+        (d.team1 === currentGame.value || d.team2 === currentGame.value)
+    );
     if (game.length === 0) {
       return;
     }
@@ -123,28 +134,20 @@ const Index: React.FC<{}> = () => {
       matchup: game[0].matchup,
       scoringTeam: '',
     });
+    let isTeam1Val = currentGame.value === game[0].team1;
+    setIsTeam1(isTeam1Val);
     setGameData(game);
-    let lineData1 = flow(
+    let lineData = flow(
       groupBy<Score>(g => g.quarter),
-      mapValues(g => g.map<Datum>((g, i) => ({ x: `${g.quarter}.${i}`, y: g.score1 }))),
-      flatMap(g => g)
-    )(game) as Datum[];
-    let lineData2 = flow(
-      groupBy<Score>(g => g.quarter),
-      mapValues(g => g.map<Datum>((g, i) => ({ x: `${g.quarter}.${i}`, y: g.score2 }))),
+      mapValues(g => g.map<Datum>((g, i) => ({ x: `${g.quarter}.${i}`, y: isTeam1Val ? g.score1 : g.score2 }))),
       flatMap(g => g)
     )(game) as Datum[];
 
     setChartData([
       {
-        id: 'team1',
+        id: 'data',
         color: '#A9E67E',
-        data: lineData1,
-      },
-      {
-        id: 'team2',
-        color: '#5BFC9A',
-        data: lineData2,
+        data: lineData,
       },
     ]);
   }, [year, week, currentGame]);
@@ -206,7 +209,7 @@ const Index: React.FC<{}> = () => {
         </Flex>
       </form>
       <Flex style={{ width: '100%', height: '100%' }}>
-        <div style={{ fontSize: 14, marginTop: 30, marginLeft: 10, marginRight: 10, width: 1000 }}>
+        <div style={{ fontSize: 14, marginTop: 50, marginLeft: 10, marginRight: 10, width: 1000 }}>
           {gameData.length > 0 ? (
             <Card>
               <Styled.table>
@@ -217,20 +220,18 @@ const Index: React.FC<{}> = () => {
                     <Styled.th>Play</Styled.th>
                     <Styled.th style={{ width: 75 }}>{gameData[0].team1}</Styled.th>
                     <Styled.th style={{ width: 75 }}>{gameData[0].team2}</Styled.th>
-                    <Styled.th style={{ width: 75 }}>{gameData[0].team1} Index</Styled.th>
-                    <Styled.th style={{ width: 75 }}>{gameData[0].team2} Index</Styled.th>
+                    <Styled.th style={{ width: 75 }}>Index</Styled.th>
                   </Styled.tr>
                 </thead>
                 <tbody>
                   {gameData.slice(1).map((d, i) => (
-                    <Styled.tr key={i}>
+                    <Styled.tr key={i} sx={{ bg: i + 1 === hoveredIndex ? 'hover' : 'background' }}>
                       <Styled.td>{d.quarter}</Styled.td>
                       <Styled.td>{d.scoringTeam}</Styled.td>
                       <Styled.td>{d.detail}</Styled.td>
                       <Styled.td>{d.team1Score}</Styled.td>
                       <Styled.td>{d.team2Score}</Styled.td>
-                      <Styled.td>{d.score1}</Styled.td>
-                      <Styled.td>{d.score2}</Styled.td>
+                      <Styled.td>{isTeam1 ? d.score1 : d.score2}</Styled.td>
                     </Styled.tr>
                   ))}
                 </tbody>
@@ -238,8 +239,8 @@ const Index: React.FC<{}> = () => {
             </Card>
           ) : null}
         </div>
-        <Card sx={{ width: '100%', marginLeft: 10, marginRight: 10, marginTop: 30, marginBottom: 70 }}>
-          <ScoreLine data={chartData} scoreData={gameData} />
+        <Card sx={{ width: '100%', marginLeft: 10, marginRight: 10, marginTop: 50, marginBottom: 70 }}>
+          <ScoreLine data={chartData} scoreData={gameData} setIndex={setHoveredIndex} />
         </Card>
       </Flex>
     </div>

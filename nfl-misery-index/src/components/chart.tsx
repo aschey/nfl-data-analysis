@@ -17,7 +17,11 @@ export interface ColoredSerie extends Serie {
   color: string;
 }
 
-export const ScoreLine: React.FC<{ data: ColoredSerie[]; scoreData: Score[] }> = ({ data, scoreData }) => {
+export const ScoreLine: React.FC<{
+  data: ColoredSerie[];
+  scoreData: Score[];
+  setIndex(index: number | null): void;
+}> = ({ data, scoreData, setIndex }) => {
   const { theme } = useThemeUI();
 
   const renderTick = (data: any) => {
@@ -79,30 +83,35 @@ export const ScoreLine: React.FC<{ data: ColoredSerie[]; scoreData: Score[] }> =
         grid: { line: { stroke: `${theme.colors?.text}22` } },
         markers: { lineColor: `${theme.colors?.text}77` },
       }}
+      onMouseMove={point => {
+        setIndex(point.index);
+      }}
+      onMouseLeave={() => setIndex(null)}
       tooltip={({ point }) => {
         let showTeam1 = point.serieId === 'team1';
         let index = parseInt(point.id.split('.')[1]);
         let current = scoreData[index];
+        console.log(point.x, point.y);
         return (
-          <div style={{ background: theme.colors?.secondary, borderRadius: 5, padding: 5, fontSize: 12 }}>
+          <div
+            style={{
+              background: theme.colors?.secondary,
+              borderRadius: 5,
+              padding: 5,
+              fontSize: 12,
+              marginTop: 100,
+            }}
+          >
             <div>{`${current.team1}: ${current.team1Score}`}</div>
             <div>{`${current.team2}: ${current.team2Score}`}</div>
-            <div>{`${showTeam1 ? current.team1 : current.team2} Misery Index: ${
-              showTeam1 ? current.score1 : current.score2
-            }`}</div>
+            <div>{`Misery Index: ${showTeam1 ? current.score1 : current.score2}`}</div>
             <div style={{ width: 200 }}>{current.detail}</div>
           </div>
         );
       }}
       legends={[
         {
-          data:
-            data.length > 0
-              ? [
-                  { color: data[0].color, id: data[0].id, label: scoreData[0].team1 },
-                  { color: data[1].color, id: data[1].id, label: scoreData[0].team2 },
-                ]
-              : [],
+          data: [],
           anchor: 'bottom-right',
           direction: 'column',
           justify: false,
