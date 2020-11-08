@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx } from 'theme-ui';
-import { CSSProperties, useEffect, useState } from 'react';
+import { CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import Papa from 'papaparse';
 import { ColoredSerie, ScoreLine } from '../components/chart';
 import { Score } from '../models/score';
@@ -38,7 +38,10 @@ const Index: React.FC<{}> = () => {
   const [currentGames, setCurrentGames] = useState<Value[]>([]);
   const [currentGame, setCurrentGame] = useState<Value>({ label: '', value: '' });
   const [isTeam1, setIsTeam1] = useState(true);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const [hoveredIndex, setHoveredIndex] = useState<number | undefined>(undefined);
+  const [overrideIndex, setOverrideIndex] = useState<number | undefined>(undefined);
+  const [enableHover, setEnableHover] = useState(true);
+  const timeout = useRef<NodeJS.Timeout>();
 
   const { theme } = useThemeUI();
 
@@ -143,13 +146,39 @@ const Index: React.FC<{}> = () => {
       flatMap(g => g)
     )(game) as Datum[];
 
+    // setChartData([
+    //   {
+    //     id: 'data1',
+    //     color: '#A9E67E',
+    //     data: lineData.map((d, i) => ({
+    //       x: d.x,
+    //       y: d.y >= 0 || (i > 0 && d.y < 0 && lineData[i - 1].y >= 0) ? d.y : null,
+    //     })),
+    //   },
+    //   {
+    //     id: 'data2',
+    //     color: '#FF0000',
+    //     data: lineData.map((d, i) => ({
+    //       x: d.x,
+    //       y: d.y < 0 || (i > 0 && d.y >= 0 && lineData[i - 1].y < 0) ? d.y : null,
+    //     })),
+    //   },
+    // ]);
+
     setChartData([
       {
-        id: 'data',
-        color: '#A9E67E',
+        key: 'data1',
+        id: 'data1',
+        color: 'gray',
         data: lineData,
       },
     ]);
+    setEnableHover(false);
+    if (timeout.current) {
+      clearTimeout(timeout.current);
+    }
+    // Enabling hover during the transition animation make it look weird
+    timeout.current = setTimeout(() => setEnableHover(true), 750);
   }, [year, week, currentGame]);
 
   const selectStyles: Partial<Styles> = {
@@ -179,6 +208,13 @@ const Index: React.FC<{}> = () => {
     },
   };
 
+  const updateIndex = (i: number) => {
+    if (enableHover) {
+      setOverrideIndex(i + 1);
+      setHoveredIndex(i + 1);
+    }
+  };
+
   return (
     <div style={{ position: 'fixed', top: 10, left: 0, width: '100%', height: '100%' }}>
       <form>
@@ -186,8 +222,7 @@ const Index: React.FC<{}> = () => {
           <Select
             sx={{ width: 100, marginRight: 10 }}
             styles={selectStyles}
-            defaultValue={year}
-            is
+            value={year}
             onChange={(value: any) => setYear(value)}
             options={rangeRight(1922, 2021).map(y => ({ value: y, label: y }))}
           />
@@ -195,15 +230,15 @@ const Index: React.FC<{}> = () => {
           <Select
             sx={{ width: 200, marginRight: 10 }}
             styles={selectStyles}
-            defaultValue={week}
+            value={week}
             options={weeks}
             onChange={(value: any) => setWeek(value)}
           />
           <Select
             sx={{ width: 500 }}
             styles={selectStyles}
-            defaultValue={currentGame}
             options={currentGames}
+            value={currentGame}
             onChange={(value: any) => setCurrentGame(value)}
           />
         </Flex>
@@ -212,7 +247,12 @@ const Index: React.FC<{}> = () => {
         <div style={{ fontSize: 14, marginTop: 50, marginLeft: 10, marginRight: 10, width: 1000 }}>
           {gameData.length > 0 ? (
             <Card>
-              <Styled.table>
+              <Styled.table
+                onMouseLeave={() => {
+                  setOverrideIndex(undefined);
+                  setHoveredIndex(undefined);
+                }}
+              >
                 <thead>
                   <Styled.tr>
                     <Styled.th style={{ width: 75 }}>Quarter</Styled.th>
@@ -225,7 +265,13 @@ const Index: React.FC<{}> = () => {
                 </thead>
                 <tbody>
                   {gameData.slice(1).map((d, i) => (
-                    <Styled.tr key={i} sx={{ bg: i + 1 === hoveredIndex ? 'hover' : 'background' }}>
+                    <Styled.tr
+                      key={i}
+                      sx={{ bg: i + 1 === hoveredIndex ? 'hover' : 'background' }}
+                      onMouseMove={() => {
+                        updateIndex(i);
+                      }}
+                    >
                       <Styled.td>{d.quarter}</Styled.td>
                       <Styled.td>{d.scoringTeam}</Styled.td>
                       <Styled.td>{d.detail}</Styled.td>
@@ -240,7 +286,7 @@ const Index: React.FC<{}> = () => {
           ) : null}
         </div>
         <Card sx={{ width: '100%', marginLeft: 10, marginRight: 10, marginTop: 50, marginBottom: 70 }}>
-          <ScoreLine data={chartData} scoreData={gameData} setIndex={setHoveredIndex} />
+          <ScoreLine data={chartData} scoreData={gameData} setIndex={setHoveredIndex} overrideIndex={overrideIndex} />
         </Card>
       </Flex>
     </div>
