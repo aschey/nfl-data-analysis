@@ -16,8 +16,9 @@
   "dependencies": {
     "@mdx-js/mdx": "^1.6.19",
     "@mdx-js/react": "^1.6.19",
-    "@nivo/core": "file:../../nivo/packages/core",
-    "@nivo/line": "file:../../nivo/packages/line",
+    "@nivo/core": "0.64.0",
+    "@nivo/line": "0.64.0",
+    "color-blend": "^3.0.0",
     "gatsby": "^2.24.85",
     "gatsby-plugin-mdx": "^1.2.51",
     "gatsby-plugin-theme-ui": "^0.3.0",

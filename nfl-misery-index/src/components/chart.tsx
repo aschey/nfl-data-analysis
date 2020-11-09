@@ -1,6 +1,6 @@
 import React, { memo, useMemo } from 'react';
 import { max, flatMap } from 'lodash';
-import { Defs, linearGradientDef, useAnimatedPath, useMotionConfig } from '@nivo/core';
+import { Defs, linearGradientDef, useAnimatedPath } from '@nivo/core';
 import {
   ResponsiveLine,
   Serie,
@@ -12,9 +12,11 @@ import {
   Datum,
   PointSymbolProps,
 } from '@nivo/line';
-import { useSpring, animated } from 'react-spring';
+import { useSpring, animated, config } from 'react-spring';
 import { Score } from '../models/score';
 import { ThemeProvider, useThemeUI } from 'theme-ui';
+import { Spring } from 'react-spring/renderprops';
+import { colorDodge, hue, normal, overlay } from 'color-blend';
 
 const getMax = (data: Serie[]) => {
   if (data.length === 0) {
@@ -70,7 +72,7 @@ const AnimatedPath = ({
     <>
       <animated.path
         d={path}
-        strokeDasharray={dash1}
+        strokeDasharray={dashArray1}
         fill='none'
         stroke='#57f542'
         style={{
@@ -81,7 +83,7 @@ const AnimatedPath = ({
         d={path}
         //pathLength={negativeDistances.concat(positiveDistances).reduce((prev, current) => prev + current)}
         //pathLength={2603.011474609375}
-        strokeDasharray={dash2}
+        strokeDasharray={dashArray2}
         //strokeDashoffset='5'
         fill='none'
         stroke='#eb4034'
@@ -158,7 +160,7 @@ const DashedLine = ({
     //newData.push(serie.data[serie.data.length - 1]);
     //serie.data = newData;
   }
-  debugger;
+  //debugger;
   return series.map(({ id, data, color }) => (
     <AnimatedPath
       d={data}
@@ -186,6 +188,113 @@ const DashedLine = ({
   // )[0];
 };
 
+interface Point {
+  x: number;
+  y: number;
+}
+
+const subtract = (p1: Point, p2: Point) => {
+  return {
+    x: p2.x - p1.x,
+    y: p2.y - p1.y,
+  };
+};
+
+const distance = (p1: Point, p2: Point) => {
+  return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+};
+
+const catmullRomDistance = (p0: Point, p1: Point, p2: Point, p3: Point) => {
+  // from https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
+  let t0 = 0.0;
+  // default alpha in d3-shape
+  let alpha = 0.5;
+  let tension = 0;
+  let t1 = t0 + Math.pow(distance(p0, p1), alpha);
+  let t2 = t1 + Math.pow(distance(p1, p2), alpha);
+  let t3 = t2 + Math.pow(distance(p2, p3), alpha);
+  const m1x =
+    (1 - tension) * (t2 - t1) * ((p0.x - p1.x) / (t0 - t1) - (p0.x - p2.x) / (t0 - t2) + (p1.x - p2.x) / (t1 - t2));
+  const m1y =
+    (1 - tension) * (t2 - t1) * ((p0.y - p1.y) / (t0 - t1) - (p0.y - p2.y) / (t0 - t2) + (p1.y - p2.y) / (t1 - t2));
+  const m2x =
+    (1 - tension) * (t2 - t1) * ((p1.x - p2.x) / (t1 - t2) - (p1.x - p3.x) / (t1 - t3) + (p2.x - p3.x) / (t2 - t3));
+  const m2y =
+    (1 - tension) * (t2 - t1) * ((p1.y - p2.y) / (t1 - t2) - (p1.y - p3.y) / (t1 - t3) + (p2.y - p3.y) / (t2 - t3));
+
+  const ax = 2 * p1.x - 2 * p2.x + m1x + m2x;
+  const ay = 2 * p1.y - 2 * p2.y + m1y + m2y;
+  const bx = -3 * p1.x + 3 * p2.x - 2 * m1x - m2x;
+  const by = -3 * p1.y + 3 * p2.y - 2 * m1y - m2y;
+  const cx = m1x;
+  const cy = m1y;
+  const dx = p1.x;
+  const dy = p1.y;
+
+  const amount = Math.max(10, Math.ceil(distance(p0, p1) / 10));
+  for (let j = 1; j <= amount; j++) {
+    const t = j / amount;
+    const px = ax * t * t * t + bx * t * t + cx * t + dx;
+    const py = ay * t * t * t + by * t * t + cy * t + dy;
+  }
+};
+
+interface CustomSymbolProps extends PointSymbolProps {
+  data: Serie[];
+  overrideIndex: number | undefined;
+}
+
+const CustomSymbol = ({ size, color, borderWidth, borderColor, datum, data, overrideIndex }: CustomSymbolProps) => {
+  const { theme } = useThemeUI();
+  // const props = useSpring({
+  //   radius: data[0].data.findIndex(d => d.x > datum.x)) === overrideIndex - 1 ? size : size / 2,
+  // });
+  //debugger;
+  //console.log(data[0].data.findIndex(d => d.x === datum.x));
+  const isSelected = data[0].data.findIndex(d => d.x > datum.x) - 1 === overrideIndex;
+  const isPositive = datum.y > 0 || (datum.y === 0 && data[0].data.find(d => d.x > datum.x)?.y > 0);
+  const green = { r: 87, g: 245, b: 66, a: 0.15 };
+  const red = { r: 235, g: 64, b: 52, a: 0.15 };
+  const blendedG = normal({ r: 30, g: 35, b: 46, a: 1 }, green);
+  const blendedR = normal({ r: 30, g: 35, b: 46, a: 1 }, red);
+  const textG = normal({ r: 200, g: 200, b: 200, a: 1 }, { ...green, a: 0.4 });
+  const textR = normal({ r: 200, g: 200, b: 200, a: 1 }, { ...red, a: 0.4 });
+  const pColor = isPositive ? blendedG : blendedR;
+  const oColor = isPositive ? green : red;
+  const fg = isPositive ? textG : textR;
+  return (
+    <Spring
+      from={{ size: size * 0.5, dash1: 0, dash2: 50, ...oColor, a: 1.0, opacity: 0.0 }}
+      to={{ size: size * 2, dash1: 12, dash2: 3, ...pColor, opacity: 1.0 }}
+      config={{ ...config.gentle, mass: 0.8 }}
+    >
+      {props => (
+        <g>
+          <circle
+            fill={isSelected ? `rgba(${props.r},${props.g},${props.b},${props.a})` : theme.colors?.background}
+            r={isSelected ? props.size : size / 2}
+            strokeWidth={borderWidth}
+            strokeDasharray={isSelected ? `${props.dash1} ${props.dash2}` : undefined}
+            stroke={isPositive ? '#57f542' : '#eb4034'}
+          ></circle>
+          {isSelected && (
+            <text
+              text-anchor='middle'
+              stroke={`rgba(${fg.r},${fg.g},${fg.b},${fg.a})`}
+              strokeWidth={1}
+              fontSize={8}
+              opacity={props.opacity}
+              style={{ transform: 'translate(0, 3px)' }}
+            >
+              {datum.y}
+            </text>
+          )}
+        </g>
+      )}
+    </Spring>
+  );
+};
+
 export const ScoreLine: React.FC<{
   data: ColoredSerie[];
   scoreData: Score[];
@@ -193,17 +302,6 @@ export const ScoreLine: React.FC<{
   setIndex(index: number | undefined): void;
 }> = ({ data, scoreData, overrideIndex, setIndex }) => {
   const { theme } = useThemeUI();
-
-  const CustomSymbol = ({ size, color, borderWidth, borderColor, datum }: PointSymbolProps) => (
-    <g>
-      <circle
-        fill={theme.colors?.background}
-        r={size / 2}
-        strokeWidth={borderWidth}
-        stroke={datum.y > 0 || (datum.y === 0 && data[0].data.find(d => d.x > datum.x)?.y > 0) ? '#57f542' : '#eb4034'}
-      />
-    </g>
-  );
 
   // const partitionData = (data: ComputedDatum[]) => {
   //   let newData: ComputedDatum[][] = [[data[0]]];
@@ -247,7 +345,7 @@ export const ScoreLine: React.FC<{
     <ResponsiveLine
       data={data}
       key={'line'}
-      //curve='catmullRom'
+      curve='catmullRom'
       margin={{ right: 150, top: 30, bottom: 50, left: 60 }}
       xScale={{ type: 'linear', min: 1, max: getMax(data) }}
       yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
@@ -282,10 +380,10 @@ export const ScoreLine: React.FC<{
       pointLabel='y'
       pointLabelYOffset={-12}
       enableSlices={false}
-      overrideIndex={overrideIndex}
-      pointSymbol={CustomSymbol}
+      //overrideIndex={overrideIndex}
+      pointSymbol={props => <CustomSymbol {...props} data={data} overrideIndex={overrideIndex} />}
       useMesh={true}
-      layers={['grid', 'markers', 'areas', 'crosshair', 'slices', 'points', 'mesh', 'axes', 'legends', DashedLine]}
+      layers={['grid', 'markers', 'areas', 'crosshair', 'slices', DashedLine, 'points', 'mesh', 'axes', 'legends']}
       defs={[
         linearGradientDef('gradientA', [
           { offset: 0, color: 'inherit' },
@@ -325,7 +423,7 @@ export const ScoreLine: React.FC<{
             <div>{`${current.team1}: ${current.team1Score}`}</div>
             <div>{`${current.team2}: ${current.team2Score}`}</div>
             <div>{`Misery Index: ${showTeam1 ? current.score1 : current.score2}`}</div>
-            <div style={{ width: 200 }}>{current.detail}</div>
+            {/* <div style={{ width: 200 }}>{current.detail}</div> */}
           </div>
         );
       }}
