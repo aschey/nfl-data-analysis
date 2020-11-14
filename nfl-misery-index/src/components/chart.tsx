@@ -380,7 +380,7 @@ const catmullRomDistance = (
   const dx = p1.x;
   const dy = p1.y;
 
-  const amount = 1000;
+  const amount = Math.round(pointDistance(p0, p1)) * 10;
   let epsilon = 0.5;
   let zeroFound = false;
   let total = 0;
