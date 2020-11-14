@@ -108,7 +108,170 @@ const DashedLine = ({
   //const { series, lineGenerator, xScale, yScale } = layerProps;
   let positiveDistances: number[] = [0];
   let negativeDistances: number[] = [0];
+  for (let serie of series) {
+    let yZero = yScale(0);
+    for (let i = 0; i < serie.data.length - 1; i++) {
+      let d1 = serie.data[i].data;
+      let d2 = serie.data[i + 1].data;
+      let d1x = xScale((d1.x as number) ?? 0);
+      let d1y = yScale((d1.y as number) ?? 0);
+      let d2x = xScale((d2.x as number) ?? 0);
+      let d2y = yScale((d2.y as number) ?? 0);
+      let d3x = 0;
+      let d3y = 0;
+      let d4x = 0;
+      let d4y = 0;
+      if (i > 0) {
+        let d3 = serie.data[i - 1].data;
+        d3x = xScale((d3.x as number) ?? 0);
+        d3y = yScale((d3.y as number) ?? 0);
+      } else {
+        d3x = 2 * d1x - d2x;
+        d3y = 2 * d1y - d2y;
+      }
+      if (i < serie.data.length - 2) {
+        let d4 = serie.data[i + 2].data;
+        d4x = xScale((d4.x as number) ?? 0);
+        d4y = yScale((d4.y as number) ?? 0);
+      } else {
+        d4x = 2 * d2x - d1x;
+        d4y = 2 * d2y - d1y;
+      }
+      //if (d1y > yZero && d2y < yZero) {
+      if (d1y < yZero && d2y > yZero) {
+        // let m = (d2y - d1y) / (d2x - d1x);
+        // let b = d1y - m * d1x;
+        // let intercept = (yZero - b) / m;
+        let distance = catmullRomDistance(
+          { x: d3x, y: d3y },
+          { x: d1x, y: d1y },
+          { x: d2x, y: d2y },
+          { x: d4x, y: d4y },
+          yZero,
+          true,
+          false
+        );
+        positiveDistances[positiveDistances.length - 1] += distance;
+        let distance2 = catmullRomDistance(
+          { x: d3x, y: d3y },
+          { x: d1x, y: d1y },
+          { x: d2x, y: d2y },
+          { x: d4x, y: d4y },
+          yZero,
+          false,
+          true
+        );
+        negativeDistances.push(distance2);
+        //newData.push(serie.data[i], { ...serie.data[i], data: { x: intercept, y: 0 } });
+        //} else if (d1y < yZero && d2y > yZero) {
+      } else if (d1y > yZero && d2y < yZero) {
+        // let m = (d2y - d1y) / (d2x - d1x);
+        // let b = d1y - m * d1x;
+        // let intercept = (yZero - b) / m;
+        // let distance = Math.sqrt(Math.pow(intercept - d1x, 2) + Math.pow(yZero - d1y, 2));
+        let distance = catmullRomDistance(
+          { x: d3x, y: d3y },
+          { x: d1x, y: d1y },
+          { x: d2x, y: d2y },
+          { x: d4x, y: d4y },
+          yZero,
+          true,
+          false
+        );
+        negativeDistances[negativeDistances.length - 1] += distance;
+        //let distance2 = Math.sqrt(Math.pow(d2x - intercept, 2) + Math.pow(d2y - yZero, 2));
+        let distance2 = catmullRomDistance(
+          { x: d3x, y: d3y },
+          { x: d1x, y: d1y },
+          { x: d2x, y: d2y },
+          { x: d4x, y: d4y },
+          yZero,
+          false,
+          true
+        );
+        positiveDistances.push(distance2);
+      } else if (d1y === yZero && d2y > yZero && i > 0 && d3y < yZero) {
+        let distance = catmullRomDistance(
+          { x: d3x, y: d3y },
+          { x: d1x, y: d1y },
+          { x: d2x, y: d2y },
+          { x: d4x, y: d4y },
+          yZero,
+          false,
+          false
+        );
+        negativeDistances.push(distance);
+        //} else if (d1y === yZero && d2y > yZero && i > 0 && d3y < yZero) {
+      } else if (d1y === yZero && d2y < yZero && i > 0 && d3y > yZero) {
+        //let distance = Math.sqrt(Math.pow(d2x - d1x, 2) + Math.pow(d2y - d1y, 2));
+        let distance = catmullRomDistance(
+          { x: d3x, y: d3y },
+          { x: d1x, y: d1y },
+          { x: d2x, y: d2y },
+          { x: d4x, y: d4y },
+          yZero,
+          false,
+          false
+        );
+        positiveDistances.push(distance);
+        //} else if (d2y < yZero || (d2y === yZero && d1y < yZero)) {
+      } else if (d2y > yZero || (d2y === yZero && d1y > yZero)) {
+        //debugger;
+        //let distance = Math.sqrt(Math.pow(d2x - d1x, 2) + Math.pow(d2y - d1y, 2));
+        let distance = catmullRomDistance(
+          { x: d3x, y: d3y },
+          { x: d1x, y: d1y },
+          { x: d2x, y: d2y },
+          { x: d4x, y: d4y },
+          yZero,
+          false,
+          false
+        );
+        negativeDistances[negativeDistances.length - 1] += distance;
+        //} else if (d2y > yZero || (d2y === yZero && d1y < yZero)) {
+      } else if (d2y < yZero || (d2y === yZero && d1y < yZero)) {
+        //let distance = Math.sqrt(Math.pow(d2x - d1x, 2) + Math.pow(d2y - d1y, 2));
+        let distance = catmullRomDistance(
+          { x: d3x, y: d3y },
+          { x: d1x, y: d1y },
+          { x: d2x, y: d2y },
+          { x: d4x, y: d4y },
+          yZero,
+          false,
+          false
+        );
+        positiveDistances[positiveDistances.length - 1] += distance;
+      }
+    }
+    //newData.push(serie.data[serie.data.length - 1]);
+    //serie.data = newData;
+  }
+  //debugger;
+  return series.map(({ id, data, color }) => (
+    <AnimatedPath
+      d={data}
+      //id={id}
+      key={id}
+      positiveDistances={positiveDistances}
+      negativeDistances={negativeDistances}
+      layerProps={{ series, lineGenerator, xScale, yScale, innerWidth, innerHeight, points, data: data2 }}
+    />
+  ));
+};
 
+const DashedLine2 = ({
+  series,
+  lineGenerator,
+  xScale,
+  yScale,
+  innerWidth,
+  innerHeight,
+  points,
+  data: data2,
+}: CustomLayerProps) => {
+  //const { series, lineGenerator, xScale, yScale } = layerProps;
+  let positiveDistances: number[] = [0];
+  let negativeDistances: number[] = [0];
   for (let serie of series) {
     let yZero = yScale(0);
     for (let i = 0; i < serie.data.length - 1; i++) {
@@ -171,21 +334,6 @@ const DashedLine = ({
       layerProps={{ series, lineGenerator, xScale, yScale, innerWidth, innerHeight, points, data: data2 }}
     />
   ));
-  // return flatMap(
-  //   series.map(({ id, data, color }) => (
-  //     <>
-  //       {
-  //         flatMap(
-  //           partitionData(data).map((d, i) => {
-  //             return (
-  //               <AnimatedPath d={d} i={i} key={id + i.toString()} id={id + i.toString()} layerProps={layerProps} />
-  //             );
-  //           })
-  //         )[0]
-  //       }
-  //     </>
-  //   ))
-  // )[0];
 };
 
 interface Point {
@@ -193,26 +341,27 @@ interface Point {
   y: number;
 }
 
-const subtract = (p1: Point, p2: Point) => {
-  return {
-    x: p2.x - p1.x,
-    y: p2.y - p1.y,
-  };
-};
-
-const distance = (p1: Point, p2: Point) => {
+const pointDistance = (p1: Point, p2: Point) => {
   return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 };
 
-const catmullRomDistance = (p0: Point, p1: Point, p2: Point, p3: Point) => {
+const catmullRomDistance = (
+  p0: Point,
+  p1: Point,
+  p2: Point,
+  p3: Point,
+  yZero: number,
+  toZero: boolean,
+  fromZero: boolean
+) => {
   // from https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
   let t0 = 0.0;
   // default alpha in d3-shape
   let alpha = 0.5;
   let tension = 0;
-  let t1 = t0 + Math.pow(distance(p0, p1), alpha);
-  let t2 = t1 + Math.pow(distance(p1, p2), alpha);
-  let t3 = t2 + Math.pow(distance(p2, p3), alpha);
+  let t1 = t0 + Math.pow(pointDistance(p0, p1), alpha);
+  let t2 = t1 + Math.pow(pointDistance(p1, p2), alpha);
+  let t3 = t2 + Math.pow(pointDistance(p2, p3), alpha);
   const m1x =
     (1 - tension) * (t2 - t1) * ((p0.x - p1.x) / (t0 - t1) - (p0.x - p2.x) / (t0 - t2) + (p1.x - p2.x) / (t1 - t2));
   const m1y =
@@ -231,12 +380,32 @@ const catmullRomDistance = (p0: Point, p1: Point, p2: Point, p3: Point) => {
   const dx = p1.x;
   const dy = p1.y;
 
-  const amount = Math.max(10, Math.ceil(distance(p0, p1) / 10));
+  const amount = 1000;
+  let epsilon = 0.5;
+  let zeroFound = false;
+  let total = 0;
+  let prevX = 0;
+  let prevY = 0;
   for (let j = 1; j <= amount; j++) {
     const t = j / amount;
     const px = ax * t * t * t + bx * t * t + cx * t + dx;
     const py = ay * t * t * t + by * t * t + cy * t + dy;
+    if ((toZero || fromZero) && !zeroFound && Math.abs(yZero - py) <= epsilon) {
+      zeroFound = true;
+    }
+    if (j === 1) {
+      prevY = py;
+      prevX = px;
+      continue;
+    }
+    if ((!toZero && !fromZero) || (toZero && !zeroFound) || (fromZero && zeroFound)) {
+      total += Math.sqrt(Math.pow(px - prevX, 2) + Math.pow(py - prevY, 2));
+    }
+    prevY = py;
+    prevX = px;
   }
+
+  return total;
 };
 
 interface CustomSymbolProps extends PointSymbolProps {
@@ -340,12 +509,12 @@ export const ScoreLine: React.FC<{
       </text>
     );
   };
-
+  let catmull = true;
   return (
     <ResponsiveLine
       data={data}
       key={'line'}
-      curve='catmullRom'
+      curve={catmull ? 'catmullRom' : 'linear'}
       margin={{ right: 150, top: 30, bottom: 50, left: 60 }}
       xScale={{ type: 'linear', min: 1, max: getMax(data) }}
       yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
@@ -383,7 +552,18 @@ export const ScoreLine: React.FC<{
       //overrideIndex={overrideIndex}
       pointSymbol={props => <CustomSymbol {...props} data={data} overrideIndex={overrideIndex} />}
       useMesh={true}
-      layers={['grid', 'markers', 'areas', 'crosshair', 'slices', DashedLine, 'points', 'mesh', 'axes', 'legends']}
+      layers={[
+        'grid',
+        'markers',
+        'areas',
+        'crosshair',
+        'slices',
+        catmull ? DashedLine : DashedLine2,
+        'points',
+        'mesh',
+        'axes',
+        'legends',
+      ]}
       defs={[
         linearGradientDef('gradientA', [
           { offset: 0, color: 'inherit' },
