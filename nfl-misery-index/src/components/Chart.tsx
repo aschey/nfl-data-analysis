@@ -1,11 +1,21 @@
-import React from 'react';
+/** @jsxRuntime classic */
+/** @jsx jsx */
+import { jsx } from 'theme-ui';
 import { max } from 'lodash';
 import { ResponsiveLine, Serie, CustomLayerProps } from '@nivo/line';
 import { Score } from '../models/score';
-import { useThemeUI } from 'theme-ui';
+import { Styled, useThemeUI } from 'theme-ui';
 import { HighlightLine } from './HighlightLine';
 import { LineSymbol } from './LineSymbol';
-import { setOpacity } from '../util/util';
+import { getIsPositive, setOpacity } from '../util/util';
+
+interface ScoreLineProps {
+  data: Serie[];
+  scoreData: Score[];
+  isTeam1: boolean;
+  overrideIndex: number | undefined;
+  setIndex(index: number | undefined): void;
+}
 
 const getMax = (data: Serie[]) => {
   if (data.length === 0) {
@@ -16,16 +26,7 @@ const getMax = (data: Serie[]) => {
   return val;
 };
 
-export interface ColoredSerie extends Serie {
-  color: string;
-}
-
-export const ScoreLine: React.FC<{
-  data: ColoredSerie[];
-  scoreData: Score[];
-  overrideIndex: number | undefined;
-  setIndex(index: number | undefined): void;
-}> = ({ data, scoreData, overrideIndex, setIndex }) => {
+export const ScoreLine: React.FC<ScoreLineProps> = ({ data, scoreData, overrideIndex, setIndex, isTeam1 }) => {
   const { theme } = useThemeUI();
 
   const renderTick = (data: any) => {
@@ -100,9 +101,13 @@ export const ScoreLine: React.FC<{
       }}
       onMouseLeave={() => setIndex(undefined)}
       tooltip={({ point }) => {
-        let showTeam1 = point.serieId === 'team1';
         let index = parseInt(point.id.split('.')[1]);
         let current = scoreData[index];
+        const score = isTeam1 ? current.score1 : current.score2;
+        let nextScore = score;
+        if (index < scoreData.length - 1) {
+          nextScore = isTeam1 ? scoreData[index + 1].score1 : scoreData[index + 1].score2;
+        }
         return (
           <div
             style={{
@@ -115,8 +120,12 @@ export const ScoreLine: React.FC<{
           >
             <div>{`${current.team1}: ${current.team1Score}`}</div>
             <div>{`${current.team2}: ${current.team2Score}`}</div>
-            <div>{`Misery Index: ${showTeam1 ? current.score1 : current.score2}`}</div>
-            {/* <div style={{ width: 200 }}>{current.detail}</div> */}
+            <div>
+              Misery Index:{' '}
+              <span sx={{ color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative' }}>
+                {score}
+              </span>
+            </div>
           </div>
         );
       }}

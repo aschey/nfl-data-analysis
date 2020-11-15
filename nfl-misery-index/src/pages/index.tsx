@@ -3,7 +3,7 @@
 import { jsx } from 'theme-ui';
 import { CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import Papa from 'papaparse';
-import { ColoredSerie, ScoreLine } from '../components/Chart';
+import { ScoreLine } from '../components/Chart';
 import { Score } from '../models/score';
 import { Datum, Serie } from '@nivo/line';
 import { takeWhile, rangeRight, random } from 'lodash';
@@ -18,6 +18,7 @@ import flatMap from 'lodash/fp/flatMap';
 import reduce from 'lodash/fp/reduce';
 import { Label, Box, Flex, Styled, Card, useThemeUI } from 'theme-ui';
 import Select, { OptionsType, Styles, ValueType } from 'react-select';
+import { getIsPositive } from '../util/util';
 
 interface Value {
   label: string;
@@ -30,7 +31,7 @@ interface IntValue {
 
 const Index: React.FC<{}> = () => {
   const [data, setData] = useState<Score[]>([]);
-  const [chartData, setChartData] = useState<ColoredSerie[]>([]);
+  const [chartData, setChartData] = useState<Serie[]>([]);
   const [gameData, setGameData] = useState<Score[]>([]);
   const [year, setYear] = useState<IntValue>({ value: 2020, label: 2020 });
   const [weeks, setWeeks] = useState<Value[]>([]);
@@ -146,29 +147,10 @@ const Index: React.FC<{}> = () => {
       flatMap(g => g)
     )(game) as Datum[];
 
-    // setChartData([
-    //   {
-    //     id: 'data1',
-    //     color: '#A9E67E',
-    //     data: lineData.map((d, i) => ({
-    //       x: d.x,
-    //       y: d.y >= 0 || (i > 0 && d.y < 0 && lineData[i - 1].y >= 0) ? d.y : null,
-    //     })),
-    //   },
-    //   {
-    //     id: 'data2',
-    //     color: '#FF0000',
-    //     data: lineData.map((d, i) => ({
-    //       x: d.x,
-    //       y: d.y < 0 || (i > 0 && d.y >= 0 && lineData[i - 1].y < 0) ? d.y : null,
-    //     })),
-    //   },
-    // ]);
-
     setChartData([
       {
-        key: 'data1',
-        id: 'data1',
+        key: 'data',
+        id: 'data',
         color: 'gray',
         data: lineData,
       },
@@ -214,7 +196,6 @@ const Index: React.FC<{}> = () => {
       setHoveredIndex(i + 1);
     }
   };
-
   return (
     <div style={{ position: 'fixed', top: 10, left: 0, width: '100%', height: '100%' }}>
       <form>
@@ -264,29 +245,46 @@ const Index: React.FC<{}> = () => {
                   </Styled.tr>
                 </thead>
                 <tbody>
-                  {gameData.slice(1).map((d, i) => (
-                    <Styled.tr
-                      key={i}
-                      sx={{ bg: i + 1 === hoveredIndex ? 'hover' : 'background' }}
-                      onMouseMove={() => {
-                        updateIndex(i);
-                      }}
-                    >
-                      <Styled.td>{d.quarter}</Styled.td>
-                      <Styled.td>{d.scoringTeam}</Styled.td>
-                      <Styled.td>{d.detail}</Styled.td>
-                      <Styled.td>{d.team1Score}</Styled.td>
-                      <Styled.td>{d.team2Score}</Styled.td>
-                      <Styled.td>{isTeam1 ? d.score1 : d.score2}</Styled.td>
-                    </Styled.tr>
-                  ))}
+                  {gameData.slice(1).map((d, i) => {
+                    const score = isTeam1 ? d.score1 : d.score2;
+                    let nextScore = score;
+                    if (i < gameData.length - 2) {
+                      nextScore = isTeam1 ? gameData[i + 1].score1 : gameData[i + 1].score2;
+                    }
+                    return (
+                      <Styled.tr
+                        key={i}
+                        sx={{ bg: i + 1 === hoveredIndex ? 'hover' : 'background' }}
+                        onMouseMove={() => {
+                          updateIndex(i);
+                        }}
+                      >
+                        <Styled.td>{d.quarter}</Styled.td>
+                        <Styled.td>{d.scoringTeam}</Styled.td>
+                        <Styled.td>{d.detail}</Styled.td>
+                        <Styled.td>{d.team1Score}</Styled.td>
+                        <Styled.td>{d.team2Score}</Styled.td>
+                        <Styled.td
+                          sx={{ color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative' }}
+                        >
+                          {score}
+                        </Styled.td>
+                      </Styled.tr>
+                    );
+                  })}
                 </tbody>
               </Styled.table>
             </Card>
           ) : null}
         </div>
         <Card sx={{ width: '100%', marginLeft: 10, marginRight: 10, marginTop: 50, marginBottom: 70 }}>
-          <ScoreLine data={chartData} scoreData={gameData} setIndex={setHoveredIndex} overrideIndex={overrideIndex} />
+          <ScoreLine
+            data={chartData}
+            scoreData={gameData}
+            setIndex={setHoveredIndex}
+            overrideIndex={overrideIndex}
+            isTeam1={isTeam1}
+          />
         </Card>
       </Flex>
     </div>

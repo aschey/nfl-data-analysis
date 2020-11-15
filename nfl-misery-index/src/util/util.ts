@@ -10,3 +10,5 @@ export const parseRgb = (rgba: string): RGBA => {
 };
 
 export const setOpacity = (rgba: string, a: number) => rgba.replace('1)', `${a})`);
+
+export const getIsPositive = (yVal: number, yNext: number) => yVal > 0 || (yVal === 0 && yNext > 0);

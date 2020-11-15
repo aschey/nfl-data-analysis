@@ -3,15 +3,13 @@ import { normal } from 'color-blend';
 import React from 'react';
 import { config, Spring } from 'react-spring/renderprops';
 import { useThemeUI } from 'theme-ui';
-import { parseRgb } from '../util/util';
+import { getIsPositive, parseRgb } from '../util/util';
 
 interface CustomSymbolProps extends PointSymbolProps {
   data: Serie[];
   overrideIndex: number | undefined;
 }
 
-//const green = { r: 87, g: 245, b: 66, a: 0.15 };
-//const red = { r: 235, g: 64, b: 52, a: 0.15 };
 export const LineSymbol: React.FC<CustomSymbolProps> = ({
   size,
   borderWidth,
@@ -19,16 +17,18 @@ export const LineSymbol: React.FC<CustomSymbolProps> = ({
   data,
   overrideIndex,
 }: CustomSymbolProps) => {
-  console.log(data, datum);
   const { theme } = useThemeUI();
   if (!theme.colors) {
     return <></>;
   }
-  debugger;
-  const index = data[0].data.findIndex(d => parseFloat((d.x as string) ?? '0') === (datum.x ?? 0));
-  const yVal = parseFloat(data[0].data[index].y as string);
+  const curData = data[0].data;
+  const index = curData.findIndex(d => parseFloat((d.x as string) ?? '0') === (datum.x ?? 0));
+  const yVal = parseFloat(curData[index].y as string);
   const isSelected = index === overrideIndex;
-  const isPositive = yVal > 0 || (yVal === 0 && parseFloat(data[0].data[index + 1].y as string) > 0);
+  const isPositive = getIsPositive(
+    yVal,
+    index < curData.length - 1 ? parseFloat(curData[index + 1].y as string) : yVal
+  );
 
   const positiveColor = theme.colors['highlightPositive'] as string;
   const negativeColor = theme.colors['highlightNegative'] as string;
