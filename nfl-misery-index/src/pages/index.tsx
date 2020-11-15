@@ -3,7 +3,7 @@
 import { jsx } from 'theme-ui';
 import { CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
 import Papa from 'papaparse';
-import { ColoredSerie, ScoreLine } from '../components/chart';
+import { ColoredSerie, ScoreLine } from '../components/Chart';
 import { Score } from '../models/score';
 import { Datum, Serie } from '@nivo/line';
 import { takeWhile, rangeRight, random } from 'lodash';
@@ -177,7 +177,7 @@ const Index: React.FC<{}> = () => {
     if (timeout.current) {
       clearTimeout(timeout.current);
     }
-    // Enabling hover during the transition animation make it look weird
+    // Enabling hover during the transition animation makes it look weird
     timeout.current = setTimeout(() => setEnableHover(true), 750);
   }, [year, week, currentGame]);
 
