@@ -1,6 +1,7 @@
 import React, { memo, useMemo } from 'react';
-import { max, flatMap } from 'lodash';
+import { max, flatMap, matchesProperty } from 'lodash';
 import { Defs, linearGradientDef, useAnimatedPath } from '@nivo/core';
+import { area, curveCatmullRom } from 'd3-shape';
 import {
   ResponsiveLine,
   Serie,
@@ -57,7 +58,7 @@ const AnimatedPath = ({
     ])
     .flat()
     .join(' ');
-  const dashArray1 = useAnimatedPath(dash1);
+  //const dashArray1 = useAnimatedPath(dash1);
   const dash2 = negativeDistances
     .map((p, i) => [
       p,
@@ -65,14 +66,14 @@ const AnimatedPath = ({
     ])
     .flat()
     .join(' ');
-  const dashArray2 = useAnimatedPath(dash2);
+  //const dashArray2 = useAnimatedPath(dash2);
   //debugger;
   //console.log(path);
   return (
     <>
       <animated.path
         d={path}
-        strokeDasharray={dashArray1}
+        strokeDasharray={dash1}
         fill='none'
         stroke='#57f542'
         style={{
@@ -83,7 +84,7 @@ const AnimatedPath = ({
         d={path}
         //pathLength={negativeDistances.concat(positiveDistances).reduce((prev, current) => prev + current)}
         //pathLength={2603.011474609375}
-        strokeDasharray={dashArray2}
+        strokeDasharray={dash2}
         //strokeDashoffset='5'
         fill='none'
         stroke='#eb4034'
@@ -345,6 +346,37 @@ const pointDistance = (p1: Point, p2: Point) => {
   return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 };
 
+const findZero = (ay: number, by: number, cy: number, dy: number, tMax: number, yZero: number, epsilon: number) => {
+  let an = 1 / tMax;
+  let bn = 1;
+  let f = (t: number) => ay * t * t * t + by * t * t + cy * t + dy - yZero;
+  const pFirst = f(an);
+  const pLast = f(bn);
+
+  if (pFirst * pLast >= 0) {
+    debugger;
+  }
+
+  let maxIters = 1000;
+
+  for (let i = 0; i < maxIters; i++) {
+    const mn = (an + bn) / 2;
+    const fmn = f(mn);
+    if (Math.abs(fmn) <= epsilon) {
+      console.log(i);
+      return mn;
+    } else if (f(an) * fmn < 0) {
+      bn = mn;
+    } else if (f(bn) * fmn < 0) {
+      an = mn;
+    } else {
+      return 0;
+    }
+    //t = t1;
+  }
+  return (an + bn) / 2;
+};
+
 const catmullRomDistance = (
   p0: Point,
   p1: Point,
@@ -386,21 +418,39 @@ const catmullRomDistance = (
   let total = 0;
   let prevX = 0;
   let prevY = 0;
-  for (let j = 1; j <= amount; j++) {
+  let start = 1;
+  let stop = amount;
+  if (fromZero || toZero) {
+    debugger;
+    let zero = findZero(ay, by, cy, dy, amount, yZero, epsilon);
+    if (fromZero) {
+      start = zero * amount;
+    } else if (toZero) {
+      stop = zero * amount + 1;
+    }
+  }
+  let s = start / amount;
+  prevX = ax * s * s * s + bx * s * s + cx * s + dx;
+  prevY = ay * s * s * s + by * s * s + cy * s + dy;
+  start++;
+  for (let j = start; j <= stop; j++) {
     const t = j / amount;
     const px = ax * t * t * t + bx * t * t + cx * t + dx;
     const py = ay * t * t * t + by * t * t + cy * t + dy;
-    if ((toZero || fromZero) && !zeroFound && Math.abs(yZero - py) <= epsilon) {
-      zeroFound = true;
-    }
-    if (j === 1) {
-      prevY = py;
-      prevX = px;
-      continue;
-    }
-    if ((!toZero && !fromZero) || (toZero && !zeroFound) || (fromZero && zeroFound)) {
-      total += Math.sqrt(Math.pow(px - prevX, 2) + Math.pow(py - prevY, 2));
-    }
+    // if ((toZero || fromZero) && !zeroFound && Math.abs(yZero - py) <= epsilon) {
+    //   zeroFound = true;
+    // }
+    // if (j === 1) {
+    //   prevY = py;
+    //   prevX = px;
+    //   continue;
+    // }
+    //if ((!toZero && !fromZero) || (toZero && !zeroFound) || (fromZero && zeroFound)) {
+    total += Math.sqrt(Math.pow(px - prevX, 2) + Math.pow(py - prevY, 2));
+    //// let t1 = t + 1;
+    //// let h = ax * t1 * t1 * t1 + bx * t1 * t1 + cx * t1 + dx - px;
+    //// total += h * (((((ax * t * t * t) / 4) * h + (bx * t * t) / 3) * h + (cx * t) / 2) * h + dx);
+    //}
     prevY = py;
     prevX = px;
   }
@@ -408,11 +458,47 @@ const catmullRomDistance = (
   return total;
 };
 
+const AreaLayer = ({ series, xScale, yScale, innerHeight, areaBaselineValue, points }: CustomLayerProps) => {
+  if (!series.length) {
+    series = [{ data: [] }];
+  }
+  let yMax = Math.max(...series[0].data.map(d => yScale(d.data.y)));
+  let yMin = Math.min(...series[0].data.map(d => yScale(d.data.y)));
+  let ratio = yScale(0) / innerHeight;
+  const areaGenerator = area()
+    .x(d => {
+      //console.log(d);
+      return xScale(d.data.x);
+    })
+    .y0(d => yScale(areaBaselineValue))
+    .y1(d => yScale(d.data.y))
+    .curve(curveCatmullRom);
+
+  const path = useAnimatedPath(areaGenerator(series[0].data));
+
+  return (
+    <Spring from={{ opacity: 0.0 }} to={{ opacity: 0.4 }} config={{ ...config.gentle, mass: 0.8 }}>
+      {props => (
+        <>
+          <linearGradient id='solids' x1='0%' y1='0%' x2='0%' y2={yMax / innerHeight}>
+            <stop offset={0} style={{ stopColor: 'rgb(0,255,0)', stopOpacity: 0.2 }} />
+            <stop offset={ratio} style={{ stopColor: 'rgb(0,255,0)', stopOpacity: 0.05 }} />
+            <stop offset={ratio} style={{ stopColor: 'rgb(255,0,0)', stopOpacity: 0.05 }} />
+            <stop offset={1} style={{ stopColor: 'rgb(255,0,0)', stopOpacity: 0.2 }} />
+          </linearGradient>
+          <animated.path d={path} fill='url(#solids)' fillOpacity={props.opacity} />
+        </>
+      )}
+    </Spring>
+  );
+};
+
 interface CustomSymbolProps extends PointSymbolProps {
   data: Serie[];
   overrideIndex: number | undefined;
 }
-
+const green = { r: 87, g: 245, b: 66, a: 0.15 };
+const red = { r: 235, g: 64, b: 52, a: 0.15 };
 const CustomSymbol = ({ size, color, borderWidth, borderColor, datum, data, overrideIndex }: CustomSymbolProps) => {
   const { theme } = useThemeUI();
   // const props = useSpring({
@@ -422,8 +508,7 @@ const CustomSymbol = ({ size, color, borderWidth, borderColor, datum, data, over
   //console.log(data[0].data.findIndex(d => d.x === datum.x));
   const isSelected = data[0].data.findIndex(d => d.x > datum.x) - 1 === overrideIndex;
   const isPositive = datum.y > 0 || (datum.y === 0 && data[0].data.find(d => d.x > datum.x)?.y > 0);
-  const green = { r: 87, g: 245, b: 66, a: 0.15 };
-  const red = { r: 235, g: 64, b: 52, a: 0.15 };
+
   const blendedG = normal({ r: 30, g: 35, b: 46, a: 1 }, green);
   const blendedR = normal({ r: 30, g: 35, b: 46, a: 1 }, red);
   const textG = normal({ r: 200, g: 200, b: 200, a: 1 }, { ...green, a: 0.4 });
@@ -514,6 +599,7 @@ export const ScoreLine: React.FC<{
     <ResponsiveLine
       data={data}
       key={'line'}
+      enableArea={true}
       curve={catmull ? 'catmullRom' : 'linear'}
       margin={{ right: 150, top: 30, bottom: 50, left: 60 }}
       xScale={{ type: 'linear', min: 1, max: getMax(data) }}
@@ -549,13 +635,12 @@ export const ScoreLine: React.FC<{
       pointLabel='y'
       pointLabelYOffset={-12}
       enableSlices={false}
-      //overrideIndex={overrideIndex}
       pointSymbol={props => <CustomSymbol {...props} data={data} overrideIndex={overrideIndex} />}
       useMesh={true}
       layers={[
         'grid',
         'markers',
-        'areas',
+
         'crosshair',
         'slices',
         catmull ? DashedLine : DashedLine2,
@@ -563,16 +648,6 @@ export const ScoreLine: React.FC<{
         'mesh',
         'axes',
         'legends',
-      ]}
-      defs={[
-        linearGradientDef('gradientA', [
-          { offset: 0, color: 'inherit' },
-          { offset: 200, color: 'inherit', opacity: 0 },
-        ]),
-        linearGradientDef('gradientB', [
-          { offset: 0, color: '#FF0000', opacity: 0 },
-          { offset: 100, color: 'FF0000', opacity: 100 },
-        ]),
       ]}
       theme={{
         background: theme.colors?.background,
