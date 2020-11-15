@@ -51,7 +51,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({ data, scoreData, overrideI
       data={data}
       key={'line'}
       curve={catmull ? 'catmullRom' : 'linear'}
-      margin={{ right: 150, top: 30, bottom: 50, left: 60 }}
+      margin={{ right: 60, top: 30, bottom: 50, left: 60 }}
       xScale={{ type: 'linear', min: 1, max: getMax(data) }}
       yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
       axisTop={null}
@@ -87,7 +87,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({ data, scoreData, overrideI
       enableSlices={false}
       pointSymbol={props => <LineSymbol {...props} data={data} overrideIndex={overrideIndex} />}
       useMesh={true}
-      layers={['grid', 'markers', 'crosshair', 'slices', LineWrapper, 'points', 'mesh', 'axes', 'legends']}
+      layers={['grid', 'markers', 'crosshair', 'slices', 'axes', 'legends', LineWrapper, 'points', 'mesh']}
       theme={{
         background: theme.colors?.background,
         textColor: theme.colors?.text,
@@ -121,9 +121,9 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({ data, scoreData, overrideI
             <div>{`${current.team1}: ${current.team1Score}`}</div>
             <div>{`${current.team2}: ${current.team2Score}`}</div>
             <div>
-              Misery Index:{' '}
+              Misery Index:
               <span sx={{ color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative' }}>
-                {score}
+                {` ${score}`}
               </span>
             </div>
           </div>

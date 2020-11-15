@@ -196,6 +196,7 @@ const Index: React.FC<{}> = () => {
       setHoveredIndex(i + 1);
     }
   };
+  const allScores = gameData.slice(1);
   return (
     <div style={{ position: 'fixed', top: 10, left: 0, width: '100%', height: '100%' }}>
       <form>
@@ -245,11 +246,11 @@ const Index: React.FC<{}> = () => {
                   </Styled.tr>
                 </thead>
                 <tbody>
-                  {gameData.slice(1).map((d, i) => {
+                  {allScores.map((d, i) => {
                     const score = isTeam1 ? d.score1 : d.score2;
                     let nextScore = score;
-                    if (i < gameData.length - 2) {
-                      nextScore = isTeam1 ? gameData[i + 1].score1 : gameData[i + 1].score2;
+                    if (i < allScores.length - 1) {
+                      nextScore = isTeam1 ? allScores[i + 1].score1 : allScores[i + 1].score2;
                     }
                     return (
                       <Styled.tr
