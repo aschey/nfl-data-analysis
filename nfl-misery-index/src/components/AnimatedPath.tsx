@@ -2,6 +2,7 @@ import { useAnimatedPath } from '@nivo/core';
 import { ComputedDatum, CustomLayerProps } from '@nivo/line';
 import { animated } from 'react-spring';
 import React from 'react';
+import { useThemeUI } from 'theme-ui';
 
 interface AnimatedPathProps {
   data: ComputedDatum[];
@@ -26,6 +27,10 @@ export const AnimatedPath: React.FC<AnimatedPathProps> = ({
   positiveDistances,
   negativeDistances,
 }) => {
+  const { theme } = useThemeUI();
+  if (!theme.colors) {
+    return <></>;
+  }
   const { lineGenerator, xScale, yScale } = layerProps;
   const line = lineGenerator(
     data.map(d => ({
@@ -44,7 +49,7 @@ export const AnimatedPath: React.FC<AnimatedPathProps> = ({
         d={path}
         strokeDasharray={dashPositive}
         fill='none'
-        stroke='#57f542'
+        stroke={theme.colors['highlightPositive'] as string}
         style={{
           strokeWidth: 2,
         }}
@@ -53,7 +58,7 @@ export const AnimatedPath: React.FC<AnimatedPathProps> = ({
         d={path}
         strokeDasharray={dashNegative}
         fill='none'
-        stroke='#eb4034'
+        stroke={theme.colors['highlightNegative'] as string}
         style={{
           strokeWidth: 2,
         }}

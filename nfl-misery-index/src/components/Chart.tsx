@@ -1,26 +1,11 @@
-import React, { memo, useMemo } from 'react';
+import React from 'react';
 import { max } from 'lodash';
-import { useAnimatedPath } from '@nivo/core';
-import { area, curveCatmullRom } from 'd3-shape';
-import {
-  ResponsiveLine,
-  Serie,
-  Line,
-  CustomLayer,
-  CustomLayerProps,
-  ComputedSerie,
-  ComputedDatum,
-  Datum,
-  PointSymbolProps,
-} from '@nivo/line';
-import { useSpring, animated, config } from 'react-spring';
+import { ResponsiveLine, Serie, CustomLayerProps } from '@nivo/line';
 import { Score } from '../models/score';
-import { ThemeProvider, useThemeUI } from 'theme-ui';
-import { Spring } from 'react-spring/renderprops';
-import { colorDodge, hue, normal, overlay } from 'color-blend';
-import { AnimatedPath } from './AnimatedPath';
+import { useThemeUI } from 'theme-ui';
 import { HighlightLine } from './HighlightLine';
 import { LineSymbol } from './LineSymbol';
+import { setOpacity } from '../util/util';
 
 const getMax = (data: Serie[]) => {
   if (data.length === 0) {
@@ -64,7 +49,6 @@ export const ScoreLine: React.FC<{
     <ResponsiveLine
       data={data}
       key={'line'}
-      enableArea={true}
       curve={catmull ? 'catmullRom' : 'linear'}
       margin={{ right: 150, top: 30, bottom: 50, left: 60 }}
       xScale={{ type: 'linear', min: 1, max: getMax(data) }}
@@ -108,8 +92,8 @@ export const ScoreLine: React.FC<{
         textColor: theme.colors?.text,
         crosshair: { line: { stroke: theme.colors?.text } },
         legends: { text: { fill: theme.colors?.text } },
-        grid: { line: { stroke: `${theme.colors?.text}22` } },
-        markers: { lineColor: `${theme.colors?.text}77` },
+        grid: { line: { stroke: setOpacity(theme.colors?.text ?? '', 0.2) } },
+        markers: { lineColor: setOpacity(theme.colors?.text ?? '', 0.7) },
       }}
       onMouseMove={point => {
         setIndex(point.index);

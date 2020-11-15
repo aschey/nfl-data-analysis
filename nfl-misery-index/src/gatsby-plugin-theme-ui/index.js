@@ -1,4 +1,6 @@
-const textColor = '#c1c1c7';
+import { setOpacity } from '../util/util';
+
+const textColor = 'rgba(193,193,199,1)';
 
 export default {
   space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
@@ -19,12 +21,14 @@ export default {
   },
   colors: {
     text: textColor,
-    background: '#1e232e',
-    primary: '#0077CC',
-    secondary: '#171b24',
-    muted: '#f6f6f6',
-    selected: '#363f54',
-    hover: '#242a38',
+    background: 'rgba(30,35,46,1)',
+    primary: 'rgba(0,119,204,1)',
+    secondary: 'rgba(23,27,36,1)',
+    muted: 'rgba(246,246,246,1)',
+    selected: 'rgba(54,63,84,1)',
+    hover: 'rgba(36,42,56,1)',
+    highlightPositive: 'rgba(50,168,142,1)',
+    highlightNegative: 'rgba(168,99,50,1)',
   },
   styles: {
     root: {
@@ -105,13 +109,13 @@ export default {
       textAlign: 'left',
       borderBottomStyle: 'solid',
       borderWidth: 1,
-      borderColor: `${textColor}22`,
+      borderColor: setOpacity(textColor, 0.2),
     },
     td: {
       textAlign: 'left',
       borderBottomStyle: 'solid',
       borderWidth: 1,
-      borderColor: `${textColor}22`,
+      borderColor: setOpacity(textColor, 0.2),
       padding: 2,
     },
     img: {

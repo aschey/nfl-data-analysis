@@ -3,14 +3,15 @@ import { normal } from 'color-blend';
 import React from 'react';
 import { config, Spring } from 'react-spring/renderprops';
 import { useThemeUI } from 'theme-ui';
+import { parseRgb } from '../util/util';
 
 interface CustomSymbolProps extends PointSymbolProps {
   data: Serie[];
   overrideIndex: number | undefined;
 }
 
-const green = { r: 87, g: 245, b: 66, a: 0.15 };
-const red = { r: 235, g: 64, b: 52, a: 0.15 };
+//const green = { r: 87, g: 245, b: 66, a: 0.15 };
+//const red = { r: 235, g: 64, b: 52, a: 0.15 };
 export const LineSymbol: React.FC<CustomSymbolProps> = ({
   size,
   borderWidth,
@@ -18,17 +19,30 @@ export const LineSymbol: React.FC<CustomSymbolProps> = ({
   data,
   overrideIndex,
 }: CustomSymbolProps) => {
+  console.log(data, datum);
   const { theme } = useThemeUI();
-  const isSelected = data[0].data.findIndex(d => (d.x ?? 0) > (datum.x ?? 0)) - 1 === overrideIndex;
-  const isPositive =
-    (datum.y ?? 0) > 0 || ((datum.y === 0 && data[0].data.find(d => (d.x ?? 0) > (datum.x ?? 0))?.y) ?? 0 > 0);
+  if (!theme.colors) {
+    return <></>;
+  }
+  debugger;
+  const index = data[0].data.findIndex(d => parseFloat((d.x as string) ?? '0') === (datum.x ?? 0));
+  const yVal = parseFloat(data[0].data[index].y as string);
+  const isSelected = index === overrideIndex;
+  const isPositive = yVal > 0 || (yVal === 0 && parseFloat(data[0].data[index + 1].y as string) > 0);
 
-  const blendedG = normal({ r: 30, g: 35, b: 46, a: 1 }, green);
-  const blendedR = normal({ r: 30, g: 35, b: 46, a: 1 }, red);
-  const textG = normal({ r: 200, g: 200, b: 200, a: 1 }, { ...green, a: 0.4 });
-  const textR = normal({ r: 200, g: 200, b: 200, a: 1 }, { ...red, a: 0.4 });
+  const positiveColor = theme.colors['highlightPositive'] as string;
+  const negativeColor = theme.colors['highlightNegative'] as string;
+  const positive = parseRgb(positiveColor);
+  const negative = parseRgb(negativeColor);
+  const background = parseRgb(theme.colors?.background);
+  const base = { r: 200, g: 200, b: 200, a: 1 };
+
+  const blendedG = normal(background, { ...positive, a: 0.15 });
+  const blendedR = normal(background, { ...negative, a: 0.15 });
+  const textG = normal(base, { ...positive, a: 0.4 });
+  const textR = normal(base, { ...negative, a: 0.4 });
   const pColor = isPositive ? blendedG : blendedR;
-  const oColor = isPositive ? green : red;
+  const oColor = isPositive ? positive : negative;
   const fg = isPositive ? textG : textR;
   return (
     <Spring
@@ -43,7 +57,7 @@ export const LineSymbol: React.FC<CustomSymbolProps> = ({
             r={isSelected ? props.size : size / 2}
             strokeWidth={borderWidth}
             strokeDasharray={isSelected ? `${props.dash1} ${props.dash2}` : undefined}
-            stroke={isPositive ? '#57f542' : '#eb4034'}
+            stroke={isPositive ? positiveColor : negativeColor}
           ></circle>
           {isSelected && (
             <text

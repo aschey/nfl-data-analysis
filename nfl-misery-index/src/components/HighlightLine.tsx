@@ -139,7 +139,6 @@ const linearDistance = ({ p1, p2 }: SplinePoints, yZero: number, toZero: boolean
 };
 
 const getDistances = ({ series, xScale, yScale, mode }: HighlightLineProps) => {
-  console.log('test');
   let positiveDistances: number[] = [0];
   let negativeDistances: number[] = [0];
   let yZero = yScale(0);
