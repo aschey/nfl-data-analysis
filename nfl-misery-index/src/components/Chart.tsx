@@ -1,8 +1,11 @@
 import React from 'react';
 import { max } from 'lodash';
-import { ResponsiveLine, Serie, Line } from '@nivo/line';
+import { ResponsiveLine, Serie, CustomLayerProps } from '@nivo/line';
 import { Score } from '../models/score';
-import { ThemeProvider, useThemeUI } from 'theme-ui';
+import { useThemeUI } from 'theme-ui';
+import { HighlightLine } from './HighlightLine';
+import { LineSymbol } from './LineSymbol';
+import { setOpacity } from '../util/util';
 
 const getMax = (data: Serie[]) => {
   if (data.length === 0) {
@@ -20,8 +23,9 @@ export interface ColoredSerie extends Serie {
 export const ScoreLine: React.FC<{
   data: ColoredSerie[];
   scoreData: Score[];
-  setIndex(index: number | null): void;
-}> = ({ data, scoreData, setIndex }) => {
+  overrideIndex: number | undefined;
+  setIndex(index: number | undefined): void;
+}> = ({ data, scoreData, overrideIndex, setIndex }) => {
   const { theme } = useThemeUI();
 
   const renderTick = (data: any) => {
@@ -36,11 +40,16 @@ export const ScoreLine: React.FC<{
       </text>
     );
   };
+  let catmull = true;
 
+  const LineWrapper: React.FC<CustomLayerProps> = props => {
+    return <HighlightLine mode={catmull ? 'catmullRom' : 'linear'} {...props} />;
+  };
   return (
     <ResponsiveLine
       data={data}
-      curve='catmullRom'
+      key={'line'}
+      curve={catmull ? 'catmullRom' : 'linear'}
       margin={{ right: 150, top: 30, bottom: 50, left: 60 }}
       xScale={{ type: 'linear', min: 1, max: getMax(data) }}
       yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
@@ -74,24 +83,26 @@ export const ScoreLine: React.FC<{
       pointBorderColor={{ from: 'serieColor' }}
       pointLabel='y'
       pointLabelYOffset={-12}
+      enableSlices={false}
+      pointSymbol={props => <LineSymbol {...props} data={data} overrideIndex={overrideIndex} />}
       useMesh={true}
+      layers={['grid', 'markers', 'crosshair', 'slices', LineWrapper, 'points', 'mesh', 'axes', 'legends']}
       theme={{
         background: theme.colors?.background,
         textColor: theme.colors?.text,
         crosshair: { line: { stroke: theme.colors?.text } },
         legends: { text: { fill: theme.colors?.text } },
-        grid: { line: { stroke: `${theme.colors?.text}22` } },
-        markers: { lineColor: `${theme.colors?.text}77` },
+        grid: { line: { stroke: setOpacity(theme.colors?.text ?? '', 0.2) } },
+        markers: { lineColor: setOpacity(theme.colors?.text ?? '', 0.7) },
       }}
       onMouseMove={point => {
         setIndex(point.index);
       }}
-      onMouseLeave={() => setIndex(null)}
+      onMouseLeave={() => setIndex(undefined)}
       tooltip={({ point }) => {
         let showTeam1 = point.serieId === 'team1';
         let index = parseInt(point.id.split('.')[1]);
         let current = scoreData[index];
-        console.log(point.x, point.y);
         return (
           <div
             style={{
@@ -105,7 +116,7 @@ export const ScoreLine: React.FC<{
             <div>{`${current.team1}: ${current.team1Score}`}</div>
             <div>{`${current.team2}: ${current.team2Score}`}</div>
             <div>{`Misery Index: ${showTeam1 ? current.score1 : current.score2}`}</div>
-            <div style={{ width: 200 }}>{current.detail}</div>
+            {/* <div style={{ width: 200 }}>{current.detail}</div> */}
           </div>
         );
       }}

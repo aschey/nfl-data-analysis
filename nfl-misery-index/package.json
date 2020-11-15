@@ -16,7 +16,9 @@
   "dependencies": {
     "@mdx-js/mdx": "^1.6.19",
     "@mdx-js/react": "^1.6.19",
-    "@nivo/line": "^0.63.1",
+    "@nivo/core": "0.64.0",
+    "@nivo/line": "0.64.0",
+    "color-blend": "^3.0.0",
     "gatsby": "^2.24.85",
     "gatsby-plugin-mdx": "^1.2.51",
     "gatsby-plugin-theme-ui": "^0.3.0",
@@ -25,6 +27,7 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-select": "^3.1.0",
+    "react-spring": "^8.0.27",
     "react-typography": "^0.16.19",
     "theme-ui": "^0.3.1"
   },
