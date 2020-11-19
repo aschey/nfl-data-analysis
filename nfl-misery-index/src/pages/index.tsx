@@ -19,12 +19,13 @@ import reduce from 'lodash/fp/reduce';
 import { Label, Box, Flex, Styled, Card, useThemeUI } from 'theme-ui';
 import Select, { OptionsType, Styles, ValueType } from 'react-select';
 import { getIsPositive, setOpacity } from '../util/util';
+import { Controls } from '../components/Controls';
 
-interface Value {
+export interface Value {
   label: string;
   value: string;
 }
-interface IntValue {
+export interface IntValue {
   label: number;
   value: number;
 }
@@ -43,8 +44,6 @@ const Index: React.FC<{}> = () => {
   const [overrideIndex, setOverrideIndex] = useState<number | undefined>(undefined);
   const [enableHover, setEnableHover] = useState(true);
   const timeout = useRef<NodeJS.Timeout>();
-
-  const { theme } = useThemeUI();
 
   useEffect(() => {
     Papa.parse<any>('https://nfl-index-data.s3.us-east-2.amazonaws.com/scores_with_index.csv', {
@@ -72,42 +71,6 @@ const Index: React.FC<{}> = () => {
       },
     });
   }, [setData, setChartData]);
-
-  useEffect(() => {
-    if (data.length === 0) {
-      return;
-    }
-
-    let grouped = flow(
-      filter<Score>(d => d.year === year.value),
-      map(d => ({ label: d.week, value: d.week })),
-      uniqBy(d => d.value)
-    )(data);
-    setWeeks(grouped);
-    setWeek(grouped[0]);
-  }, [year, data]);
-
-  useEffect(() => {
-    if (data.length === 0) {
-      return;
-    }
-
-    let grouped = flow(
-      filter<Score>(d => d.year === year.value && d.week === week.value),
-      uniqBy(d => d.matchup),
-      map(d => [
-        { label: `${d.team1} (vs ${d.team2})`, value: d.team1 },
-        { label: `${d.team2} (vs ${d.team1})`, value: d.team2 },
-      ]),
-      flatMap(d => d)
-    )(data);
-
-    setCurrentGames(grouped);
-    if (grouped.length === 0) {
-      return;
-    }
-    setCurrentGame(grouped[0]);
-  }, [week, year, data]);
 
   useEffect(() => {
     if (data.length === 0) {
@@ -163,42 +126,6 @@ const Index: React.FC<{}> = () => {
     timeout.current = setTimeout(() => setEnableHover(true), 750);
   }, [year, week, currentGame]);
 
-  const selectStyles: Partial<Styles> = {
-    control: (base, state) => ({
-      ...base,
-      background: theme.colors?.background,
-      borderColor: setOpacity(theme.colors?.text ?? '', 0.2),
-      boxShadow: state.isFocused ? `0 0 0 1px ${theme.colors?.primary}` : undefined,
-      ':hover': {
-        borderColor: theme.colors?.primary,
-      },
-    }),
-    indicatorSeparator: base => ({ ...base, background: setOpacity(theme.colors?.text ?? '', 0.5) }),
-    dropdownIndicator: base => ({ ...base, color: setOpacity(theme.colors?.text ?? '', 0.8) }),
-    menu: base => ({
-      ...base,
-      background: theme.colors?.background,
-    }),
-    singleValue: base => ({ ...base, color: theme.colors?.text }),
-    input: base => ({
-      ...base,
-      caretColor: theme.colors?.text,
-      color: theme.colors?.text,
-    }),
-    option: (base, state) => {
-      if (!theme.colors) {
-        return base;
-      }
-      return {
-        ...base,
-        backgroundColor: state.isSelected ? (theme.colors['selected'] as string) : theme.colors?.background,
-        ':hover': {
-          background: theme.colors['hover'],
-        },
-      };
-    },
-  };
-
   const updateIndex = (i: number) => {
     if (enableHover) {
       setOverrideIndex(i + 1);
@@ -208,32 +135,19 @@ const Index: React.FC<{}> = () => {
   const allScores = gameData.slice(1);
   return (
     <div style={{ position: 'fixed', top: 10, left: 10, width: 'calc(100% - 10px)', height: '100%' }}>
-      <form>
-        <Flex>
-          <Select
-            sx={{ width: 100, marginRight: 10 }}
-            styles={selectStyles}
-            value={year}
-            onChange={(value: any) => setYear(value)}
-            options={rangeRight(1922, 2021).map(y => ({ value: y, label: y }))}
-          />
-
-          <Select
-            sx={{ width: 200, marginRight: 10 }}
-            styles={selectStyles}
-            value={week}
-            options={weeks}
-            onChange={(value: any) => setWeek(value)}
-          />
-          <Select
-            sx={{ width: 500 }}
-            styles={selectStyles}
-            options={currentGames}
-            value={currentGame}
-            onChange={(value: any) => setCurrentGame(value)}
-          />
-        </Flex>
-      </form>
+      <Controls
+        year={year}
+        setYear={setYear}
+        currentGame={currentGame}
+        setCurrentGame={setCurrentGame}
+        week={week}
+        setWeek={setWeek}
+        currentGames={currentGames}
+        setCurrentGames={setCurrentGames}
+        weeks={weeks}
+        setWeeks={setWeeks}
+        data={data}
+      />
       <Flex style={{ width: '100%', height: '100%' }}>
         <div style={{ fontSize: 14, marginTop: 50, marginRight: 10, width: 1000 }}>
           {gameData.length > 0 ? (
