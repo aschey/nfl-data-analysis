@@ -111,7 +111,7 @@ export const Controls: React.FC<ControlProps> = ({
   };
   return (
     <form>
-      <Flex>
+      <Flex sx={{ paddingLeft: 10 }}>
         <Select
           sx={{ width: 100, marginRight: 10 }}
           styles={selectStyles}

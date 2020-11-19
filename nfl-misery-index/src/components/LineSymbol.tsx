@@ -61,7 +61,7 @@ export const LineSymbol: React.FC<CustomSymbolProps> = ({
           ></circle>
           {isSelected && (
             <text
-              text-anchor='middle'
+              textAnchor='middle'
               stroke={`rgba(${fg.r},${fg.g},${fg.b},${fg.a})`}
               strokeWidth={1}
               fontSize={8}

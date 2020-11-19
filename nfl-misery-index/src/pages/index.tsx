@@ -1,25 +1,16 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx } from 'theme-ui';
-import { CSSProperties, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Papa from 'papaparse';
 import { ScoreLine } from '../components/Chart';
 import { Score } from '../models/score';
 import { Datum, Serie } from '@nivo/line';
-import { takeWhile, rangeRight, random } from 'lodash';
-import map from 'lodash/fp/map';
-import filter from 'lodash/fp/filter';
-import flow from 'lodash/fp/flow';
-import uniqBy from 'lodash/fp/uniqBy';
-import keys from 'lodash/fp/keys';
-import groupBy from 'lodash/fp/groupBy';
-import mapValues from 'lodash/fp/mapValues';
-import flatMap from 'lodash/fp/flatMap';
-import reduce from 'lodash/fp/reduce';
+import { flow, groupBy, mapValues, flatMap } from 'lodash/fp';
 import { Label, Box, Flex, Styled, Card, useThemeUI } from 'theme-ui';
-import Select, { OptionsType, Styles, ValueType } from 'react-select';
 import { getIsPositive, setOpacity } from '../util/util';
 import { Controls } from '../components/Controls';
+import { ScoreTable } from '../components/ScoreTable';
 
 export interface Value {
   label: string;
@@ -125,16 +116,19 @@ const Index: React.FC<{}> = () => {
     // Enabling hover during the transition animation makes it look weird
     timeout.current = setTimeout(() => setEnableHover(true), 750);
   }, [year, week, currentGame]);
-
-  const updateIndex = (i: number) => {
-    if (enableHover) {
-      setOverrideIndex(i + 1);
-      setHoveredIndex(i + 1);
-    }
-  };
-  const allScores = gameData.slice(1);
+  const p: Score[] = [];
   return (
-    <div style={{ position: 'fixed', top: 10, left: 10, width: 'calc(100% - 10px)', height: '100%' }}>
+    <Styled.div
+      sx={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        padding: '10px 0',
+        overflowY: 'auto',
+      }}
+    >
       <Controls
         year={year}
         setYear={setYear}
@@ -148,70 +142,41 @@ const Index: React.FC<{}> = () => {
         setWeeks={setWeeks}
         data={data}
       />
-      <Flex style={{ width: '100%', height: '100%' }}>
-        <div style={{ fontSize: 14, marginTop: 50, marginRight: 10, width: 1000 }}>
-          {gameData.length > 0 ? (
-            <Card>
-              <Styled.table
-                onMouseLeave={() => {
-                  setOverrideIndex(undefined);
-                  setHoveredIndex(undefined);
-                }}
-              >
-                <thead>
-                  <Styled.tr>
-                    <Styled.th style={{ width: 75 }}>Quarter</Styled.th>
-                    <Styled.th style={{ width: 75 }}>Team</Styled.th>
-                    <Styled.th>Play</Styled.th>
-                    <Styled.th style={{ width: 75 }}>{gameData[0].team1}</Styled.th>
-                    <Styled.th style={{ width: 75 }}>{gameData[0].team2}</Styled.th>
-                    <Styled.th style={{ width: 75 }}>Index</Styled.th>
-                  </Styled.tr>
-                </thead>
-                <tbody>
-                  {allScores.map((d, i) => {
-                    const score = isTeam1 ? d.score1 : d.score2;
-                    let nextScore = score;
-                    if (i < allScores.length - 1) {
-                      nextScore = isTeam1 ? allScores[i + 1].score1 : allScores[i + 1].score2;
-                    }
-                    return (
-                      <Styled.tr
-                        key={i}
-                        sx={{ bg: i + 1 === hoveredIndex ? 'hover' : 'background' }}
-                        onMouseMove={() => {
-                          updateIndex(i);
-                        }}
-                      >
-                        <Styled.td>{d.quarter}</Styled.td>
-                        <Styled.td>{d.scoringTeam}</Styled.td>
-                        <Styled.td>{d.detail}</Styled.td>
-                        <Styled.td>{d.team1Score}</Styled.td>
-                        <Styled.td>{d.team2Score}</Styled.td>
-                        <Styled.td
-                          sx={{ color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative' }}
-                        >
-                          {score}
-                        </Styled.td>
-                      </Styled.tr>
-                    );
-                  })}
-                </tbody>
-              </Styled.table>
-            </Card>
-          ) : null}
-        </div>
-        <Card sx={{ width: '100%', marginLeft: 10, marginRight: 10, marginTop: 50, marginBottom: 70 }}>
-          <ScoreLine
-            data={chartData}
-            scoreData={gameData}
-            setIndex={setHoveredIndex}
-            overrideIndex={overrideIndex}
+      <Flex sx={{ width: '100%', height: 'calc(100% - 50px)', flexDirection: ['column', 'row'] }}>
+        <Box style={{ fontSize: 14, padding: '50px 10px 0 10px', width: 'min(1000px, 100%)' }}>
+          <ScoreTable
+            gameData={gameData}
+            setOverrideIndex={setOverrideIndex}
+            hoveredIndex={hoveredIndex}
+            setHoveredIndex={setHoveredIndex}
             isTeam1={isTeam1}
+            enableHover={enableHover}
           />
-        </Card>
+        </Box>
+        <Box
+          sx={{
+            width: '100%',
+            height: '100%',
+            padding: '50px 10px 10px 10px',
+          }}
+        >
+          <Card
+            sx={{
+              width: '100%',
+              height: '100%',
+            }}
+          >
+            <ScoreLine
+              data={chartData}
+              scoreData={gameData}
+              setIndex={setHoveredIndex}
+              overrideIndex={overrideIndex}
+              isTeam1={isTeam1}
+            />
+          </Card>
+        </Box>
       </Flex>
-    </div>
+    </Styled.div>
   );
 };
 
