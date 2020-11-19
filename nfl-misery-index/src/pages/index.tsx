@@ -18,7 +18,7 @@ import flatMap from 'lodash/fp/flatMap';
 import reduce from 'lodash/fp/reduce';
 import { Label, Box, Flex, Styled, Card, useThemeUI } from 'theme-ui';
 import Select, { OptionsType, Styles, ValueType } from 'react-select';
-import { getIsPositive } from '../util/util';
+import { getIsPositive, setOpacity } from '../util/util';
 
 interface Value {
   label: string;
@@ -164,18 +164,27 @@ const Index: React.FC<{}> = () => {
   }, [year, week, currentGame]);
 
   const selectStyles: Partial<Styles> = {
-    control: base => ({
+    control: (base, state) => ({
       ...base,
       background: theme.colors?.background,
-      borderColor: `${theme.colors?.text}22`,
+      borderColor: setOpacity(theme.colors?.text ?? '', 0.2),
+      boxShadow: state.isFocused ? `0 0 0 1px ${theme.colors?.primary}` : undefined,
+      ':hover': {
+        borderColor: theme.colors?.primary,
+      },
     }),
-    indicatorSeparator: base => ({ ...base, background: `${theme.colors?.text}55` }),
-    dropdownIndicator: base => ({ ...base, color: `${theme.colors?.text}AA` }),
+    indicatorSeparator: base => ({ ...base, background: setOpacity(theme.colors?.text ?? '', 0.5) }),
+    dropdownIndicator: base => ({ ...base, color: setOpacity(theme.colors?.text ?? '', 0.8) }),
     menu: base => ({
       ...base,
       background: theme.colors?.background,
     }),
     singleValue: base => ({ ...base, color: theme.colors?.text }),
+    input: base => ({
+      ...base,
+      caretColor: theme.colors?.text,
+      color: theme.colors?.text,
+    }),
     option: (base, state) => {
       if (!theme.colors) {
         return base;
@@ -198,7 +207,7 @@ const Index: React.FC<{}> = () => {
   };
   const allScores = gameData.slice(1);
   return (
-    <div style={{ position: 'fixed', top: 10, left: 0, width: '100%', height: '100%' }}>
+    <div style={{ position: 'fixed', top: 10, left: 10, width: 'calc(100% - 10px)', height: '100%' }}>
       <form>
         <Flex>
           <Select
@@ -226,7 +235,7 @@ const Index: React.FC<{}> = () => {
         </Flex>
       </form>
       <Flex style={{ width: '100%', height: '100%' }}>
-        <div style={{ fontSize: 14, marginTop: 50, marginLeft: 10, marginRight: 10, width: 1000 }}>
+        <div style={{ fontSize: 14, marginTop: 50, marginRight: 10, width: 1000 }}>
           {gameData.length > 0 ? (
             <Card>
               <Styled.table

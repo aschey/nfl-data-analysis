@@ -22,7 +22,7 @@ export default {
   colors: {
     text: textColor,
     background: 'rgba(30,35,46,1)',
-    primary: 'rgba(0,119,204,1)',
+    primary: 'rgba(53,170,196,1)',
     secondary: 'rgba(23,27,36,1)',
     muted: 'rgba(246,246,246,1)',
     selected: 'rgba(54,63,84,1)',
