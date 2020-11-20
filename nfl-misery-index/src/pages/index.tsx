@@ -147,7 +147,7 @@ const Index: React.FC<{}> = () => {
           sx={{
             fontSize: 14,
             padding: '50px 10px 0 10px',
-            width: 'min(1000px, 100%)',
+            width: ['100%', '100%', 1000],
             alignSelf: ['center', 'center', 'flex-start'],
           }}
         >
