@@ -1,14 +1,39 @@
-import { useAnimatedPath } from '@nivo/core';
 import { ComputedDatum, CustomLayerProps } from '@nivo/line';
-import { animated } from 'react-spring';
-import React from 'react';
+import { interpolateString } from 'd3-interpolate';
+import { animated, useSpring } from 'react-spring';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { useThemeUI } from 'theme-ui';
+
+const usePrevious = <T,>(value: T) => {
+  const ref = useRef<T>();
+
+  useEffect(() => {
+    ref.current = value;
+  }, [value]);
+
+  return ref.current;
+};
+
+const useAnimatedPath = (path: string, onRest: () => void) => {
+  const previousPath = usePrevious(path);
+  const interpolator = useMemo(() => interpolateString(previousPath ?? '', path), [previousPath, path]);
+
+  const { value }: any = useSpring({
+    from: { value: 0 },
+    to: { value: 1 },
+    reset: true,
+    onRest,
+  });
+
+  return value.interpolate(interpolator);
+};
 
 interface AnimatedPathProps {
   data: ComputedDatum[];
   layerProps: CustomLayerProps;
   positiveDistances: number[];
   negativeDistances: number[];
+  onAnimationEnd: () => void;
 }
 
 const getDashArray = (distances: number[], oppositeDistances: number[]) => {
@@ -26,6 +51,7 @@ export const AnimatedPath: React.FC<AnimatedPathProps> = ({
   layerProps,
   positiveDistances,
   negativeDistances,
+  onAnimationEnd,
 }) => {
   const { theme } = useThemeUI();
   if (!theme.colors) {
@@ -38,7 +64,7 @@ export const AnimatedPath: React.FC<AnimatedPathProps> = ({
       y: yScale(d?.data?.y ?? 0),
     }))
   );
-  const path = useAnimatedPath(line);
+  const path = useAnimatedPath(line, onAnimationEnd);
   const dashPositive = getDashArray(positiveDistances, negativeDistances);
 
   const dashNegative = getDashArray(negativeDistances, positiveDistances);

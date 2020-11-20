@@ -111,9 +111,9 @@ export const Controls: React.FC<ControlProps> = ({
   };
   return (
     <form>
-      <Flex sx={{ paddingLeft: 10 }}>
+      <Flex sx={{ paddingLeft: 10, flexWrap: 'wrap' }}>
         <Select
-          sx={{ width: 100, marginRight: 10 }}
+          sx={{ width: 100, marginRight: 10, marginBottom: 10 }}
           styles={selectStyles}
           value={year}
           onChange={(value: any) => setYear(value)}
@@ -121,14 +121,14 @@ export const Controls: React.FC<ControlProps> = ({
         />
 
         <Select
-          sx={{ width: 200, marginRight: 10 }}
+          sx={{ width: 200, marginRight: 10, marginBottom: 10 }}
           styles={selectStyles}
           value={week}
           options={weeks}
           onChange={(value: any) => setWeek(value)}
         />
         <Select
-          sx={{ width: 500 }}
+          sx={{ width: 310 }}
           styles={selectStyles}
           options={currentGames}
           value={currentGame}

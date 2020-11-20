@@ -196,6 +196,7 @@ const getDistances = ({ series, xScale, yScale, mode }: HighlightLineProps) => {
 
 interface HighlightLineProps extends CustomLayerProps {
   mode: 'catmullRom' | 'linear';
+  onAnimationEnd: () => void;
 }
 
 export const HighlightLine: React.FC<HighlightLineProps> = (props: HighlightLineProps) => {
@@ -214,6 +215,7 @@ export const HighlightLine: React.FC<HighlightLineProps> = (props: HighlightLine
           positiveDistances={positiveDistances}
           negativeDistances={negativeDistances}
           layerProps={props}
+          onAnimationEnd={props.onAnimationEnd}
         />
       ))}
     </>

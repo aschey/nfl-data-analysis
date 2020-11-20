@@ -114,9 +114,9 @@ const Index: React.FC<{}> = () => {
       clearTimeout(timeout.current);
     }
     // Enabling hover during the transition animation makes it look weird
-    timeout.current = setTimeout(() => setEnableHover(true), 750);
+    //timeout.current = setTimeout(() => setEnableHover(true), 1500);
   }, [year, week, currentGame]);
-  const p: Score[] = [];
+  const onAnimationEnd = () => setEnableHover(true);
   return (
     <Styled.div
       sx={{
@@ -142,13 +142,13 @@ const Index: React.FC<{}> = () => {
         setWeeks={setWeeks}
         data={data}
       />
-      <Flex sx={{ width: '100%', height: 'calc(100% - 50px)', flexDirection: ['column', 'row'] }}>
+      <Flex sx={{ width: '100%', height: 'calc(100% - 50px)', flexDirection: ['column', 'column', 'row'] }}>
         <Flex
           sx={{
             fontSize: 14,
             padding: '50px 10px 0 10px',
             width: 'min(1000px, 100%)',
-            alignSelf: ['center', 'flex-start'],
+            alignSelf: ['center', 'center', 'flex-start'],
           }}
         >
           <ScoreTable
@@ -170,7 +170,7 @@ const Index: React.FC<{}> = () => {
           <Card
             sx={{
               width: '100%',
-              height: '100%',
+              height: [500, 500, '100%'],
             }}
           >
             <ScoreLine
@@ -179,6 +179,7 @@ const Index: React.FC<{}> = () => {
               setIndex={setHoveredIndex}
               overrideIndex={overrideIndex}
               isTeam1={isTeam1}
+              onAnimationEnd={onAnimationEnd}
             />
           </Card>
         </Box>

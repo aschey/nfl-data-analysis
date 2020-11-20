@@ -15,6 +15,7 @@ interface ScoreLineProps {
   isTeam1: boolean;
   overrideIndex: number | undefined;
   setIndex(index: number | undefined): void;
+  onAnimationEnd: () => void;
 }
 
 const getMax = (data: Serie[]) => {
@@ -26,7 +27,21 @@ const getMax = (data: Serie[]) => {
   return val;
 };
 
-export const ScoreLine: React.FC<ScoreLineProps> = ({ data, scoreData, overrideIndex, setIndex, isTeam1 }) => {
+const isMobile = () => {
+  return (
+    navigator.userAgent.match(/iPhone|iPad|iPod|Android|BlackBerry|Opera Mini|IEMobile|CRiOS|OPiOS|Mobile|FxiOS/i) !=
+    null
+  );
+};
+
+export const ScoreLine: React.FC<ScoreLineProps> = ({
+  data,
+  scoreData,
+  overrideIndex,
+  setIndex,
+  isTeam1,
+  onAnimationEnd,
+}) => {
   const { theme } = useThemeUI();
 
   const renderTick = (data: any) => {
@@ -44,7 +59,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({ data, scoreData, overrideI
   let catmull = true;
 
   const LineWrapper: React.FC<CustomLayerProps> = props => {
-    return <HighlightLine mode={catmull ? 'catmullRom' : 'linear'} {...props} />;
+    return <HighlightLine mode={catmull ? 'catmullRom' : 'linear'} onAnimationEnd={onAnimationEnd} {...props} />;
   };
   return (
     <ResponsiveLine

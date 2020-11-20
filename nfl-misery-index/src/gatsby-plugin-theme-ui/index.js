@@ -19,7 +19,7 @@ export default {
     body: 1.5,
     heading: 1.125,
   },
-  breakpoints: ['80em'],
+  breakpoints: ['40em', '80em'],
   colors: {
     text: textColor,
     background: 'rgba(30,35,46,1)',
