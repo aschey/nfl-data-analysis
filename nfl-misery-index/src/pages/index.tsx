@@ -143,7 +143,14 @@ const Index: React.FC<{}> = () => {
         data={data}
       />
       <Flex sx={{ width: '100%', height: 'calc(100% - 50px)', flexDirection: ['column', 'row'] }}>
-        <Box style={{ fontSize: 14, padding: '50px 10px 0 10px', width: 'min(1000px, 100%)' }}>
+        <Flex
+          sx={{
+            fontSize: 14,
+            padding: '50px 10px 0 10px',
+            width: 'min(1000px, 100%)',
+            alignSelf: ['center', 'flex-start'],
+          }}
+        >
           <ScoreTable
             gameData={gameData}
             setOverrideIndex={setOverrideIndex}
@@ -152,7 +159,7 @@ const Index: React.FC<{}> = () => {
             isTeam1={isTeam1}
             enableHover={enableHover}
           />
-        </Box>
+        </Flex>
         <Box
           sx={{
             width: '100%',

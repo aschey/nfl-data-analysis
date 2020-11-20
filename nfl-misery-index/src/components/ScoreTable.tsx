@@ -32,7 +32,7 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
   return (
     <React.Fragment>
       {gameData.length > 0 ? (
-        <Card>
+        <Card sx={{ width: '100%' }}>
           <Styled.table
             onMouseLeave={() => {
               setOverrideIndex(undefined);
