@@ -111,6 +111,10 @@ export default {
       borderBottomStyle: 'solid',
       borderWidth: 1,
       borderColor: setOpacity(textColor, 0.2),
+      position: 'sticky',
+      top: 0,
+      zIndex: 2,
+      backgroundColor: 'background'
     },
     td: {
       textAlign: 'left',

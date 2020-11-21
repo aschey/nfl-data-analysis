@@ -29,7 +29,10 @@ const Index: React.FC<{}> = () => {
   const [weeks, setWeeks] = useState<Value[]>([]);
   const [week, setWeek] = useState<Value>({ label: 'Week 1', value: 'Week 1' });
   const [currentGames, setCurrentGames] = useState<Value[]>([]);
-  const [currentGame, setCurrentGame] = useState<Value>({ label: '', value: '' });
+  const [currentGame, setCurrentGame] = useState<Value>({
+    label: '',
+    value: '',
+  });
   const [isTeam1, setIsTeam1] = useState(true);
   const [hoveredIndex, setHoveredIndex] = useState<number | undefined>(undefined);
   const [overrideIndex, setOverrideIndex] = useState<number | undefined>(undefined);
@@ -97,7 +100,12 @@ const Index: React.FC<{}> = () => {
     setGameData(game);
     let lineData = flow(
       groupBy<Score>(g => g.quarter),
-      mapValues(g => g.map<Datum>((g, i) => ({ x: `${g.quarter}.${i}`, y: isTeam1Val ? g.score1 : g.score2 }))),
+      mapValues(g =>
+        g.map<Datum>((g, i) => ({
+          x: `${g.quarter}.${i}`,
+          y: isTeam1Val ? g.score1 : g.score2,
+        }))
+      ),
       flatMap(g => g)
     )(game) as Datum[];
 
@@ -142,12 +150,19 @@ const Index: React.FC<{}> = () => {
         setWeeks={setWeeks}
         data={data}
       />
-      <Flex sx={{ width: '100%', height: 'calc(100% - 50px)', flexDirection: ['column', 'column', 'row'] }}>
+      <Flex
+        sx={{
+          width: '100%',
+          height: 'calc(100% - 50px)',
+          flexDirection: ['column', 'column', 'row'],
+        }}
+      >
         <Flex
           sx={{
             fontSize: 14,
             padding: '50px 10px 0 10px',
             width: ['100%', '100%', 1000],
+            height: '100%',
             alignSelf: ['center', 'center', 'flex-start'],
           }}
         >

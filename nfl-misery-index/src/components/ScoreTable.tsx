@@ -32,7 +32,14 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
   return (
     <React.Fragment>
       {gameData.length > 0 ? (
-        <Card sx={{ width: '100%', height: [200, 200, '100%'], overflowY: 'auto' }}>
+        <Card
+          sx={{
+            width: '100%',
+            height: [200, 200, '100%'],
+            overflowY: 'auto',
+            padding: 0,
+          }}
+        >
           <Styled.table
             onMouseLeave={() => {
               setOverrideIndex(undefined);
@@ -70,7 +77,9 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
                     <Styled.td>{d.team1Score}</Styled.td>
                     <Styled.td>{d.team2Score}</Styled.td>
                     <Styled.td
-                      sx={{ color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative' }}
+                      sx={{
+                        color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative',
+                      }}
                     >
                       {score}
                     </Styled.td>
