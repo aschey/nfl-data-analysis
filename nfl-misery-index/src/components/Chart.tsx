@@ -44,7 +44,6 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
   onAnimationEnd,
 }) => {
   const { theme } = useThemeUI();
-  const { width, height } = useWindowSize();
 
   const renderTick = (data: any) => {
     return (
@@ -64,13 +63,18 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
   const LineWrapper: React.FC<CustomLayerProps> = props => {
     return <HighlightLine mode={catmull ? 'catmullRom' : 'linear'} onAnimationEnd={onAnimationEnd} {...props} />;
   };
-  const sideMargin = (width / 2) * 0.08;
+
   return (
     <ResponsiveLine
       data={data}
       key={'line'}
       curve={catmull ? 'catmullRom' : 'linear'}
-      margin={{ right: sideMargin, top: height * 0.03, bottom: height * 0.08, left: Math.max(sideMargin, 50) }}
+      margin={{
+        right: 25,
+        top: 25,
+        bottom: 50,
+        left: 50,
+      }}
       xScale={{ type: 'linear', min: 1, max: getMax(data) }}
       yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
       axisTop={null}

@@ -120,7 +120,9 @@ export default {
       borderBottomStyle: 'solid',
       borderWidth: 1,
       borderColor: setOpacity(textColor, 0.2),
-      padding: 2,
+      paddingTop: 2,
+      paddingBottom: 2,
+      paddingRight: 2
     },
     img: {
       maxWidth: '100%',

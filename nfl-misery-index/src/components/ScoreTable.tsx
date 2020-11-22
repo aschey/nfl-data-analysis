@@ -48,11 +48,11 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
           >
             <thead>
               <Styled.tr>
-                <Styled.th sx={{ width: ['15%', '15%', '15%'] }}>Quarter</Styled.th>
-                <Styled.th sx={{ width: [undefined, '10%', '10%'] }}>Team</Styled.th>
+                <Styled.th sx={{ width: ['15%', '15%', '15%'], paddingLeft: '5px' }}>Quarter</Styled.th>
+                <Styled.th sx={{ width: [undefined, '20%', '20%'] }}>Team</Styled.th>
                 <Styled.th sx={{ display: ['none', 'flex', 'flex'] }}>Play</Styled.th>
-                <Styled.th sx={{ width: ['20%', '10%', '10%'] }}>{gameData[0].team1}</Styled.th>
-                <Styled.th sx={{ width: ['20%', '10%', '10%'] }}>{gameData[0].team2}</Styled.th>
+                <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{gameData[0].team1}</Styled.th>
+                <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{gameData[0].team2}</Styled.th>
                 <Styled.th sx={{ width: ['20%', '10%', '10%'] }}>Index</Styled.th>
               </Styled.tr>
             </thead>
@@ -71,7 +71,7 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
                       updateIndex(i);
                     }}
                   >
-                    <Styled.td>{d.quarter}</Styled.td>
+                    <Styled.td sx={{ paddingLeft: '5px' }}>{d.quarter}</Styled.td>
                     <Styled.td>{d.scoringTeam}</Styled.td>
                     <Styled.td sx={{ display: ['none', 'flex', 'flex'] }}>{d.detail}</Styled.td>
                     <Styled.td>{d.team1Score}</Styled.td>
