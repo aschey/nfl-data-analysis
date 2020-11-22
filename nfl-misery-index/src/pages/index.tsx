@@ -124,7 +124,11 @@ const Index: React.FC<{}> = () => {
     // Enabling hover during the transition animation makes it look weird
     //timeout.current = setTimeout(() => setEnableHover(true), 1500);
   }, [year, week, currentGame]);
+
   const onAnimationEnd = () => setEnableHover(true);
+
+  const cardItemPadding = '50px 10px 0 10px';
+
   return (
     <Styled.div
       sx={{
@@ -160,7 +164,7 @@ const Index: React.FC<{}> = () => {
         <Flex
           sx={{
             fontSize: 14,
-            padding: '50px 10px 0 10px',
+            padding: cardItemPadding,
             width: ['100%', '100%', 1000],
             height: '100%',
             alignSelf: ['center', 'center', 'flex-start'],
@@ -179,7 +183,7 @@ const Index: React.FC<{}> = () => {
           sx={{
             width: '100%',
             height: '100%',
-            padding: '50px 10px 10px 10px',
+            padding: cardItemPadding,
           }}
         >
           <Card

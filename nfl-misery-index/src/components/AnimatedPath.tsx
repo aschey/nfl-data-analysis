@@ -3,30 +3,7 @@ import { interpolateString } from 'd3-interpolate';
 import { animated, useSpring } from 'react-spring';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { useThemeUI } from 'theme-ui';
-
-const usePrevious = <T,>(value: T) => {
-  const ref = useRef<T>();
-
-  useEffect(() => {
-    ref.current = value;
-  }, [value]);
-
-  return ref.current;
-};
-
-const useAnimatedPath = (path: string, onRest: () => void) => {
-  const previousPath = usePrevious(path);
-  const interpolator = useMemo(() => interpolateString(previousPath ?? '', path), [previousPath, path]);
-
-  const { value }: any = useSpring({
-    from: { value: 0 },
-    to: { value: 1 },
-    reset: true,
-    onRest,
-  });
-
-  return value.interpolate(interpolator);
-};
+import { useAnimatedPath } from '../hooks/useAnimatedPath';
 
 interface AnimatedPathProps {
   data: ComputedDatum[];
