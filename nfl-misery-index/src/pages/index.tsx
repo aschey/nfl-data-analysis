@@ -176,7 +176,7 @@ const Index: React.FC<{}> = () => {
             fontSize: 14,
             padding: cardItemPadding,
             width: ['100%', '100%', 1000],
-            height: [height * 0.3, height * 0.4, '100%'],
+            height: [height * 0.3, height * 0.4, height - controlHeight - 25],
             alignSelf: ['center', 'center', 'flex-start'],
           }}
         >
@@ -198,8 +198,12 @@ const Index: React.FC<{}> = () => {
         >
           <Card
             sx={{
-              width: '100%',
-              height: [height * 0.7 - controlHeightTwoRows - 25, height * 0.6 - controlHeight - 25, '100%'],
+              width: [width - 20, width - 20, width - 600],
+              height: [
+                height * 0.7 - controlHeightTwoRows - 25,
+                height * 0.6 - controlHeight - 25,
+                height - controlHeight - 75,
+              ],
             }}
           >
             <ScoreLine

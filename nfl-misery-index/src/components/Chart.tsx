@@ -63,7 +63,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
       key={'line'}
       curve={catmull ? 'catmullRom' : 'linear'}
       margin={{
-        right: 25,
+        right: 50,
         top: 25,
         bottom: 50,
         left: 50,
@@ -103,7 +103,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
       enableSlices={false}
       pointSymbol={props => <LineSymbol {...props} data={data} overrideIndex={overrideIndex} />}
       useMesh={true}
-      layers={['grid', 'markers', 'crosshair', 'slices', 'axes', 'legends', LineWrapper, 'points', 'mesh']}
+      layers={['grid', 'markers', 'axes', 'areas', 'crosshair', LineWrapper, 'points', 'slices', 'mesh', 'legends']}
       theme={{
         background: theme.colors?.background,
         textColor: theme.colors?.text,
