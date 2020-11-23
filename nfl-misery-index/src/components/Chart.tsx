@@ -28,13 +28,6 @@ const getMax = (data: Serie[]) => {
   return val;
 };
 
-const isMobile = () => {
-  return (
-    navigator.userAgent.match(/iPhone|iPad|iPod|Android|BlackBerry|Opera Mini|IEMobile|CRiOS|OPiOS|Mobile|FxiOS/i) !=
-    null
-  );
-};
-
 export const ScoreLine: React.FC<ScoreLineProps> = ({
   data,
   scoreData,

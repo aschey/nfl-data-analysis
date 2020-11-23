@@ -11,6 +11,7 @@ import { Label, Box, Flex, Styled, Card, useThemeUI } from 'theme-ui';
 import { getIsPositive, setOpacity } from '../util/util';
 import { Controls } from '../components/Controls';
 import { ScoreTable } from '../components/ScoreTable';
+import { useWindowSize } from '../hooks/useWindowSize';
 
 export interface Value {
   label: string;
@@ -38,6 +39,8 @@ const Index: React.FC<{}> = () => {
   const [overrideIndex, setOverrideIndex] = useState<number | undefined>(undefined);
   const [enableHover, setEnableHover] = useState(true);
   const timeout = useRef<NodeJS.Timeout>();
+
+  const { width, height } = useWindowSize();
 
   useEffect(() => {
     Papa.parse<any>('https://nfl-index-data.s3.us-east-2.amazonaws.com/scores_with_index.csv', {
@@ -127,7 +130,10 @@ const Index: React.FC<{}> = () => {
 
   const onAnimationEnd = () => setEnableHover(true);
 
-  const cardItemPadding = '50px 10px 0 10px';
+  const cardItemPadding = ['10px 10px 0 10px', '10px 10px 0 10px', '50px 10px 0 10px'];
+  const selectHeight = 38;
+  const controlHeight = selectHeight + 10;
+  const controlHeightTwoRows = selectHeight * 2 + 10;
 
   return (
     <Styled.div
@@ -157,7 +163,11 @@ const Index: React.FC<{}> = () => {
       <Flex
         sx={{
           width: '100%',
-          height: 'calc(100% - 50px)',
+          height: [
+            `calc(100% - ${controlHeightTwoRows}px)`,
+            `calc(100% - ${controlHeightTwoRows}px)`,
+            'calc(100% - 50px)',
+          ],
           flexDirection: ['column', 'column', 'row'],
         }}
       >
@@ -166,7 +176,7 @@ const Index: React.FC<{}> = () => {
             fontSize: 14,
             padding: cardItemPadding,
             width: ['100%', '100%', 1000],
-            height: '100%',
+            height: [height * 0.3, height * 0.4, '100%'],
             alignSelf: ['center', 'center', 'flex-start'],
           }}
         >
@@ -189,7 +199,7 @@ const Index: React.FC<{}> = () => {
           <Card
             sx={{
               width: '100%',
-              height: [500, 500, '100%'],
+              height: [height * 0.7 - controlHeightTwoRows - 25, height * 0.6 - controlHeight - 25, '100%'],
             }}
           >
             <ScoreLine
