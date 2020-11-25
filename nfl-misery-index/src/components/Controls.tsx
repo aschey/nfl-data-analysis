@@ -37,8 +37,6 @@ export const Controls: React.FC<ControlProps> = ({
   setYear,
   data,
 }) => {
-  const { theme } = useThemeUI();
-
   useEffect(() => {
     if (data.length === 0) {
       return;
@@ -75,41 +73,6 @@ export const Controls: React.FC<ControlProps> = ({
     setWeek(grouped[0]);
   }, [year, data]);
 
-  const selectStyles: Partial<Styles> = {
-    control: (base, state) => ({
-      ...base,
-      background: theme.colors?.background,
-      borderColor: setOpacity(theme.colors?.text ?? '', 0.2),
-      boxShadow: state.isFocused ? `0 0 0 1px ${theme.colors?.primary}` : undefined,
-      ':hover': {
-        borderColor: theme.colors?.primary,
-      },
-    }),
-    indicatorSeparator: base => ({ ...base, background: setOpacity(theme.colors?.text ?? '', 0.5) }),
-    dropdownIndicator: base => ({ ...base, color: setOpacity(theme.colors?.text ?? '', 0.8) }),
-    menu: base => ({
-      ...base,
-      background: theme.colors?.background,
-    }),
-    singleValue: base => ({ ...base, color: theme.colors?.text }),
-    input: base => ({
-      ...base,
-      caretColor: theme.colors?.text,
-      color: theme.colors?.text,
-    }),
-    option: (base, state) => {
-      if (!theme.colors) {
-        return base;
-      }
-      return {
-        ...base,
-        backgroundColor: state.isSelected ? (theme.colors['selected'] as string) : theme.colors?.background,
-        ':hover': {
-          background: theme.colors['hover'],
-        },
-      };
-    },
-  };
   return (
     <form>
       <Flex sx={{ paddingLeft: 10, flexWrap: 'wrap' }}>
@@ -128,7 +91,7 @@ export const Controls: React.FC<ControlProps> = ({
           onChange={value => setWeek(value as Value)}
         />
         <AdaptiveSelect
-          width={305}
+          width={310}
           options={currentGames}
           value={currentGame}
           onChange={value => setCurrentGame(value as Value)}

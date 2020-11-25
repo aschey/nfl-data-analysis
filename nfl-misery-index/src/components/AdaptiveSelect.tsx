@@ -4,6 +4,7 @@ import { jsx, useThemeUI, Select as MobileSelect, SxStyleProp, Box } from 'theme
 import Select, { Styles } from 'react-select';
 import { isMobile, setOpacity } from '../util/util';
 import { IntValue, Value } from '../pages';
+import { useEffect, useState } from 'react';
 
 interface AdaptiveSelectProps {
   value: Value | IntValue;
@@ -15,6 +16,10 @@ interface AdaptiveSelectProps {
 
 export const AdaptiveSelect: React.FC<AdaptiveSelectProps> = ({ value, onChange, options, sxStyles, width }) => {
   const { theme } = useThemeUI();
+  let [isMobileBrowser, setIsMobileBrowser] = useState<boolean | null>(null);
+  useEffect(() => {
+    setIsMobileBrowser(isMobile());
+  }, []);
   const selectStyles: Partial<Styles> = {
     control: (base, state) => ({
       ...base,
@@ -51,22 +56,26 @@ export const AdaptiveSelect: React.FC<AdaptiveSelectProps> = ({ value, onChange,
     },
   };
 
-  return (
-    <Box sx={{ ...sxStyles, height: 38 }}>
-      {isMobile() ? (
-        <MobileSelect
-          onChange={e => {
-            onChange(options.find(o => o.label === e.target.value) ?? options[0]);
-          }}
-          sx={{ width }}
-        >
-          {options.map(o => (
-            <option key={o.value}>{o.label}</option>
-          ))}
-        </MobileSelect>
-      ) : (
-        <Select styles={selectStyles} sx={{ width }} value={value} onChange={onChange as any} options={options} />
-      )}
-    </Box>
-  );
+  const selectElement = () => {
+    switch (isMobileBrowser) {
+      case true:
+        return (
+          <MobileSelect
+            onChange={e => {
+              onChange(options.find(o => o.label === e.target.value) ?? options[0]);
+            }}
+          >
+            {options.map(o => (
+              <option key={o.value}>{o.label}</option>
+            ))}
+          </MobileSelect>
+        );
+      case false:
+        return <Select styles={selectStyles} value={value} onChange={onChange as any} options={options} />;
+      case null:
+        return null;
+    }
+  };
+
+  return <Box sx={{ ...sxStyles, height: 38, width }}>{selectElement()}</Box>;
 };
