@@ -20,11 +20,12 @@ export const AdaptiveSelect: React.FC<AdaptiveSelectProps> = ({ value, onChange,
   useEffect(() => {
     setIsMobileBrowser(isMobile());
   }, []);
+
   const selectStyles: Partial<Styles> = {
     control: (base, state) => ({
       ...base,
       background: theme.colors?.background,
-      borderColor: setOpacity(theme.colors?.text ?? '', 0.2),
+      borderColor: theme.colors ? (theme.colors['border'] as string) : '',
       boxShadow: state.isFocused ? `0 0 0 1px ${theme.colors?.primary}` : undefined,
       ':hover': {
         borderColor: theme.colors?.primary,
@@ -61,9 +62,7 @@ export const AdaptiveSelect: React.FC<AdaptiveSelectProps> = ({ value, onChange,
       case true:
         return (
           <MobileSelect
-            onChange={e => {
-              onChange(options.find(o => o.label === e.target.value) ?? options[0]);
-            }}
+            onChange={e => onChange(options.find(o => o.label.toString() === e.target.value) ?? options[0])}
           >
             {options.map(o => (
               <option key={o.value}>{o.label}</option>

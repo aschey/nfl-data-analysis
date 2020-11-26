@@ -38,7 +38,6 @@ const Index: React.FC<{}> = () => {
   const [hoveredIndex, setHoveredIndex] = useState<number | undefined>(undefined);
   const [overrideIndex, setOverrideIndex] = useState<number | undefined>(undefined);
   const [enableHover, setEnableHover] = useState(true);
-  const timeout = useRef<NodeJS.Timeout>();
 
   const { width, height } = useWindowSize();
 
@@ -121,11 +120,6 @@ const Index: React.FC<{}> = () => {
       },
     ]);
     setEnableHover(false);
-    if (timeout.current) {
-      clearTimeout(timeout.current);
-    }
-    // Enabling hover during the transition animation makes it look weird
-    //timeout.current = setTimeout(() => setEnableHover(true), 1500);
   }, [year, week, currentGame]);
 
   const onAnimationEnd = () => setEnableHover(true);

@@ -28,6 +28,7 @@ export default {
     muted: 'rgba(246,246,246,1)',
     selected: 'rgba(54,63,84,1)',
     hover: 'rgba(36,42,56,1)',
+    border: setOpacity(textColor, 0.2),
     highlightPositive: 'rgba(50,168,142,1)',
     highlightNegative: 'rgba(168,99,50,1)',
   },
@@ -135,4 +136,10 @@ export default {
       boxShadow: '2px 0 8px rgba(0, 0, 0, 0.3)',
     },
   },
+  select: {
+    borderColor: 'border',
+    '&:focus': {
+      outline: t =>  `${t.colors.primary} auto 1px`
+    }
+  }
 };
