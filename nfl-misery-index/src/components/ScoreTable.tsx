@@ -2,7 +2,6 @@
 /** @jsx jsx */
 import React from 'react';
 import { Card, jsx, Styled } from 'theme-ui';
-import { useWindowSize } from '../hooks/useWindowSize';
 import { Score } from '../models/score';
 import { getIsPositive } from '../util/util';
 
@@ -23,8 +22,6 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
   hoveredIndex,
   enableHover,
 }) => {
-  const { width, height } = useWindowSize();
-
   const updateIndex = (i: number) => {
     if (enableHover) {
       setOverrideIndex(i + 1);

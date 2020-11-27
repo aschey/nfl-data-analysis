@@ -3,10 +3,12 @@ import { useMemo } from 'react';
 import { useSpring } from 'react-spring';
 import { usePrevious } from './usePrevious';
 
-export const useAnimatedPath = (path: string, onRest: () => void) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const useAnimatedPath = (path: string, onRest: () => void): any => {
   const previousPath = usePrevious(path);
   const interpolator = useMemo(() => interpolateString(previousPath ?? '', path), [previousPath, path]);
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { value }: any = useSpring({
     from: { value: 0 },
     to: { value: 1 },

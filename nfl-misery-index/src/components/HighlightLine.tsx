@@ -1,4 +1,5 @@
-import { CustomLayerProps, Datum } from '@nivo/line';
+import { ComputedSerie, CustomLayerProps, Datum } from '@nivo/line';
+import { ScaleFunc } from '@nivo/scales';
 import React, { useMemo } from 'react';
 import { AnimatedPath } from './AnimatedPath';
 
@@ -27,7 +28,7 @@ const computeCubic = ({ a, b, c, d, x }: CubicParams) => a * Math.pow(x, 3) + b 
 const findZero = ({ a, b, c, d }: CubicCoefficients, tMax: number, yZero: number, epsilon: number) => {
   let an = 1 / tMax;
   let bn = 1;
-  let f = (x: number) => computeCubic({ a, b, c, d, x }) - yZero;
+  const f = (x: number) => computeCubic({ a, b, c, d, x }) - yZero;
   const pFirst = f(an);
   const pLast = f(bn);
 
@@ -35,7 +36,7 @@ const findZero = ({ a, b, c, d }: CubicCoefficients, tMax: number, yZero: number
     return 0;
   }
 
-  let maxIters = 100;
+  const maxIters = 100;
   for (let i = 0; i < maxIters; i++) {
     const mn = (an + bn) / 2;
     const fmn = f(mn);
@@ -59,12 +60,12 @@ const getTangeantY = (t0: number, t1: number, t2: number, p0: Point, p1: Point, 
 
 const catmullRomDistance = ({ p0, p1, p2, p3 }: SplinePoints, yZero: number, toZero: boolean, fromZero: boolean) => {
   // from https://qroph.github.io/2018/07/30/smooth-paths-using-catmull-rom-splines.html
-  let t0 = 0.0;
+  const t0 = 0.0;
   // default alpha in d3-shape
-  let alpha = 0.5;
-  let t1 = t0 + Math.pow(pointDistance(p0, p1), alpha);
-  let t2 = t1 + Math.pow(pointDistance(p1, p2), alpha);
-  let t3 = t2 + Math.pow(pointDistance(p2, p3), alpha);
+  const alpha = 0.5;
+  const t1 = t0 + Math.pow(pointDistance(p0, p1), alpha);
+  const t2 = t1 + Math.pow(pointDistance(p1, p2), alpha);
+  const t3 = t2 + Math.pow(pointDistance(p2, p3), alpha);
 
   const tDiff = t2 - t1;
   const m1x = tDiff * getTangeantX(t0, t1, t2, p0, p1, p2);
@@ -86,21 +87,21 @@ const catmullRomDistance = ({ p0, p1, p2, p3 }: SplinePoints, yZero: number, toZ
     d: p1.y,
   };
   const amount = Math.round(pointDistance(p0, p1)) * 10;
-  let epsilon = 0.5;
+  const epsilon = 0.5;
   let total = 0;
   let prevX = 0;
   let prevY = 0;
   let start = 1;
   let stop = amount;
   if (fromZero || toZero) {
-    let zero = findZero(yCoeffs, amount, yZero, epsilon);
+    const zero = findZero(yCoeffs, amount, yZero, epsilon);
     if (fromZero) {
       start = zero * amount;
     } else if (toZero) {
       stop = zero * amount + 1;
     }
   }
-  let s = start / amount;
+  const s = start / amount;
   prevX = computeCubic({ ...xCoeffs, x: s });
   prevY = computeCubic({ ...yCoeffs, x: s });
   start++;
@@ -128,9 +129,9 @@ const getDummyPoint = (p1: Point, p2: Point): Point => ({ x: 2 * p1.x - p2.x, y:
 
 const linearDistance = ({ p1, p2 }: SplinePoints, yZero: number, toZero: boolean, fromZero: boolean) => {
   if (toZero || fromZero) {
-    let m = (p2.y - p1.y) / (p2.x - p1.x);
-    let b = p1.y - m * p1.x;
-    let intercept = (yZero - b) / m;
+    const m = (p2.y - p1.y) / (p2.x - p1.x);
+    const b = p1.y - m * p1.x;
+    const intercept = (yZero - b) / m;
     return toZero
       ? Math.sqrt(Math.pow(intercept - p1.x, 2) + Math.pow(yZero - p1.y, 2))
       : Math.sqrt(Math.pow(p2.x - intercept, 2) + Math.pow(p2.y - yZero, 2));
@@ -138,10 +139,10 @@ const linearDistance = ({ p1, p2 }: SplinePoints, yZero: number, toZero: boolean
   return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
 };
 
-const getDistances = ({ series, xScale, yScale, mode }: HighlightLineProps) => {
-  let positiveDistances: number[] = [0];
-  let negativeDistances: number[] = [0];
-  let yZero = yScale(0);
+const getDistances = (series: ComputedSerie[], xScale: ScaleFunc, yScale: ScaleFunc, mode: 'catmullRom' | 'linear') => {
+  const positiveDistances: number[] = [0];
+  const negativeDistances: number[] = [0];
+  const yZero = yScale(0);
   const distanceFunc = mode === 'catmullRom' ? catmullRomDistance : linearDistance;
   const getPoint = (datum: Datum): Point => {
     return {
@@ -149,7 +150,7 @@ const getDistances = ({ series, xScale, yScale, mode }: HighlightLineProps) => {
       y: yScale(datum.y ?? 0),
     };
   };
-  for (let serie of series) {
+  for (const serie of series) {
     for (let i = 0; i < serie.data.length - 1; i++) {
       const p1 = getPoint(serie.data[i].data);
       const p2 = getPoint(serie.data[i + 1].data);
@@ -200,12 +201,11 @@ interface HighlightLineProps extends CustomLayerProps {
 }
 
 export const HighlightLine: React.FC<HighlightLineProps> = (props: HighlightLineProps) => {
-  const [negativeDistances, positiveDistances] = useMemo(() => getDistances(props), [
-    props.innerHeight,
-    props.innerWidth,
-    props.mode,
-    props.data,
-  ]);
+  const [negativeDistances, positiveDistances] = useMemo(
+    () => getDistances(props.series, props.xScale, props.yScale, props.mode),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [props.innerHeight, props.innerWidth, props.mode, props.data]
+  );
   return (
     <>
       {props.series.map(({ id, data }) => (

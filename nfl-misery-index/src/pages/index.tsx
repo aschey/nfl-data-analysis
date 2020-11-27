@@ -1,14 +1,13 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx } from 'theme-ui';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Papa from 'papaparse';
 import { ScoreLine } from '../components/Chart';
 import { Score } from '../models/score';
 import { Datum, Serie } from '@nivo/line';
 import { flow, groupBy, mapValues, flatMap } from 'lodash/fp';
-import { Label, Box, Flex, Styled, Card, useThemeUI } from 'theme-ui';
-import { getIsPositive, setOpacity } from '../util/util';
+import { Box, Flex, Styled, Card } from 'theme-ui';
 import { Controls } from '../components/Controls';
 import { ScoreTable } from '../components/ScoreTable';
 import { useWindowSize } from '../hooks/useWindowSize';
@@ -22,7 +21,7 @@ export interface IntValue {
   value: number;
 }
 
-const Index: React.FC<{}> = () => {
+const Index: React.FC<Record<string, unknown>> = () => {
   const [data, setData] = useState<Score[]>([]);
   const [chartData, setChartData] = useState<Serie[]>([]);
   const [gameData, setGameData] = useState<Score[]>([]);
@@ -42,12 +41,13 @@ const Index: React.FC<{}> = () => {
   const { width, height } = useWindowSize();
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Papa.parse<any>('https://nfl-index-data.s3.us-east-2.amazonaws.com/scores_with_index.csv', {
       download: true,
       worker: true,
       header: true,
       complete: results => {
-        let csvData = results.data.map<Score>(d => ({
+        const csvData = results.data.map<Score>(d => ({
           detail: d.Detail,
           quarter: parseFloat(d.Quarter?.startsWith('OT') ? 5 : d.Quarter),
           date: new Date(d.date),
@@ -69,7 +69,7 @@ const Index: React.FC<{}> = () => {
   }, [setData, setChartData]);
 
   useEffect(() => {
-    if (data.length === 0) {
+    if (data.length === 0 || !year || !week) {
       return;
     }
 
@@ -79,6 +79,7 @@ const Index: React.FC<{}> = () => {
         d.week === week.value &&
         (d.team1 === currentGame.value || d.team2 === currentGame.value)
     );
+
     if (game.length === 0) {
       return;
     }
@@ -97,10 +98,10 @@ const Index: React.FC<{}> = () => {
       matchup: game[0].matchup,
       scoringTeam: '',
     });
-    let isTeam1Val = currentGame.value === game[0].team1;
+    const isTeam1Val = currentGame.value === game[0].team1;
     setIsTeam1(isTeam1Val);
     setGameData(game);
-    let lineData = flow(
+    const lineData = flow(
       groupBy<Score>(g => g.quarter),
       mapValues(g =>
         g.map<Datum>((g, i) => ({
@@ -120,7 +121,7 @@ const Index: React.FC<{}> = () => {
       },
     ]);
     setEnableHover(false);
-  }, [year, week, currentGame]);
+  }, [currentGame, data, week, year]);
 
   const onAnimationEnd = () => setEnableHover(true);
 

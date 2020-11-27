@@ -1,7 +1,6 @@
 import { ComputedDatum, CustomLayerProps } from '@nivo/line';
-import { interpolateString } from 'd3-interpolate';
-import { animated, useSpring } from 'react-spring';
-import React, { useEffect, useMemo, useRef } from 'react';
+import { animated } from 'react-spring';
+import React from 'react';
 import { useThemeUI } from 'theme-ui';
 import { useAnimatedPath } from '../hooks/useAnimatedPath';
 
@@ -30,18 +29,21 @@ export const AnimatedPath: React.FC<AnimatedPathProps> = ({
   negativeDistances,
   onAnimationEnd,
 }) => {
-  const { theme } = useThemeUI();
-  if (!theme.colors) {
-    return <></>;
-  }
   const { lineGenerator, xScale, yScale } = layerProps;
+  const { theme } = useThemeUI();
+
   const line = lineGenerator(
     data.map(d => ({
       x: xScale(d?.data?.x ?? 0),
       y: yScale(d?.data?.y ?? 0),
     }))
   );
+
   const path = useAnimatedPath(line, onAnimationEnd);
+  if (!theme.colors) {
+    return <></>;
+  }
+
   const dashPositive = getDashArray(positiveDistances, negativeDistances);
 
   const dashNegative = getDashArray(negativeDistances, positiveDistances);

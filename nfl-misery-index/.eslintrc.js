@@ -1,6 +1,9 @@
 module.exports = {
+  globals: {
+    __PATH_PREFIX__: true,
+  },
   parser: `@typescript-eslint/parser`,
-  extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended', 'prettier/@typescript-eslint'],
+  extends: ['plugin:@typescript-eslint/recommended', 'prettier/@typescript-eslint', 'react-app'],
   plugins: ['@typescript-eslint', 'prettier'],
   parserOptions: {
     ecmaVersion: 2018, // Allows for the parsing of modern ECMAScript features
@@ -12,21 +15,7 @@ module.exports = {
   },
   rules: {
     quotes: 'off',
-    '@typescript-eslint/quotes': [
-      2,
-      {
-        avoidEscape: true,
-      },
-    ],
     indent: ['error', 2, { SwitchCase: 1 }],
-    'prettier/prettier': [
-      'error',
-      {
-        trailingComma: 'es5',
-        semi: true,
-        singleQuote: true,
-        printWidth: 120,
-      },
-    ],
+    'react/jsx-pascal-case': 'off',
   },
 };

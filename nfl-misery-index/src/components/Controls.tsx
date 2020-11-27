@@ -1,13 +1,10 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { Datum } from '@nivo/line';
-import { filter, flatMap, flow, groupBy, map, mapValues, rangeRight, uniqBy } from 'lodash/fp';
-import { useEffect, useState } from 'react';
-import Select, { Styles } from 'react-select';
-import { Box, Divider, Flex, jsx, useThemeUI } from 'theme-ui';
+import { filter, flatMap, flow, map, rangeRight, uniqBy } from 'lodash/fp';
+import { useCallback, useEffect } from 'react';
+import { Flex, jsx } from 'theme-ui';
 import { Score } from '../models/score';
 import { IntValue, Value } from '../pages';
-import { setOpacity } from '../util/util';
 import { AdaptiveSelect } from './AdaptiveSelect';
 
 interface ControlProps {
@@ -37,41 +34,46 @@ export const Controls: React.FC<ControlProps> = ({
   setYear,
   data,
 }) => {
+  const updateWeek = useCallback(
+    (newWeek: Value, year: IntValue) => {
+      setWeek(newWeek);
+      const grouped = flow(
+        filter<Score>(d => d.year === year.value && d.week === newWeek.value),
+        uniqBy(d => d.matchup),
+        map(d => [
+          { label: `${d.team1} (vs ${d.team2})`, value: d.team1 },
+          { label: `${d.team2} (vs ${d.team1})`, value: d.team2 },
+        ]),
+        flatMap(d => d)
+      )(data);
+
+      setCurrentGames(grouped);
+      if (grouped.length === 0) {
+        return;
+      }
+      setCurrentGame(grouped[0]);
+    },
+    [data, setCurrentGames, setCurrentGame, setWeek]
+  );
+
+  const updateYear = useCallback(
+    (newYear: IntValue) => {
+      setYear(newYear);
+      const grouped = flow(
+        filter<Score>(d => d.year === newYear.value),
+        map(d => ({ label: d.week, value: d.week })),
+        uniqBy(d => d.value)
+      )(data);
+
+      setWeeks(grouped);
+      updateWeek(grouped[0], newYear);
+    },
+    [data, setWeeks, setYear, updateWeek]
+  );
+
   useEffect(() => {
-    if (data.length === 0) {
-      return;
-    }
-
-    let grouped = flow(
-      filter<Score>(d => d.year === year.value && d.week === week.value),
-      uniqBy(d => d.matchup),
-      map(d => [
-        { label: `${d.team1} (vs ${d.team2})`, value: d.team1 },
-        { label: `${d.team2} (vs ${d.team1})`, value: d.team2 },
-      ]),
-      flatMap(d => d)
-    )(data);
-
-    setCurrentGames(grouped);
-    if (grouped.length === 0) {
-      return;
-    }
-    setCurrentGame(grouped[0]);
-  }, [week, year, data]);
-
-  useEffect(() => {
-    if (data.length === 0) {
-      return;
-    }
-
-    let grouped = flow(
-      filter<Score>(d => d.year === year.value),
-      map(d => ({ label: d.week, value: d.week })),
-      uniqBy(d => d.value)
-    )(data);
-    setWeeks(grouped);
-    setWeek(grouped[0]);
-  }, [year, data]);
+    updateYear({ value: 2020, label: 2020 });
+  }, [updateYear]);
 
   return (
     <form>
@@ -80,7 +82,7 @@ export const Controls: React.FC<ControlProps> = ({
           sxStyles={{ marginBottom: 10, marginRight: 10 }}
           width={100}
           value={year}
-          onChange={value => setYear(value as IntValue)}
+          onChange={value => updateYear(value as IntValue)}
           options={rangeRight(1922, 2021).map(y => ({ value: y, label: y }))}
         />
         <AdaptiveSelect
@@ -88,7 +90,7 @@ export const Controls: React.FC<ControlProps> = ({
           width={200}
           value={week}
           options={weeks}
-          onChange={value => setWeek(value as Value)}
+          onChange={value => updateWeek(value as Value, year)}
         />
         <AdaptiveSelect
           width={310}

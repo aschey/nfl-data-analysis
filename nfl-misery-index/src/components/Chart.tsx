@@ -4,11 +4,10 @@ import { jsx } from 'theme-ui';
 import { max } from 'lodash';
 import { ResponsiveLine, Serie, CustomLayerProps } from '@nivo/line';
 import { Score } from '../models/score';
-import { Styled, useThemeUI } from 'theme-ui';
+import { useThemeUI } from 'theme-ui';
 import { HighlightLine } from './HighlightLine';
 import { LineSymbol } from './LineSymbol';
 import { getIsPositive, setOpacity } from '../util/util';
-import { useWindowSize } from '../hooks/useWindowSize';
 
 interface ScoreLineProps {
   data: Serie[];
@@ -23,8 +22,8 @@ const getMax = (data: Serie[]) => {
   if (data.length === 0) {
     return 4.0;
   }
-  let m = max(data[0].data.map(d => d.x)) as number;
-  let val = m > 4.0 ? m : 4.0;
+  const m = max(data[0].data.map(d => d.x)) as number;
+  const val = m > 4.0 ? m : 4.0;
   return val;
 };
 
@@ -38,6 +37,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
 }) => {
   const { theme } = useThemeUI();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const renderTick = (data: any) => {
     return (
       <text
@@ -51,7 +51,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
     );
   };
 
-  let catmull = true;
+  const catmull = true;
 
   const LineWrapper: React.FC<CustomLayerProps> = props => {
     return <HighlightLine mode={catmull ? 'catmullRom' : 'linear'} onAnimationEnd={onAnimationEnd} {...props} />;
@@ -117,8 +117,8 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
       }}
       onMouseLeave={() => setIndex(undefined)}
       tooltip={({ point }) => {
-        let index = parseInt(point.id.split('.')[1]);
-        let current = scoreData[index];
+        const index = parseInt(point.id.split('.')[1]);
+        const current = scoreData[index];
         const score = isTeam1 ? current.score1 : current.score2;
         let nextScore = score;
         if (index < scoreData.length - 1) {

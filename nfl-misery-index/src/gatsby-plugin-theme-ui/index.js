@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { setOpacity } from '../util/util';
 
 const textColor = 'rgba(193,193,199,1)';
 
-export default {
+const styles = {
   space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
   fonts: {
     body: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
@@ -114,7 +115,7 @@ export default {
       borderColor: setOpacity(textColor, 0.2),
       position: 'sticky',
       top: 0,
-      backgroundColor: 'background'
+      backgroundColor: 'background',
     },
     td: {
       textAlign: 'left',
@@ -123,7 +124,7 @@ export default {
       borderColor: setOpacity(textColor, 0.2),
       paddingTop: 2,
       paddingBottom: 2,
-      paddingRight: 2
+      paddingRight: 2,
     },
     img: {
       maxWidth: '100%',
@@ -139,7 +140,9 @@ export default {
   select: {
     borderColor: 'border',
     '&:focus': {
-      outline: t =>  `${t.colors.primary} auto 1px`
-    }
-  }
+      outline: t => `${t.colors.primary} auto 1px`,
+    },
+  },
 };
+
+export default styles;
