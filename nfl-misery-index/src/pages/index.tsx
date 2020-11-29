@@ -10,7 +10,7 @@ import { flow, groupBy, mapValues, flatMap } from 'lodash/fp';
 import { Box, Flex, Styled, Card } from 'theme-ui';
 import { Controls } from '../components/Controls';
 import { ScoreTable } from '../components/ScoreTable';
-import { useWindowSize } from '../hooks/useWindowSize';
+import { ClientOnly } from '../components/ClientOnly';
 
 export interface Value {
   label: string;
@@ -38,7 +38,9 @@ const Index: React.FC<Record<string, unknown>> = () => {
   const [overrideIndex, setOverrideIndex] = useState<number | undefined>(undefined);
   const [enableHover, setEnableHover] = useState(true);
 
-  const { width, height } = useWindowSize();
+  const selectHeight = 38;
+  const controlHeight = selectHeight + 10;
+  const controlHeightTwoRows = selectHeight * 2 + 10;
 
   useEffect(() => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -126,9 +128,6 @@ const Index: React.FC<Record<string, unknown>> = () => {
   const onAnimationEnd = () => setEnableHover(true);
 
   const cardItemPadding = ['10px 10px 0 10px', '10px 10px 0 10px', '50px 10px 0 10px'];
-  const selectHeight = 38;
-  const controlHeight = selectHeight + 10;
-  const controlHeightTwoRows = selectHeight * 2 + 10;
 
   return (
     <Styled.div
@@ -137,9 +136,12 @@ const Index: React.FC<Record<string, unknown>> = () => {
         top: 0,
         left: 0,
         width: '100%',
-        height: '100%',
+        height: [
+          `calc(100% - ${controlHeightTwoRows}px)`,
+          `calc(100% - ${controlHeightTwoRows}px)`,
+          `calc(100% - ${controlHeight}px)`,
+        ],
         padding: '10px 0',
-        overflowY: 'auto',
       }}
     >
       <Controls
@@ -158,11 +160,7 @@ const Index: React.FC<Record<string, unknown>> = () => {
       <Flex
         sx={{
           width: '100%',
-          height: [
-            `calc(100% - ${controlHeightTwoRows}px)`,
-            `calc(100% - ${controlHeightTwoRows}px)`,
-            'calc(100% - 50px)',
-          ],
+          height: '100%',
           flexDirection: ['column', 'column', 'row'],
         }}
       >
@@ -171,7 +169,7 @@ const Index: React.FC<Record<string, unknown>> = () => {
             fontSize: 14,
             padding: cardItemPadding,
             width: ['100%', '100%', 1000],
-            height: [height * 0.3, height * 0.4, height - controlHeight - 25],
+            height: ['40%', '40%', '100%'],
             alignSelf: ['center', 'center', 'flex-start'],
           }}
         >
@@ -187,18 +185,14 @@ const Index: React.FC<Record<string, unknown>> = () => {
         <Box
           sx={{
             width: '100%',
-            height: '100%',
+            height: ['60%', '60%', '100%'],
             padding: cardItemPadding,
           }}
         >
           <Card
             sx={{
-              width: [width - 20, width - 20, width - 600],
-              height: [
-                height * 0.7 - controlHeightTwoRows - 25,
-                height * 0.6 - controlHeight - 25,
-                height - controlHeight - 75,
-              ],
+              width: '100%',
+              height: '100%',
             }}
           >
             <ScoreLine

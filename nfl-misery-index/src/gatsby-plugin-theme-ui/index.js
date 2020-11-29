@@ -115,6 +115,7 @@ const styles = {
       borderColor: setOpacity(textColor, 0.2),
       position: 'sticky',
       top: 0,
+      paddingRight: '5px',
       backgroundColor: 'background',
     },
     td: {

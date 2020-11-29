@@ -30,66 +30,64 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
   };
   const allScores = gameData.slice(1);
   return (
-    <React.Fragment>
-      {gameData.length > 0 ? (
-        <Card
-          sx={{
-            width: '100%',
-            height: '100%',
-            overflowY: 'auto',
-            padding: 0,
-          }}
-        >
-          <Styled.table
-            onMouseLeave={() => {
-              setOverrideIndex(undefined);
-              setHoveredIndex(undefined);
-            }}
-          >
-            <thead>
-              <Styled.tr>
-                <Styled.th sx={{ width: ['15%', '15%', '15%'], paddingLeft: '5px' }}>Quarter</Styled.th>
-                <Styled.th sx={{ width: [undefined, '20%', '20%'] }}>Team</Styled.th>
-                <Styled.th sx={{ display: ['none', 'flex', 'flex'] }}>Play</Styled.th>
-                <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{gameData[0].team1}</Styled.th>
-                <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{gameData[0].team2}</Styled.th>
-                <Styled.th sx={{ width: ['20%', '10%', '10%'] }}>Index</Styled.th>
+    <Card
+      sx={{
+        width: '100%',
+        height: '100%',
+        overflowY: 'auto',
+        padding: 0,
+      }}
+    >
+      <Styled.table
+        onMouseLeave={() => {
+          setOverrideIndex(undefined);
+          setHoveredIndex(undefined);
+        }}
+      >
+        <thead>
+          <Styled.tr>
+            <Styled.th sx={{ width: ['15%', '15%', '15%'], paddingLeft: '5px' }}>Quarter</Styled.th>
+            <Styled.th sx={{ width: [undefined, '20%', '20%'] }}>Team</Styled.th>
+            <Styled.th sx={{ width: ['0%', '45%', '45%'], display: ['none', 'table-cell', 'table-cell'] }}>
+              Play
+            </Styled.th>
+            <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{gameData.length > 0 ? gameData[0].team1 : ''}</Styled.th>
+            <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{gameData.length > 0 ? gameData[0].team2 : ''}</Styled.th>
+            <Styled.th sx={{ width: ['20%', '10%', '10%'] }}>Index</Styled.th>
+          </Styled.tr>
+        </thead>
+        <tbody>
+          {allScores.map((d, i) => {
+            const score = isTeam1 ? d.score1 : d.score2;
+            let nextScore = score;
+            if (i < allScores.length - 1) {
+              nextScore = isTeam1 ? allScores[i + 1].score1 : allScores[i + 1].score2;
+            }
+            return (
+              <Styled.tr
+                key={i}
+                sx={{ bg: i + 1 === hoveredIndex ? 'hover' : 'background' }}
+                onMouseMove={() => {
+                  updateIndex(i);
+                }}
+              >
+                <Styled.td sx={{ paddingLeft: '5px' }}>{d.quarter}</Styled.td>
+                <Styled.td>{d.scoringTeam}</Styled.td>
+                <Styled.td sx={{ display: ['none', 'flex', 'flex'] }}>{d.detail}</Styled.td>
+                <Styled.td>{d.team1Score}</Styled.td>
+                <Styled.td>{d.team2Score}</Styled.td>
+                <Styled.td
+                  sx={{
+                    color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative',
+                  }}
+                >
+                  {score}
+                </Styled.td>
               </Styled.tr>
-            </thead>
-            <tbody>
-              {allScores.map((d, i) => {
-                const score = isTeam1 ? d.score1 : d.score2;
-                let nextScore = score;
-                if (i < allScores.length - 1) {
-                  nextScore = isTeam1 ? allScores[i + 1].score1 : allScores[i + 1].score2;
-                }
-                return (
-                  <Styled.tr
-                    key={i}
-                    sx={{ bg: i + 1 === hoveredIndex ? 'hover' : 'background' }}
-                    onMouseMove={() => {
-                      updateIndex(i);
-                    }}
-                  >
-                    <Styled.td sx={{ paddingLeft: '5px' }}>{d.quarter}</Styled.td>
-                    <Styled.td>{d.scoringTeam}</Styled.td>
-                    <Styled.td sx={{ display: ['none', 'flex', 'flex'] }}>{d.detail}</Styled.td>
-                    <Styled.td>{d.team1Score}</Styled.td>
-                    <Styled.td>{d.team2Score}</Styled.td>
-                    <Styled.td
-                      sx={{
-                        color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative',
-                      }}
-                    >
-                      {score}
-                    </Styled.td>
-                  </Styled.tr>
-                );
-              })}
-            </tbody>
-          </Styled.table>
-        </Card>
-      ) : null}
-    </React.Fragment>
+            );
+          })}
+        </tbody>
+      </Styled.table>
+    </Card>
   );
 };
