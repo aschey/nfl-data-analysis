@@ -1,0 +1,27 @@
+org: aschey
+app: nfl-misery-index
+service: nfl-misery-index
+
+provider:
+  name: aws
+  runtime: python3.8
+  apiGateway:
+    shouldStartNameWithService: true
+  iamRoleStatements:
+    - Effect: 'Allow'
+      Action:
+        - 'lambda:InvokeFunction'
+      Resource: '*'
+
+functions:
+  hello:
+    handler: handler.hello
+    warmup: true
+    events:
+      - http:
+          path: /
+          method: get
+          cors: true
+plugins:
+  - serverless-python-requirements
+  - serverless-plugin-warmup

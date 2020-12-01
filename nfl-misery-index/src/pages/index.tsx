@@ -10,7 +10,6 @@ import { flow, groupBy, mapValues, flatMap } from 'lodash/fp';
 import { Box, Flex, Styled, Card } from 'theme-ui';
 import { Controls } from '../components/Controls';
 import { ScoreTable } from '../components/ScoreTable';
-import { ClientOnly } from '../components/ClientOnly';
 
 export interface Value {
   label: string;

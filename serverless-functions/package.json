@@ -1,0 +1,9 @@
+{
+  "name": "nfl-misery-index",
+  "description": "",
+  "version": "0.1.0",
+  "devDependencies": {
+    "serverless-python-requirements": "^5.1.0",
+    "serverless-plugin-warmup": "^4.9.0"
+  }
+}
