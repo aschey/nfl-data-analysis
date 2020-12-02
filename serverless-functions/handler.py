@@ -21,7 +21,7 @@ def hello(event, context):
     #c.execute('''CREATE TABLE scores (detail text, quarter int, date date, score1 float, score2 float, team1 text, team2 text, team1Score number, team2Score number, week text, year int, matchup text, scoringTeam text)''')
     #scores = pd.read_csv(url)
     res = c.execute(
-        '''SELECT * FROM scores where team1_mascot = "Raiders" and team2_mascot="Broncos"''').fetchall()
+        '''select * from score where game_id = 3''').fetchall()
     #scores.to_sql('scores2', conn, index=False)
     # with open(url, 'r') as r:
     #     # with closing(requests.get(url, stream=True)) as r:
