@@ -70,11 +70,7 @@ class Scorer:
         self.previous_quarter_diffs = []
         self.current_quarter_diff = 0
 
-    def calculate(self, team1_score, team2_score, q, final):
-        if q.startswith('OT'):
-            quarter = 5.0
-        else:
-            quarter = float(q)
+    def calculate(self, team1_score, team2_score, quarter, final):
         diff = team1_score - team2_score
         self.max_pos_diff = max(self.max_pos_diff, diff)
         self.max_neg_diff = min(self.max_neg_diff, diff)
@@ -102,7 +98,8 @@ class Scorer:
         run = list(takewhile(filter, derivative[::-1]))[::-1]
         # take square root of squared margins, this increases weight of points scored in a single quarter
         # also weight later quarters higher
-        avg = math.sqrt(sum((v * (i + 1)) ** 2 for i, v in enumerate(run))) / max(len(run), 1)
+        avg = math.sqrt(sum((v * (i + 1)) ** 2 for i,
+                            v in enumerate(run))) / max(len(run), 1)
         ret = (avg * (quarter / max(quarter, 4))) ** 1.5
         return -ret if negative else ret
 
@@ -111,14 +108,17 @@ class Scorer:
             # current lead
             s = self.sigmoid(score_diff, 50, 0.3 + (0.03 * quarter))
             # current lead relative to max lead
-            d1 = self.sigmoid(score_diff/max(max_pos_diff, 1), 10 * quarter, 10 * quarter)
+            d1 = self.sigmoid(score_diff/max(max_pos_diff, 1),
+                              10 * quarter, 10 * quarter)
             # maximum deficit overcome
-            d2 = (score_diff - max_neg_diff) + self.g(all_diffs, quarter, False)
+            d2 = (score_diff - max_neg_diff) + \
+                self.g(all_diffs, quarter, False)
         else:
             # current defecit
             s = -self.sigmoid(-score_diff, 50, 0.3 + (0.03 * quarter))
             # current deficit relative to max deficit
-            d1 = -self.sigmoid(score_diff/max_neg_diff, 10 * quarter, 10 * quarter)
+            d1 = -self.sigmoid(score_diff/max_neg_diff,
+                               10 * quarter, 10 * quarter)
             # total deficit from previous max lead
             d2 = score_diff - max_pos_diff + self.g(all_diffs, quarter, True)
         #print(s, d1, d2)
