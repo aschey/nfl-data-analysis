@@ -14,12 +14,20 @@ provider:
       Resource: '*'
 
 functions:
-  hello:
-    handler: handler.hello
+  get_weeks:
+    handler: handler.get_weeks
     warmup: true
     events:
       - http:
-          path: /
+          path: /weeks
+          method: get
+          cors: true
+  get_years:
+    handler: handler.get_years
+    warmup: true
+    events:
+      - http:
+          path: /years
           method: get
           cors: true
 plugins:

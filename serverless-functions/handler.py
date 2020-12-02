@@ -7,39 +7,54 @@ import sqlite3
 #import pandas as pd
 
 
-def hello(event, context):
-    if 'source' in event and event['source'] == 'serverless-plugin-warmup':
-        print('warmup')
-        return {
-            'statusCode': 200,
-            'body': json.dumps({'message': 'function is warm'})
-        }
-    url = './scores_with_index.csv'
-    rows = None
-    conn = sqlite3.connect('test.db')
-    c = conn.cursor()
-    #c.execute('''CREATE TABLE scores (detail text, quarter int, date date, score1 float, score2 float, team1 text, team2 text, team1Score number, team2Score number, week text, year int, matchup text, scoringTeam text)''')
-    #scores = pd.read_csv(url)
-    res = c.execute(
-        '''select * from score where game_id = 3''').fetchall()
-    #scores.to_sql('scores2', conn, index=False)
-    # with open(url, 'r') as r:
-    #     # with closing(requests.get(url, stream=True)) as r:
-    #     reader = csv.DictReader(r)
-    #     # next(reader)
-    #     rows = [r for r in reader if r['week'] == '1999 Week 7']
+def flatten(t): return [item for sublist in t for item in sublist]
 
-    body = {
-        "message": "Go Serverless v1.0! Your function executed successfully!",
-        "input": res[0]
-    }
 
-    response = {
-        "statusCode": 200,
+def is_warmup(
+    event): return 'source' in event and event['source'] == 'serverless-plugin-warmup'
+
+
+def get_response(body, status_code=200):
+    return {
+        "statusCode": status_code,
         'headers': {
             'Access-Control-Allow-Origin': '*',
         },
-        "body": json.dumps(body)
+        'body': json.dumps(body)
     }
 
+
+def get_connection():
+    conn = sqlite3.connect('scores.db')
+    return conn.cursor()
+
+
+def get_years(event, context):
+    if is_warmup(event):
+        return get_response({'message': 'warmup invocation'})
+
+    c = get_connection()
+    db_response = c.execute(
+        '''select distinct year from week order by year desc''')
+    result = flatten(db_response)
+
+    response = get_response(result)
+    return response
+
+
+def get_weeks(event, context):
+    if is_warmup(event):
+        return get_response({'message': 'warmup invocation'})
+
+    try:
+        year = event['queryStringParameters']['year']
+    except (KeyError, TypeError):
+        return get_response({'message': 'Query parameter "year" is required but was not present'}, 400)
+
+    c = get_connection()
+    db_response = c.execute(
+        '''select week_name from week where year = ? order by week_order''', (year,)).fetchall()
+    result = flatten(db_response)
+
+    response = get_response(result)
     return response

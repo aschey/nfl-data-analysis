@@ -1,0 +1,1 @@
+sls invoke local -f get_weeks -d '{ "queryStringParameters": {"year":'$1'} }'
