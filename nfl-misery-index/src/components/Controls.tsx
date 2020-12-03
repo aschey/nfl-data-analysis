@@ -1,10 +1,13 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { filter, flatMap, flow, map, rangeRight, uniqBy } from 'lodash/fp';
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Flex, jsx } from 'theme-ui';
+import { Game } from '../models/game';
 import { Score } from '../models/score';
+import { Week } from '../models/week';
 import { IntValue, Value } from '../pages';
+import { getJson } from '../util/fetchUtil';
 import { AdaptiveSelect } from './AdaptiveSelect';
 
 interface ControlProps {
@@ -18,7 +21,6 @@ interface ControlProps {
   currentGame: Value;
   setCurrentGame: (currentGame: Value) => void;
   setCurrentGames: (currentGames: Value[]) => void;
-  data: Score[];
 }
 
 export const Controls: React.FC<ControlProps> = ({
@@ -32,47 +34,55 @@ export const Controls: React.FC<ControlProps> = ({
   setCurrentGames,
   year,
   setYear,
-  data,
 }) => {
-  const updateWeek = useCallback(
-    (newWeek: Value, year: IntValue) => {
-      setWeek(newWeek);
-      const grouped = flow(
-        filter<Score>(d => d.year === year.value && d.week === newWeek.value),
-        uniqBy(d => d.matchup),
-        map(d => [
-          { label: `${d.team1} (vs ${d.team2})`, value: d.team1 },
-          { label: `${d.team2} (vs ${d.team1})`, value: d.team2 },
-        ]),
-        flatMap(d => d)
-      )(data);
+  const [years, setYears] = useState<IntValue[]>([]);
 
-      setCurrentGames(grouped);
-      if (grouped.length === 0) {
+  const updateWeek = useCallback(
+    async (newWeek: Value, year: IntValue) => {
+      setWeek(newWeek);
+      const games = await getJson<Game[]>(`/games?weekId=${newWeek.value}`);
+      const matchups = flow(
+        map<Game, Value[]>(g => [
+          {
+            label: `${g.team1.originalMascot} (vs ${g.team2.originalMascot})`,
+            value: g.team1.originalMascot,
+          },
+          {
+            label: `${g.team2.originalMascot} (vs ${g.team1.originalMascot})`,
+            value: g.team2.originalMascot,
+          },
+        ]),
+        flatMap(g => g)
+      )(games);
+
+      setCurrentGames(matchups);
+      if (matchups.length === 0) {
         return;
       }
-      setCurrentGame(grouped[0]);
+      setCurrentGame(matchups[0]);
     },
-    [data, setCurrentGames, setCurrentGame, setWeek]
+    [setCurrentGames, setCurrentGame, setWeek]
   );
 
   const updateYear = useCallback(
-    (newYear: IntValue) => {
+    async (newYear: IntValue) => {
       setYear(newYear);
-      const grouped = flow(
-        filter<Score>(d => d.year === newYear.value),
-        map(d => ({ label: d.week, value: d.week })),
-        uniqBy(d => d.value)
-      )(data);
+      const weeks = await getJson<Week[]>(`/weeks?year=${newYear.value}`);
+      const weekValues = weeks.map(w => ({ label: w.weekName, value: w.weekId }));
 
-      setWeeks(grouped);
-      updateWeek(grouped[0], newYear);
+      setWeeks(weekValues);
+      updateWeek(weekValues[0], newYear);
     },
-    [data, setWeeks, setYear, updateWeek]
+    [setWeeks, setYear, updateWeek]
   );
 
   useEffect(() => {
-    updateYear({ value: 2020, label: 2020 });
+    getJson<number[]>('/years').then(allYears => {
+      const yearVals = allYears.map(y => ({ label: y, value: y }));
+
+      setYears(yearVals);
+      updateYear(yearVals[0]);
+    });
   }, [updateYear]);
 
   return (
@@ -83,7 +93,7 @@ export const Controls: React.FC<ControlProps> = ({
           width={100}
           value={year}
           onChange={value => updateYear(value as IntValue)}
-          options={rangeRight(1922, 2021).map(y => ({ value: y, label: y }))}
+          options={years}
         />
         <AdaptiveSelect
           sxStyles={{ marginBottom: 10, marginRight: 10 }}

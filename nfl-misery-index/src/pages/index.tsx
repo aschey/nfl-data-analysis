@@ -13,7 +13,7 @@ import { ScoreTable } from '../components/ScoreTable';
 
 export interface Value {
   label: string;
-  value: string;
+  value: string | number;
 }
 export interface IntValue {
   label: number;
@@ -48,9 +48,10 @@ const Index: React.FC<Record<string, unknown>> = () => {
       worker: true,
       header: true,
       complete: results => {
+        debugger;
         const csvData = results.data.map<Score>(d => ({
-          detail: d.Detail,
-          quarter: parseFloat(d.Quarter?.startsWith('OT') ? 5 : d.Quarter),
+          detail: d.detail,
+          quarter: d.quarter,
           date: new Date(d.date),
           score1: Math.round(parseFloat(d.score1) * 100) / 100,
           score2: Math.round(parseFloat(d.score2) * 100) / 100,
@@ -61,7 +62,7 @@ const Index: React.FC<Record<string, unknown>> = () => {
           week: d.week,
           year: parseInt(d.year),
           matchup: `${d.team1_mascot} vs ${d.team2_mascot}`,
-          scoringTeam: d.Tm,
+          scoringTeam: d.scoring_team,
         }));
 
         setData(csvData);
@@ -73,11 +74,11 @@ const Index: React.FC<Record<string, unknown>> = () => {
     if (data.length === 0 || !year || !week) {
       return;
     }
-
+    debugger;
     const game = data.filter(
       d =>
         d.year === year.value &&
-        d.week === week.value &&
+        d.week === week.label &&
         (d.team1 === currentGame.value || d.team2 === currentGame.value)
     );
 
@@ -154,7 +155,6 @@ const Index: React.FC<Record<string, unknown>> = () => {
         setCurrentGames={setCurrentGames}
         weeks={weeks}
         setWeeks={setWeeks}
-        data={data}
       />
       <Flex
         sx={{

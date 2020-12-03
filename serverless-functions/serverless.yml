@@ -30,6 +30,14 @@ functions:
           path: /years
           method: get
           cors: true
+  get_games:
+    handler: handler.get_games
+    warmup: true
+    events:
+      - http:
+          path: /games
+          method: get
+          cors: true
 plugins:
   - serverless-python-requirements
   - serverless-plugin-warmup
