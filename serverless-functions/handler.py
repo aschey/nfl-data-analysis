@@ -1,4 +1,4 @@
-from helpers import is_warmup, get_connection, get_response, sql_result_values
+from helpers import is_warmup, get_connection, get_response, sql_result_values, get_team_structure
 
 
 def get_years(event, context):
@@ -26,12 +26,6 @@ def get_weeks(event, context):
         '''select week_id, week_name from week where year = ? order by week_order''', (year,)).fetchall()
 
     return get_response(result)
-
-
-def _get_team(team_key, result):
-    fields = ['originalCity', 'originalMascot', 'city', 'mascot', 'id']
-    return {field: result[f'{team_key}{field[0].upper()}{field[1:]}']
-            for field in fields}
 
 
 def get_games(event, context):
@@ -62,9 +56,31 @@ def get_games(event, context):
     where g.week_id = ?
     ''', (week_id,)).fetchall()
 
-    response = [{
-        'team1': _get_team('team1', r),
-        'team2': _get_team('team2', r),
-        'gameId': r['gameId']
-    } for r in result]
+    fields = ['originalCity', 'originalMascot', 'city', 'mascot', 'id']
+    response = get_team_structure(result, fields)
+    return get_response(response)
+
+
+def get_scores(event, context):
+    if is_warmup(event):
+        return get_response({'message': 'warmup invocation'})
+    try:
+        game_id = event['queryStringParameters']['gameId']
+    except (KeyError, TypeError):
+        return get_response({'message': 'Query parameter "gameId" is required but was not present'}, 400)
+
+    c = get_connection()
+    result = c.execute('''
+    select 
+    quarter, time, scoring_team_id, detail, 
+    team1_game_score, team2_game_score, 
+    round(team1_misery_index, 2) team1_misery_index, 
+    round(team2_misery_index, 2) team2_misery_index
+    from score s
+    where s.game_id = ?
+    ''', (game_id,)).fetchall()
+
+    fields = ['gameScore', 'miseryIndex']
+    response = get_team_structure(result, fields)
+
     return get_response(response)
