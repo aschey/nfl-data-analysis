@@ -75,9 +75,10 @@ def get_scores(event, context):
     quarter, time, scoring_team_id, detail, 
     team1_game_score, team2_game_score, 
     round(team1_misery_index, 2) team1_misery_index, 
-    round(team2_misery_index, 2) team2_misery_index
-    from score s
-    where s.game_id = ?
+    round(team2_misery_index, 2) team2_misery_index,
+    score_order
+    from score
+    where game_id = ?
     ''', (game_id,)).fetchall()
 
     fields = ['gameScore', 'miseryIndex']
