@@ -3,18 +3,24 @@
 import { jsx, useThemeUI, Select as MobileSelect, SxStyleProp, Box } from 'theme-ui';
 import Select, { Styles, ValueType } from 'react-select';
 import { isMobile, setOpacity } from '../util/util';
-import { IntValue, Value } from '../pages';
 import { useEffect, useState } from 'react';
+import { Value } from '../models/value';
 
-interface AdaptiveSelectProps {
-  value: Value | IntValue;
-  onChange: (value: ValueType<Value | IntValue>) => void;
-  options: (Value | IntValue)[];
+interface AdaptiveSelectProps<T> {
+  value: Value<T> | undefined;
+  onChange: (value: ValueType<Value<T>>) => void;
+  options: Value<T>[];
   sxStyles?: SxStyleProp;
   width: number;
 }
 
-export const AdaptiveSelect: React.FC<AdaptiveSelectProps> = ({ value, onChange, options, sxStyles, width }) => {
+export const AdaptiveSelect: <T>(props: AdaptiveSelectProps<T>) => React.ReactElement<AdaptiveSelectProps<T>> = <T,>({
+  value,
+  onChange,
+  options,
+  sxStyles,
+  width,
+}: AdaptiveSelectProps<T>) => {
   const { theme } = useThemeUI();
   const [isMobileBrowser, setIsMobileBrowser] = useState<boolean | null>(null);
   useEffect(() => {
@@ -64,8 +70,8 @@ export const AdaptiveSelect: React.FC<AdaptiveSelectProps> = ({ value, onChange,
           <MobileSelect
             onChange={e => onChange(options.find(o => o.label.toString() === e.target.value) ?? options[0])}
           >
-            {options.map(o => (
-              <option key={o.value}>{o.label}</option>
+            {options.map((o, i) => (
+              <option key={i}>{o.label}</option>
             ))}
           </MobileSelect>
         );
