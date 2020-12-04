@@ -3,4 +3,5 @@ export interface Team {
   city: string;
   originalMascot: string;
   mascot: string;
+  id: number;
 }

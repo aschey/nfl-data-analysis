@@ -8,11 +8,14 @@ import { useThemeUI } from 'theme-ui';
 import { HighlightLine } from './HighlightLine';
 import { LineSymbol } from './LineSymbol';
 import { getIsPositive, setOpacity } from '../util/util';
+import { Team } from '../models/team';
 
 interface ScoreLineProps {
   data: Serie[];
   scoreData: Score[];
   isTeam1: boolean;
+  team1: Team | undefined;
+  team2: Team | undefined;
   overrideIndex: number | undefined;
   setIndex(index: number | undefined): void;
   onAnimationEnd: () => void;
@@ -33,6 +36,8 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
   overrideIndex,
   setIndex,
   isTeam1,
+  team1,
+  team2,
   onAnimationEnd,
 }) => {
   const { theme } = useThemeUI();
@@ -119,10 +124,10 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
       tooltip={({ point }) => {
         const index = parseInt(point.id.split('.')[1]);
         const current = scoreData[index];
-        const score = isTeam1 ? current.score1 : current.score2;
+        const score = isTeam1 ? current.team1.miseryIndex : current.team2.miseryIndex;
         let nextScore = score;
         if (index < scoreData.length - 1) {
-          nextScore = isTeam1 ? scoreData[index + 1].score1 : scoreData[index + 1].score2;
+          nextScore = isTeam1 ? scoreData[index + 1].team1.miseryIndex : scoreData[index + 1].team2.miseryIndex;
         }
         return (
           <div
@@ -134,8 +139,8 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
               marginTop: 100,
             }}
           >
-            <div>{`${current.team1}: ${current.team1Score}`}</div>
-            <div>{`${current.team2}: ${current.team2Score}`}</div>
+            <div>{`${team1?.originalMascot}: ${current.team1.gameScore}`}</div>
+            <div>{`${team2?.originalMascot}: ${current.team2.gameScore}`}</div>
             <div>
               Misery Index:
               <span sx={{ color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative' }}>

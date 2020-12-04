@@ -3,6 +3,7 @@
 import React from 'react';
 import { Card, jsx, Styled } from 'theme-ui';
 import { Score } from '../models/score';
+import { Team } from '../models/team';
 import { getIsPositive } from '../util/util';
 
 interface ScoreTableProps {
@@ -12,6 +13,8 @@ interface ScoreTableProps {
   setHoveredIndex: (overrideIndex: number | undefined) => void;
   isTeam1: boolean;
   enableHover: boolean;
+  team1: Team | undefined;
+  team2: Team | undefined;
 }
 
 export const ScoreTable: React.FC<ScoreTableProps> = ({
@@ -21,6 +24,8 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
   isTeam1,
   hoveredIndex,
   enableHover,
+  team1,
+  team2,
 }) => {
   const updateIndex = (i: number) => {
     if (enableHover) {
@@ -51,17 +56,17 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
             <Styled.th sx={{ width: ['0%', '45%', '45%'], display: ['none', 'table-cell', 'table-cell'] }}>
               Play
             </Styled.th>
-            <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{gameData.length > 0 ? gameData[0].team1 : ''}</Styled.th>
-            <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{gameData.length > 0 ? gameData[0].team2 : ''}</Styled.th>
+            <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{team1?.originalMascot}</Styled.th>
+            <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{team2?.originalMascot}</Styled.th>
             <Styled.th sx={{ width: ['20%', '10%', '10%'] }}>Index</Styled.th>
           </Styled.tr>
         </thead>
         <tbody>
           {allScores.map((d, i) => {
-            const score = isTeam1 ? d.score1 : d.score2;
+            const score = isTeam1 ? d.team1.miseryIndex : d.team2.miseryIndex;
             let nextScore = score;
             if (i < allScores.length - 1) {
-              nextScore = isTeam1 ? allScores[i + 1].score1 : allScores[i + 1].score2;
+              nextScore = isTeam1 ? allScores[i + 1].team1.miseryIndex : allScores[i + 1].team2.miseryIndex;
             }
             return (
               <Styled.tr
@@ -72,10 +77,10 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
                 }}
               >
                 <Styled.td sx={{ paddingLeft: '5px' }}>{d.quarter}</Styled.td>
-                <Styled.td>{d.scoringTeam}</Styled.td>
+                <Styled.td>{d.scoringTeamId === team1?.id ? team1.originalMascot : team2?.originalMascot}</Styled.td>
                 <Styled.td sx={{ display: ['none', 'flex', 'flex'] }}>{d.detail}</Styled.td>
-                <Styled.td>{d.team1Score}</Styled.td>
-                <Styled.td>{d.team2Score}</Styled.td>
+                <Styled.td>{d.team1.gameScore}</Styled.td>
+                <Styled.td>{d.team2.gameScore}</Styled.td>
                 <Styled.td
                   sx={{
                     color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative',

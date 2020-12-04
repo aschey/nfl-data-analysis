@@ -1,26 +1,24 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
-import { filter, flatMap, flow, map, rangeRight, uniqBy } from 'lodash/fp';
+import { flatMap, flow, map } from 'lodash/fp';
 import { useCallback, useEffect, useState } from 'react';
 import { Flex, jsx } from 'theme-ui';
 import { Game } from '../models/game';
-import { Score } from '../models/score';
+import { GameTeam } from '../models/gameTeam';
+import { Value } from '../models/value';
 import { Week } from '../models/week';
-import { IntValue, Value } from '../pages';
 import { getJson } from '../util/fetchUtil';
 import { AdaptiveSelect } from './AdaptiveSelect';
 
 interface ControlProps {
-  week: Value;
-  setWeek: (week: Value) => void;
-  weeks: Value[];
-  setWeeks: (weeks: Value[]) => void;
-  year: IntValue;
-  setYear: (year: IntValue) => void;
-  currentGames: Value[];
-  currentGame: Value;
-  setCurrentGame: (currentGame: Value) => void;
-  setCurrentGames: (currentGames: Value[]) => void;
+  week: Value<number>;
+  setWeek: (week: Value<number>) => void;
+  weeks: Value<number>[];
+  setWeeks: (weeks: Value<number>[]) => void;
+  currentGames: Value<GameTeam>[];
+  currentGame: Value<GameTeam> | undefined;
+  setCurrentGame: (currentGame: Value<GameTeam>) => void;
+  setCurrentGames: (currentGames: Value<GameTeam>[]) => void;
 }
 
 export const Controls: React.FC<ControlProps> = ({
@@ -32,24 +30,23 @@ export const Controls: React.FC<ControlProps> = ({
   currentGame,
   setCurrentGame,
   setCurrentGames,
-  year,
-  setYear,
 }) => {
-  const [years, setYears] = useState<IntValue[]>([]);
+  const [years, setYears] = useState<Value<number>[]>([]);
+  const [year, setYear] = useState<Value<number>>({ label: '2020', value: 2020 });
 
   const updateWeek = useCallback(
-    async (newWeek: Value, year: IntValue) => {
+    async (newWeek: Value<number>, year: Value<number>) => {
       setWeek(newWeek);
       const games = await getJson<Game[]>(`/games?weekId=${newWeek.value}`);
       const matchups = flow(
-        map<Game, Value[]>(g => [
+        map<Game, Value<GameTeam>[]>(g => [
           {
             label: `${g.team1.originalMascot} (vs ${g.team2.originalMascot})`,
-            value: g.team1.originalMascot,
+            value: { team: g.team1, game: g },
           },
           {
             label: `${g.team2.originalMascot} (vs ${g.team1.originalMascot})`,
-            value: g.team2.originalMascot,
+            value: { team: g.team2, game: g },
           },
         ]),
         flatMap(g => g)
@@ -65,7 +62,7 @@ export const Controls: React.FC<ControlProps> = ({
   );
 
   const updateYear = useCallback(
-    async (newYear: IntValue) => {
+    async (newYear: Value<number>) => {
       setYear(newYear);
       const weeks = await getJson<Week[]>(`/weeks?year=${newYear.value}`);
       const weekValues = weeks.map(w => ({ label: w.weekName, value: w.weekId }));
@@ -78,7 +75,7 @@ export const Controls: React.FC<ControlProps> = ({
 
   useEffect(() => {
     getJson<number[]>('/years').then(allYears => {
-      const yearVals = allYears.map(y => ({ label: y, value: y }));
+      const yearVals = allYears.map(y => ({ label: y.toString(), value: y }));
 
       setYears(yearVals);
       updateYear(yearVals[0]);
@@ -92,7 +89,7 @@ export const Controls: React.FC<ControlProps> = ({
           sxStyles={{ marginBottom: 10, marginRight: 10 }}
           width={100}
           value={year}
-          onChange={value => updateYear(value as IntValue)}
+          onChange={value => updateYear(value as Value<number>)}
           options={years}
         />
         <AdaptiveSelect
@@ -100,13 +97,13 @@ export const Controls: React.FC<ControlProps> = ({
           width={200}
           value={week}
           options={weeks}
-          onChange={value => updateWeek(value as Value, year)}
+          onChange={value => updateWeek(value as Value<number>, year)}
         />
         <AdaptiveSelect
           width={310}
           options={currentGames}
           value={currentGame}
-          onChange={value => setCurrentGame(value as Value)}
+          onChange={value => setCurrentGame(value as Value<GameTeam>)}
         />
       </Flex>
     </form>
