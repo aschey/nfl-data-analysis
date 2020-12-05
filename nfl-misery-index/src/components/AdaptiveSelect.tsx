@@ -1,4 +1,3 @@
-/** @jsxRuntime classic */
 /** @jsx jsx */
 import { jsx, useThemeUI, Select as MobileSelect, SxStyleProp, Box } from 'theme-ui';
 import Select, { Styles, ValueType } from 'react-select';
@@ -8,7 +7,7 @@ import { Value } from '../models/value';
 
 interface AdaptiveSelectProps<T> {
   value: Value<T> | undefined;
-  onChange: (value: ValueType<Value<T>>) => void;
+  onChange: (value: ValueType<Value<T>, boolean>) => void;
   options: Value<T>[];
   sxStyles?: SxStyleProp;
   width: number;

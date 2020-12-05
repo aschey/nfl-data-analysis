@@ -1,4 +1,3 @@
-/** @jsxRuntime classic */
 /** @jsx jsx */
 import { flatMap, flow, map } from 'lodash/fp';
 import { useCallback, useEffect, useState } from 'react';

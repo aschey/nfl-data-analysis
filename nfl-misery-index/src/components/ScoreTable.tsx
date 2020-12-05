@@ -1,4 +1,3 @@
-/** @jsxRuntime classic */
 /** @jsx jsx */
 import React from 'react';
 import { Card, jsx, Styled } from 'theme-ui';
