@@ -67,6 +67,7 @@ export const AdaptiveSelect: <T>(props: AdaptiveSelectProps<T>) => React.ReactEl
       case true:
         return (
           <MobileSelect
+            value={value?.label}
             onChange={e => onChange(options.find(o => o.label.toString() === e.target.value) ?? options[0])}
           >
             {options.map((o, i) => (

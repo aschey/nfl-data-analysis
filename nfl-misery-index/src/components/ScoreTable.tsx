@@ -12,8 +12,8 @@ interface ScoreTableProps {
   setHoveredIndex: (overrideIndex: number | undefined) => void;
   isTeam1: boolean;
   enableHover: boolean;
-  team1: Team | undefined;
-  team2: Team | undefined;
+  team1: Team;
+  team2: Team;
 }
 
 export const ScoreTable: React.FC<ScoreTableProps> = ({
@@ -51,32 +51,30 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
         <thead>
           <Styled.tr>
             <Styled.th sx={{ width: ['15%', '15%', '15%'], paddingLeft: '5px' }}>Quarter</Styled.th>
-            <Styled.th sx={{ width: [undefined, '20%', '20%'] }}>Team</Styled.th>
+            <Styled.th sx={{ width: ['25%', '20%', '20%'] }}>Team</Styled.th>
             <Styled.th sx={{ width: ['0%', '45%', '45%'], display: ['none', 'table-cell', 'table-cell'] }}>
               Play
             </Styled.th>
-            <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{team1?.originalMascot}</Styled.th>
-            <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{team2?.originalMascot}</Styled.th>
+            <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{team1.originalMascot}</Styled.th>
+            <Styled.th sx={{ width: ['20%', '15%', '15%'] }}>{team2.originalMascot}</Styled.th>
             <Styled.th sx={{ width: ['20%', '10%', '10%'] }}>Index</Styled.th>
           </Styled.tr>
         </thead>
         <tbody>
           {allScores.map((d, i) => {
-            const score = isTeam1 ? d.team1.miseryIndex : d.team2.miseryIndex;
+            const score = (isTeam1 ? d.team1 : d.team2).miseryIndex;
             let nextScore = score;
             if (i < allScores.length - 1) {
-              nextScore = isTeam1 ? allScores[i + 1].team1.miseryIndex : allScores[i + 1].team2.miseryIndex;
+              nextScore = (isTeam1 ? allScores[i + 1].team1 : allScores[i + 1].team2).miseryIndex;
             }
             return (
               <Styled.tr
                 key={i}
                 sx={{ bg: i + 1 === hoveredIndex ? 'hover' : 'background' }}
-                onMouseMove={() => {
-                  updateIndex(i);
-                }}
+                onMouseMove={() => updateIndex(i)}
               >
                 <Styled.td sx={{ paddingLeft: '5px' }}>{d.quarter}</Styled.td>
-                <Styled.td>{d.scoringTeamId === team1?.id ? team1.originalMascot : team2?.originalMascot}</Styled.td>
+                <Styled.td>{d.scoringTeamId === team1.id ? team1.originalMascot : team2.originalMascot}</Styled.td>
                 <Styled.td sx={{ display: ['none', 'flex', 'flex'] }}>{d.detail}</Styled.td>
                 <Styled.td>{d.team1.gameScore}</Styled.td>
                 <Styled.td>{d.team2.gameScore}</Styled.td>

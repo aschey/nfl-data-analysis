@@ -1,5 +1,5 @@
 /** @jsx jsx */
-import { jsx } from 'theme-ui';
+import { Card, jsx } from 'theme-ui';
 import { max } from 'lodash';
 import { ResponsiveLine, Serie, CustomLayerProps } from '@nivo/line';
 import { Score } from '../models/score';
@@ -13,8 +13,8 @@ interface ScoreLineProps {
   data: Serie[];
   scoreData: Score[];
   isTeam1: boolean;
-  team1: Team | undefined;
-  team2: Team | undefined;
+  team1: Team;
+  team2: Team;
   overrideIndex: number | undefined;
   setIndex(index: number | undefined): void;
   onAnimationEnd: () => void;
@@ -62,120 +62,127 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
   };
 
   return (
-    <ResponsiveLine
-      data={data}
-      key={'line'}
-      curve={catmull ? 'catmullRom' : 'linear'}
-      margin={{
-        right: 50,
-        top: 25,
-        bottom: 50,
-        left: 50,
+    <Card
+      sx={{
+        width: '100%',
+        height: '100%',
       }}
-      xScale={{ type: 'linear', min: 1, max: getMax(data) }}
-      yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
-      axisTop={null}
-      axisRight={null}
-      axisBottom={{
-        orient: 'bottom',
-        tickSize: 5,
-        tickPadding: 5,
-        tickRotation: 0,
-        legend: 'Quarter',
-        legendOffset: 36,
-        legendPosition: 'middle',
-        tickValues: Math.round(getMax(data)),
-        renderTick: renderTick,
-      }}
-      axisLeft={{
-        orient: 'left',
-        tickSize: 5,
-        tickPadding: 5,
-        tickRotation: 0,
-        legend: 'Score',
-        legendOffset: -40,
-        legendPosition: 'middle',
-      }}
-      markers={[{ axis: 'y', value: 0 }]}
-      colors={data.map(d => d.color)}
-      pointSize={10}
-      pointColor={{ theme: 'background' }}
-      pointBorderWidth={2}
-      pointBorderColor={{ from: 'serieColor' }}
-      pointLabel='y'
-      pointLabelYOffset={-12}
-      enableSlices={false}
-      pointSymbol={props => <LineSymbol {...props} data={data} overrideIndex={overrideIndex} />}
-      useMesh={true}
-      layers={['grid', 'markers', 'axes', 'areas', 'crosshair', LineWrapper, 'points', 'slices', 'mesh', 'legends']}
-      theme={{
-        background: theme.colors?.background,
-        textColor: theme.colors?.text,
-        crosshair: { line: { stroke: theme.colors?.text } },
-        legends: { text: { fill: theme.colors?.text } },
-        grid: { line: { stroke: setOpacity(theme.colors?.text ?? '', 0.2) } },
-        markers: { lineColor: setOpacity(theme.colors?.text ?? '', 0.7) },
-      }}
-      onMouseMove={point => {
-        setIndex(point.index);
-      }}
-      onMouseLeave={() => setIndex(undefined)}
-      tooltip={({ point }) => {
-        const index = parseInt(point.id.split('.')[1]);
-        const current = scoreData[index];
-        const score = isTeam1 ? current.team1.miseryIndex : current.team2.miseryIndex;
-        let nextScore = score;
-        if (index < scoreData.length - 1) {
-          nextScore = isTeam1 ? scoreData[index + 1].team1.miseryIndex : scoreData[index + 1].team2.miseryIndex;
-        }
-        return (
-          <div
-            style={{
-              background: theme.colors?.secondary,
-              borderRadius: 5,
-              padding: 5,
-              fontSize: 12,
-              marginTop: 100,
-            }}
-          >
-            <div>{`${team1?.originalMascot}: ${current.team1.gameScore}`}</div>
-            <div>{`${team2?.originalMascot}: ${current.team2.gameScore}`}</div>
-            <div>
-              Misery Index:
-              <span sx={{ color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative' }}>
-                {` ${score}`}
-              </span>
+    >
+      <ResponsiveLine
+        data={data}
+        key={'line'}
+        curve={catmull ? 'catmullRom' : 'linear'}
+        margin={{
+          right: 50,
+          top: 25,
+          bottom: 50,
+          left: 50,
+        }}
+        xScale={{ type: 'linear', min: 1, max: getMax(data) }}
+        yScale={{ type: 'linear', min: 'auto', max: 'auto', stacked: false, reverse: false }}
+        axisTop={null}
+        axisRight={null}
+        axisBottom={{
+          orient: 'bottom',
+          tickSize: 5,
+          tickPadding: 5,
+          tickRotation: 0,
+          legend: 'Quarter',
+          legendOffset: 36,
+          legendPosition: 'middle',
+          tickValues: Math.round(getMax(data)),
+          renderTick: renderTick,
+        }}
+        axisLeft={{
+          orient: 'left',
+          tickSize: 5,
+          tickPadding: 5,
+          tickRotation: 0,
+          legend: 'Score',
+          legendOffset: -40,
+          legendPosition: 'middle',
+        }}
+        markers={[{ axis: 'y', value: 0 }]}
+        colors={data.map(d => d.color)}
+        pointSize={10}
+        pointColor={{ theme: 'background' }}
+        pointBorderWidth={2}
+        pointBorderColor={{ from: 'serieColor' }}
+        pointLabel='y'
+        pointLabelYOffset={-12}
+        enableSlices={false}
+        pointSymbol={props => <LineSymbol {...props} data={data} overrideIndex={overrideIndex} />}
+        useMesh={true}
+        layers={['grid', 'markers', 'axes', 'areas', 'crosshair', LineWrapper, 'points', 'slices', 'mesh', 'legends']}
+        theme={{
+          background: theme.colors?.background,
+          textColor: theme.colors?.text,
+          crosshair: { line: { stroke: theme.colors?.text } },
+          legends: { text: { fill: theme.colors?.text } },
+          grid: { line: { stroke: setOpacity(theme.colors?.text ?? '', 0.2) } },
+          markers: { lineColor: setOpacity(theme.colors?.text ?? '', 0.7) },
+        }}
+        onMouseMove={point => {
+          setIndex(point.index);
+        }}
+        onMouseLeave={() => setIndex(undefined)}
+        tooltip={({ point }) => {
+          const index = parseInt(point.id.split('.')[1]);
+          const current = scoreData[index];
+          const score = isTeam1 ? current.team1.miseryIndex : current.team2.miseryIndex;
+          let nextScore = score;
+          if (index < scoreData.length - 1) {
+            nextScore = isTeam1 ? scoreData[index + 1].team1.miseryIndex : scoreData[index + 1].team2.miseryIndex;
+          }
+          return (
+            <div
+              style={{
+                background: theme.colors?.secondary,
+                borderRadius: 5,
+                padding: 5,
+                fontSize: 12,
+                marginTop: 100,
+              }}
+            >
+              <div>{`${team1.originalMascot}: ${current.team1.gameScore}`}</div>
+              <div>{`${team2.originalMascot}: ${current.team2.gameScore}`}</div>
+              <div>
+                Misery Index:
+                <span sx={{ color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative' }}>
+                  {` ${score}`}
+                </span>
+              </div>
             </div>
-          </div>
-        );
-      }}
-      legends={[
-        {
-          data: [],
-          anchor: 'bottom-right',
-          direction: 'column',
-          justify: false,
-          translateX: 100,
-          translateY: 0,
-          itemsSpacing: 0,
-          itemDirection: 'left-to-right',
-          itemWidth: 80,
-          itemHeight: 20,
-          itemOpacity: 0.75,
-          symbolSize: 12,
-          symbolShape: 'circle',
-          symbolBorderColor: 'rgba(0, 0, 0, .5)',
-          effects: [
-            {
-              on: 'hover',
-              style: {
-                itemBackground: 'rgba(0, 0, 0, .03)',
-                itemOpacity: 1,
+          );
+        }}
+        legends={[
+          {
+            data: [],
+            anchor: 'bottom-right',
+            direction: 'column',
+            justify: false,
+            translateX: 100,
+            translateY: 0,
+            itemsSpacing: 0,
+            itemDirection: 'left-to-right',
+            itemWidth: 80,
+            itemHeight: 20,
+            itemOpacity: 0.75,
+            symbolSize: 12,
+            symbolShape: 'circle',
+            symbolBorderColor: 'rgba(0, 0, 0, .5)',
+            effects: [
+              {
+                on: 'hover',
+                style: {
+                  itemBackground: 'rgba(0, 0, 0, .03)',
+                  itemOpacity: 1,
+                },
               },
-            },
-          ],
-        },
-      ]}
-    />
+            ],
+          },
+        ]}
+      />
+    </Card>
   );
 };

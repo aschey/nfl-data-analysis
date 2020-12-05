@@ -18,6 +18,7 @@ interface ControlProps {
   currentGame: Value<GameTeam> | undefined;
   setCurrentGame: (currentGame: Value<GameTeam>) => void;
   setCurrentGames: (currentGames: Value<GameTeam>[]) => void;
+  setIsLoading: (isLoading: boolean) => void;
 }
 
 export const Controls: React.FC<ControlProps> = ({
@@ -29,12 +30,14 @@ export const Controls: React.FC<ControlProps> = ({
   currentGame,
   setCurrentGame,
   setCurrentGames,
+  setIsLoading,
 }) => {
   const [years, setYears] = useState<Value<number>[]>([]);
   const [year, setYear] = useState<Value<number>>({ label: '2020', value: 2020 });
 
   const updateWeek = useCallback(
     async (newWeek: Value<number>, year: Value<number>) => {
+      setIsLoading(true);
       setWeek(newWeek);
       const games = await getJson<Game[]>(`/games?weekId=${newWeek.value}`);
       const matchups = flow(
@@ -57,11 +60,12 @@ export const Controls: React.FC<ControlProps> = ({
       }
       setCurrentGame(matchups[0]);
     },
-    [setCurrentGames, setCurrentGame, setWeek]
+    [setCurrentGames, setCurrentGame, setWeek, setIsLoading]
   );
 
   const updateYear = useCallback(
     async (newYear: Value<number>) => {
+      setIsLoading(true);
       setYear(newYear);
       const weeks = await getJson<Week[]>(`/weeks?year=${newYear.value}`);
       const weekValues = weeks.map(w => ({ label: w.weekName, value: w.weekId }));
@@ -69,7 +73,7 @@ export const Controls: React.FC<ControlProps> = ({
       setWeeks(weekValues);
       updateWeek(weekValues[0], newYear);
     },
-    [setWeeks, setYear, updateWeek]
+    [setWeeks, setYear, updateWeek, setIsLoading]
   );
 
   useEffect(() => {
@@ -102,7 +106,10 @@ export const Controls: React.FC<ControlProps> = ({
           width={310}
           options={currentGames}
           value={currentGame}
-          onChange={value => setCurrentGame(value as Value<GameTeam>)}
+          onChange={value => {
+            setIsLoading(true);
+            setCurrentGame(value as Value<GameTeam>);
+          }}
         />
       </Flex>
     </form>
