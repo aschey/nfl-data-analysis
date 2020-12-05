@@ -103,7 +103,6 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
           legendPosition: 'middle',
         }}
         markers={[{ axis: 'y', value: 0 }]}
-        colors={data.map(d => d.color)}
         pointSize={10}
         pointColor={{ theme: 'background' }}
         pointBorderWidth={2}
