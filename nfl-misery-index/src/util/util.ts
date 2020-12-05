@@ -1,6 +1,6 @@
 import { RGBA } from 'color-blend/dist/types';
 
-export const parseRgb = (rgba: string): RGBA => {
+export const parseRgba = (rgba: string): RGBA => {
   const matches = rgba.match(/\d{1,3}/g)?.map(parseFloat);
   if (matches?.length !== 4) {
     return { r: 0, g: 0, b: 0, a: 1 };
@@ -8,6 +8,8 @@ export const parseRgb = (rgba: string): RGBA => {
   const [r, g, b, a] = matches;
   return { r, g, b, a };
 };
+
+export const formatRgba = (rgba: RGBA): string => `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`;
 
 export const setOpacity = (rgba: string, a: number): string => rgba.replace('1)', `${a})`);
 

@@ -3,7 +3,7 @@ import { normal } from 'color-blend';
 import React from 'react';
 import { animated, config, Spring } from 'react-spring';
 import { useThemeUI } from 'theme-ui';
-import { getIsPositive, parseRgb } from '../util/util';
+import { formatRgba, getIsPositive, parseRgba } from '../util/util';
 
 interface CustomSymbolProps extends PointSymbolProps {
   data: Serie[];
@@ -33,22 +33,20 @@ export const LineSymbol: React.FC<CustomSymbolProps> = ({
 
   const positiveColor = theme.colors['highlightPositive'] as string;
   const negativeColor = theme.colors['highlightNegative'] as string;
-  const positive = parseRgb(positiveColor);
-  const negative = parseRgb(negativeColor);
-  const background = parseRgb(theme.colors?.background ?? '');
+  const positive = parseRgba(positiveColor);
+  const negative = parseRgba(negativeColor);
+  const background = parseRgba(theme.colors?.background ?? '');
   const base = { r: 200, g: 200, b: 200, a: 1 };
 
   const blendedG = normal(background, { ...positive, a: 0.15 });
   const blendedR = normal(background, { ...negative, a: 0.15 });
-  const textG = normal(base, { ...positive, a: 0.4 });
-  const textR = normal(base, { ...negative, a: 0.4 });
+  const textPositive = normal(base, { ...positive, a: 0.4 });
+  const textNegative = normal(base, { ...negative, a: 0.4 });
 
-  const pColor = isPositive ? blendedG : blendedR;
-  const oColor = isPositive ? positive : negative;
+  const startColor = formatRgba(isPositive ? positive : negative);
+  const endColor = formatRgba(isPositive ? blendedG : blendedR);
 
-  const startColor = `rgba(${oColor.r},${oColor.g},${oColor.b},${oColor.a})`;
-  const endColor = `rgba(${pColor.r},${pColor.g},${pColor.b},${pColor.a})`;
-  const fg = isPositive ? textG : textR;
+  const fg = isPositive ? textPositive : textNegative;
 
   return (
     <Spring
@@ -68,7 +66,7 @@ export const LineSymbol: React.FC<CustomSymbolProps> = ({
           {isSelected && (
             <animated.text
               textAnchor='middle'
-              stroke={`rgba(${fg.r},${fg.g},${fg.b},${fg.a})`}
+              stroke={formatRgba(fg)}
               strokeWidth={1}
               fontSize={8}
               opacity={props.opacity}

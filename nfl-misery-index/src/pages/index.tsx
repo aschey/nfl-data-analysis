@@ -1,7 +1,7 @@
 /** @jsx jsx */
 import { jsx } from 'theme-ui';
 import { useEffect, useState } from 'react';
-import { ScoreLine } from '../components/Chart';
+import { ScoreLine } from '../components/ScoreLine';
 import { Score } from '../models/score';
 import { Serie } from '@nivo/line';
 import { Box, Flex, Styled } from 'theme-ui';

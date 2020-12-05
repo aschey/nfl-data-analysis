@@ -22,10 +22,10 @@ interface ScoreLineProps {
 
 const getMax = (data: Serie[]) => {
   if (data.length === 0) {
-    return 4.0;
+    return 5.0;
   }
   const m = max(data[0].data.map(d => d.x)) as number;
-  const val = m > 4.0 ? m : 4.0;
+  const val = m > 5.0 ? m : 5.0;
   return val;
 };
 
@@ -42,15 +42,21 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
   const { theme } = useThemeUI();
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const renderTick = (data: any) => {
+  const renderTick = (tickData: any) => {
+    let labelVal = '';
+    if (tickData.value === 5 && data?.length > 0 && max(data[0].data.map(d => d.x)) >= 5) {
+      labelVal = 'OT';
+    } else if (tickData.value < 5) {
+      labelVal = tickData.value.toString();
+    }
     return (
       <text
-        dominantBaseline={data.textBaseline}
-        textAnchor={data.textAnchor}
-        transform={`translate(${data.x},${data.textY}) rotate(0)`}
+        dominantBaseline={tickData.textBaseline}
+        textAnchor={tickData.textAnchor}
+        transform={`translate(${tickData.x},${tickData.textY}) rotate(0)`}
         style={{ fontFamily: 'sans-serif', fontSize: 11, fill: theme.colors?.text }}
       >
-        {data.value === 5 ? 'OT' : data.value}
+        {labelVal}
       </text>
     );
   };
@@ -143,8 +149,8 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
                 marginTop: 100,
               }}
             >
-              <div>{`${team1.originalMascot}: ${current.team1.gameScore}`}</div>
-              <div>{`${team2.originalMascot}: ${current.team2.gameScore}`}</div>
+              <div>{`${team1.originalMascot}: ${(isTeam1 ? current.team1 : current.team2).gameScore}`}</div>
+              <div>{`${team2.originalMascot}: ${(isTeam1 ? current.team2 : current.team1).gameScore}`}</div>
               <div>
                 Misery Index:
                 <span sx={{ color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative' }}>

@@ -73,11 +73,11 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
                 sx={{ bg: i + 1 === hoveredIndex ? 'hover' : 'background' }}
                 onMouseMove={() => updateIndex(i)}
               >
-                <Styled.td sx={{ paddingLeft: '5px' }}>{d.quarter}</Styled.td>
+                <Styled.td sx={{ paddingLeft: '5px' }}>{d.quarter < 5 ? d.quarter : 'OT'}</Styled.td>
                 <Styled.td>{d.scoringTeamId === team1.id ? team1.originalMascot : team2.originalMascot}</Styled.td>
                 <Styled.td sx={{ display: ['none', 'flex', 'flex'] }}>{d.detail}</Styled.td>
-                <Styled.td>{d.team1.gameScore}</Styled.td>
-                <Styled.td>{d.team2.gameScore}</Styled.td>
+                <Styled.td>{(isTeam1 ? d.team1 : d.team2).gameScore}</Styled.td>
+                <Styled.td>{(isTeam1 ? d.team2 : d.team1).gameScore}</Styled.td>
                 <Styled.td
                   sx={{
                     color: getIsPositive(score, nextScore) ? 'highlightPositive' : 'highlightNegative',
