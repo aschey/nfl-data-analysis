@@ -39,17 +39,17 @@ def get_games(event, context):
     c = get_connection()
     result = c.execute('''
     select
-    t1.original_city team1_original_city, 
-    t1.original_mascot team1_original_mascot, 
-    t1.city team1_city, 
-    t1.mascot team1_mascot, 
-    t1.team_id team1_id,
-    t2.original_city team2_original_city, 
-    t2.original_mascot team2_original_mascot,
-    t2.city team2_city,
-    t2.mascot team2_mascot,
-    t2.team_id team2_id,
-    g.game_id
+        t1.original_city team1_original_city, 
+        t1.original_mascot team1_original_mascot, 
+        t1.city team1_city, 
+        t1.mascot team1_mascot, 
+        t1.team_id team1_id,
+        t2.original_city team2_original_city, 
+        t2.original_mascot team2_original_mascot,
+        t2.city team2_city,
+        t2.mascot team2_mascot,
+        t2.team_id team2_id,
+        g.game_id
     from game g
     inner join team t1 on t1.team_id = g.team1_id
     inner join team t2 on t2.team_id = g.team2_id
@@ -72,12 +72,12 @@ def get_scores(event, context):
     c = get_connection()
     result = c.execute('''
     select 
-    g.game_id,
-    quarter, time, scoring_team_id, detail, 
-    team1_game_score, team2_game_score, 
-    round(team1_misery_index, 2) team1_misery_index, 
-    round(team2_misery_index, 2) team2_misery_index,
-    score_order
+        g.game_id,
+        quarter, time, scoring_team_id, detail, 
+        team1_game_score, team2_game_score, 
+        round(team1_misery_index, 2) team1_misery_index, 
+        round(team2_misery_index, 2) team2_misery_index,
+        score_order
     from score s
 	inner join game g on g.game_id = s.game_id
     where g.week_id = ?
