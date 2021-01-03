@@ -1,1 +1,0 @@
-sls invoke local -f get_scores -d '{ "queryStringParameters": {"weekId":'$1'} }'

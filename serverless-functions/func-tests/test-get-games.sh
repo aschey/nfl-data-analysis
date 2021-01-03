@@ -1,1 +1,0 @@
-sls invoke local -f get_games -d '{ "queryStringParameters": {"weekId":'$1'} }'
