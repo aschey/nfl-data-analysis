@@ -18,8 +18,7 @@ const success = async <T>(response: Response): Promise<T> => {
   return data;
 };
 
-const env = 'dev';
-const baseUrl = `https://ykkv08bylf.execute-api.us-east-1.amazonaws.com/${env}`;
+const baseUrl = process.env.GATSBY_API_URL;
 
 export const getJson = async <T>(url: string): Promise<T> => {
   const response = await fetch(baseUrl + url, { method: 'GET', ...options });
