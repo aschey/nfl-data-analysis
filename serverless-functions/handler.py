@@ -73,11 +73,15 @@ def get_scores(event, context):
     result = c.execute('''
     select 
         g.game_id,
-        quarter, time, scoring_team_id, detail, 
-        team1_game_score, team2_game_score, 
-        round(team1_misery_index, 2) team1_misery_index, 
-        round(team2_misery_index, 2) team2_misery_index,
-        score_order
+        s.quarter, 
+        s.time, 
+        s.scoring_team_id, 
+        s.detail, 
+        s.team1_game_score, 
+        s.team2_game_score, 
+        round(s.team1_misery_index, 2) team1_misery_index, 
+        round(s.team2_misery_index, 2) team2_misery_index,
+        s.score_order
     from score s
 	inner join game g on g.game_id = s.game_id
     where g.week_id = ?
