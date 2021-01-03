@@ -7,21 +7,24 @@ import { Serie } from '@nivo/line';
 import { Box, Flex, Styled } from 'theme-ui';
 import { Controls } from '../components/Controls';
 import { ScoreTable } from '../components/ScoreTable';
-import { getJson } from '../util/fetchUtil';
 import { Value } from '../models/value';
 import { GameTeam } from '../models/gameTeam';
 import { Team } from '../models/team';
 import { Overlay } from '../components/Overlay';
+import { usePrevious } from '../hooks/usePrevious';
 
 const Index: React.FC<Record<string, unknown>> = () => {
   const [chartData, setChartData] = useState<Serie[]>([]);
   const [gameData, setGameData] = useState<Score[]>([]);
+  const [allScores, setAllScores] = useState<Score[]>([]);
   const [weeks, setWeeks] = useState<Value<number>[]>([]);
   const [week, setWeek] = useState<Value<number>>({ label: 'Week 1', value: 0 });
   const [currentGames, setCurrentGames] = useState<Value<GameTeam>[]>([]);
   const [currentGame, setCurrentGame] = useState<Value<GameTeam>>();
   const [isTeam1, setIsTeam1] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+
+  const prevGame = usePrevious(currentGame);
 
   const [primaryTeam, setPrimaryTeam] = useState<Team>({
     originalCity: '',
@@ -50,42 +53,44 @@ const Index: React.FC<Record<string, unknown>> = () => {
   }, []);
 
   useEffect(() => {
-    if (!week || !currentGame) {
+    // Only update if current game has changed
+    if (!currentGame || prevGame?.value === currentGame.value) {
       return;
     }
 
     setEnableHover(false);
-    getJson<Score[]>(`/scores?gameId=${currentGame.value.game.gameId}`).then(scores => {
-      scores.unshift({
-        quarter: 1,
-        team1: { gameScore: 0, miseryIndex: 0 },
-        team2: { gameScore: 0, miseryIndex: 0 },
-        detail: '',
-        time: '',
-        scoringTeamId: 0,
-        scoreOrder: 1.0,
-      });
 
-      const game = currentGame.value.game;
-      const isTeam1Val = currentGame.value.team.id === game.team1.id;
-      setIsTeam1(isTeam1Val);
-      setPrimaryTeam(isTeam1Val ? game.team1 : game.team2);
-      setSecondaryTeam(isTeam1Val ? game.team2 : game.team1);
-      setGameData(scores);
-      const lineData = scores.map(g => ({
-        x: g.scoreOrder,
-        y: isTeam1Val ? g.team1.miseryIndex : g.team2.miseryIndex,
-      }));
-      setIsLoading(false);
-      setChartData([
-        {
-          key: 'data',
-          id: 'data',
-          data: lineData,
-        },
-      ]);
+    const scores = allScores.filter(s => s.gameId === currentGame.value.game.gameId);
+    scores.unshift({
+      gameId: currentGame.value.game.gameId,
+      quarter: 1,
+      team1: { gameScore: 0, miseryIndex: 0 },
+      team2: { gameScore: 0, miseryIndex: 0 },
+      detail: '',
+      time: '',
+      scoringTeamId: 0,
+      scoreOrder: 1.0,
     });
-  }, [currentGame, week, setIsLoading]);
+
+    const game = currentGame.value.game;
+    const isTeam1Val = currentGame.value.team.id === game.team1.id;
+    setIsTeam1(isTeam1Val);
+    setPrimaryTeam(isTeam1Val ? game.team1 : game.team2);
+    setSecondaryTeam(isTeam1Val ? game.team2 : game.team1);
+    setGameData(scores);
+    const lineData = scores.map(g => ({
+      x: g.scoreOrder,
+      y: isTeam1Val ? g.team1.miseryIndex : g.team2.miseryIndex,
+    }));
+    setIsLoading(false);
+    setChartData([
+      {
+        key: 'data',
+        id: 'data',
+        data: lineData,
+      },
+    ]);
+  }, [currentGame, setIsLoading, allScores, prevGame]);
 
   const onAnimationEnd = () => setEnableHover(true);
 
@@ -116,6 +121,7 @@ const Index: React.FC<Record<string, unknown>> = () => {
           setCurrentGames={setCurrentGames}
           weeks={weeks}
           setWeeks={setWeeks}
+          setAllScores={setAllScores}
           setIsLoading={setIsLoading}
         />
         <Flex

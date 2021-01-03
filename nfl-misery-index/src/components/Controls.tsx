@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Flex, jsx } from 'theme-ui';
 import { Game } from '../models/game';
 import { GameTeam } from '../models/gameTeam';
+import { Score } from '../models/score';
 import { Value } from '../models/value';
 import { Week } from '../models/week';
 import { getJson } from '../util/fetchUtil';
@@ -18,6 +19,7 @@ interface ControlProps {
   currentGame: Value<GameTeam> | undefined;
   setCurrentGame: (currentGame: Value<GameTeam>) => void;
   setCurrentGames: (currentGames: Value<GameTeam>[]) => void;
+  setAllScores: (allScores: Score[]) => void;
   setIsLoading: (isLoading: boolean) => void;
 }
 
@@ -30,6 +32,7 @@ export const Controls: React.FC<ControlProps> = ({
   currentGame,
   setCurrentGame,
   setCurrentGames,
+  setAllScores,
   setIsLoading,
 }) => {
   const [years, setYears] = useState<Value<number>[]>([]);
@@ -38,8 +41,14 @@ export const Controls: React.FC<ControlProps> = ({
   const updateWeek = useCallback(
     async (newWeek: Value<number>, year: Value<number>) => {
       setIsLoading(true);
+
+      const [scores, games] = await Promise.all([
+        getJson<Score[]>(`/scores?weekId=${newWeek.value}`),
+        getJson<Game[]>(`/games?weekId=${newWeek.value}`),
+      ]);
+      setAllScores(scores);
       setWeek(newWeek);
-      const games = await getJson<Game[]>(`/games?weekId=${newWeek.value}`);
+
       const matchups = flow(
         map<Game, Value<GameTeam>[]>(g => [
           {
@@ -60,7 +69,7 @@ export const Controls: React.FC<ControlProps> = ({
       }
       setCurrentGame(matchups[0]);
     },
-    [setCurrentGames, setCurrentGame, setWeek, setIsLoading]
+    [setCurrentGames, setCurrentGame, setWeek, setIsLoading, setAllScores]
   );
 
   const updateYear = useCallback(

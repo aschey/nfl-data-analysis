@@ -1,1 +1,1 @@
-sls invoke local -f get_scores -d '{ "queryStringParameters": {"gameId":'$1'} }'
+sls invoke local -f get_scores -d '{ "queryStringParameters": {"weekId":'$1'} }'

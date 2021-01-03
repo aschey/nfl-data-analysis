@@ -38,7 +38,7 @@ def get_games(event, context):
 
     c = get_connection()
     result = c.execute('''
-    select 
+    select
     t1.original_city team1_original_city, 
     t1.original_mascot team1_original_mascot, 
     t1.city team1_city, 
@@ -65,21 +65,23 @@ def get_scores(event, context):
     if is_warmup(event):
         return get_response({'message': 'warmup invocation'})
     try:
-        game_id = event['queryStringParameters']['gameId']
+        week_id = event['queryStringParameters']['weekId']
     except (KeyError, TypeError):
-        return get_response({'message': 'Query parameter "gameId" is required but was not present'}, 400)
+        return get_response({'message': 'Query parameter "weekId" is required but was not present'}, 400)
 
     c = get_connection()
     result = c.execute('''
     select 
+    g.game_id,
     quarter, time, scoring_team_id, detail, 
     team1_game_score, team2_game_score, 
     round(team1_misery_index, 2) team1_misery_index, 
     round(team2_misery_index, 2) team2_misery_index,
     score_order
-    from score
-    where game_id = ?
-    ''', (game_id,)).fetchall()
+    from score s
+	inner join game g on g.game_id = s.game_id
+    where g.week_id = ?
+    ''', (week_id,)).fetchall()
 
     fields = ['gameScore', 'miseryIndex']
     response = get_team_structure(result, fields)

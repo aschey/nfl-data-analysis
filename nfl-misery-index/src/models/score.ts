@@ -1,6 +1,7 @@
 import { TeamScore } from './teamScore';
 
 export interface Score {
+  gameId: number;
   quarter: number;
   time: string;
   scoringTeamId: number;
