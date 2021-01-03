@@ -73,11 +73,11 @@ def get_scores(event, context):
     result = c.execute('''
     select 
         g.game_id,
-        s.quarter, 
-        s.time, 
-        s.scoring_team_id, 
+        s.quarter,
+        s.time,
+        s.scoring_team_id,
         s.detail, 
-        s.team1_game_score, 
+        s.team1_game_score,
         s.team2_game_score, 
         round(s.team1_misery_index, 2) team1_misery_index, 
         round(s.team2_misery_index, 2) team2_misery_index,
