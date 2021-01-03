@@ -1,40 +1,41 @@
-from helpers import is_warmup, get_connection, get_response, sql_result_values, get_team_structure
+from flask import Flask, request
+from flask_cors import CORS
+import json
+from helpers import get_connection, sql_result_values, \
+    get_team_structure, try_get_param
+
+app = Flask(__name__)
+CORS(app)
 
 
-def get_years(event, context):
-    if is_warmup(event):
-        return get_response({'message': 'warmup invocation'})
-
+@app.route('/years')
+def get_years():
     c = get_connection()
     db_response = c.execute(
         '''select distinct year from week order by year desc''').fetchall()
     result = sql_result_values(db_response)
-    return get_response(result)
+    return json.dumps(result)
 
 
-def get_weeks(event, context):
-    if is_warmup(event):
-        return get_response({'message': 'warmup invocation'})
-
-    try:
-        year = event['queryStringParameters']['year']
-    except (KeyError, TypeError):
-        return get_response({'message': 'Query parameter "year" is required but was not present'}, 400)
+@app.route('/weeks')
+def get_weeks():
+    year, error = try_get_param('year')
+    if year == None:
+        return error, 400
 
     c = get_connection()
     result = c.execute(
         '''select week_id, week_name from week where year = ? order by week_order''', (year,)).fetchall()
 
-    return get_response(result)
+    return json.dumps(result)
 
 
-def get_games(event, context):
-    if is_warmup(event):
-        return get_response({'message': 'warmup invocation'})
-    try:
-        week_id = event['queryStringParameters']['weekId']
-    except (KeyError, TypeError):
-        return get_response({'message': 'Query parameter "weekId" is required but was not present'}, 400)
+@app.route('/games')
+def get_games():
+
+    week_id, error = try_get_param('weekId')
+    if week_id == None:
+        return error, 400
 
     c = get_connection()
     result = c.execute('''
@@ -58,16 +59,14 @@ def get_games(event, context):
 
     fields = ['originalCity', 'originalMascot', 'city', 'mascot', 'id']
     response = get_team_structure(result, fields)
-    return get_response(response)
+    return json.dumps(response)
 
 
-def get_scores(event, context):
-    if is_warmup(event):
-        return get_response({'message': 'warmup invocation'})
-    try:
-        week_id = event['queryStringParameters']['weekId']
-    except (KeyError, TypeError):
-        return get_response({'message': 'Query parameter "weekId" is required but was not present'}, 400)
+@app.route('/scores')
+def get_scores():
+    week_id, error = try_get_param('weekId')
+    if week_id == None:
+        return error, 400
 
     c = get_connection()
     result = c.execute('''
@@ -90,4 +89,4 @@ def get_scores(event, context):
     fields = ['gameScore', 'miseryIndex']
     response = get_team_structure(result, fields)
 
-    return get_response(response)
+    return json.dumps(response)

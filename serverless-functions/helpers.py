@@ -1,22 +1,9 @@
 import json
 import sqlite3
+from flask import request
 
 
 def sql_result_values(dictList): return [list(d.values())[0] for d in dictList]
-
-
-def is_warmup(
-    event): return 'source' in event and event['source'] == 'serverless-plugin-warmup'
-
-
-def get_response(body, status_code=200):
-    return {
-        "statusCode": status_code,
-        'headers': {
-            'Access-Control-Allow-Origin': '*',
-        },
-        'body': json.dumps(body)
-    }
 
 
 def camel(snake_str):
@@ -52,3 +39,12 @@ def get_team_structure(result, fields):
     } for r in result]
 
     return response
+
+
+def try_get_param(name):
+    val = request.args.get(name)
+    error_response = ''
+    if val == None:
+        error_response = json.dumps(
+            {'message': f'Query parameter "{name}" is required but was not present'})
+    return val, error_response
