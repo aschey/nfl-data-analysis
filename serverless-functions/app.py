@@ -1,6 +1,7 @@
 from flask import Flask, request
 from flask_cors import CORS
 import json
+from typing import Tuple, Union
 from helpers import get_connection, sql_result_values, \
     get_team_structure, try_get_param
 
@@ -9,7 +10,7 @@ CORS(app)
 
 
 @app.route('/years')
-def get_years():
+def get_years() -> str:
     c = get_connection()
     db_response = c.execute(
         '''select distinct year from week order by year desc''').fetchall()
@@ -18,7 +19,7 @@ def get_years():
 
 
 @app.route('/weeks')
-def get_weeks():
+def get_weeks() -> Union[str, Tuple[str, int]]:
     year, error = try_get_param('year')
     if year == None:
         return error, 400
@@ -31,8 +32,7 @@ def get_weeks():
 
 
 @app.route('/games')
-def get_games():
-
+def get_games() -> Union[str, Tuple[str, int]]:
     week_id, error = try_get_param('weekId')
     if week_id == None:
         return error, 400
@@ -63,7 +63,7 @@ def get_games():
 
 
 @app.route('/scores')
-def get_scores():
+def get_scores() -> Union[str, Tuple[str, int]]:
     week_id, error = try_get_param('weekId')
     if week_id == None:
         return error, 400

@@ -1,18 +1,21 @@
 import json
 import sqlite3
+from sqlite3 import Cursor
 from flask import request
+from typing import Dict, List, Tuple, Any, Union
 
 
-def sql_result_values(dictList): return [list(d.values())[0] for d in dictList]
+def sql_result_values(dictList: List[Dict]) -> List:
+    return [list(d.values())[0] for d in dictList]
 
 
-def camel(snake_str):
+def camel(snake_str: str) -> str:
     first, *others = snake_str.split('_')
     return ''.join([first.lower(), *map(str.title, others)])
 
 
-def get_connection():
-    def dict_factory(cursor, row):
+def get_connection() -> Cursor:
+    def dict_factory(cursor: Cursor, row: List[str]) -> Dict[str, str]:
         d = {camel(col[0]): row[idx]
              for idx, col in enumerate(cursor.description)}
         return d
@@ -22,16 +25,16 @@ def get_connection():
     return conn.cursor()
 
 
-def _get_team(team_key, result, fields):
+def _get_team(team_key: str, result: Dict[str, str], fields: List[str]) -> Dict[str, str]:
     return {field: result[f'{team_key}{field[0].upper()}{field[1:]}']
             for field in fields}
 
 
-def _get_non_team(result):
+def _get_non_team(result: Dict[str, str]) -> Dict[str, Any]:
     return {field: result[field] for field in result if not field.startswith('team')}
 
 
-def get_team_structure(result, fields):
+def get_team_structure(result: List[Dict[str, str]], fields: List[str]) -> List[Dict[str, Dict[str, str]]]:
     response = [{
         **_get_non_team(r),
         'team1': _get_team('team1', r, fields),
@@ -41,7 +44,7 @@ def get_team_structure(result, fields):
     return response
 
 
-def try_get_param(name):
+def try_get_param(name: str) -> Tuple[Any, str]:
     val = request.args.get(name)
     error_response = ''
     if val == None:
