@@ -39,7 +39,7 @@ export const Controls: React.FC<ControlProps> = ({
   const [year, setYear] = useState<Value<number>>({ label: '2020', value: 2020 });
 
   const updateWeek = useCallback(
-    async (newWeek: Value<number>, year: Value<number>) => {
+    async (newWeek: Value<number>) => {
       setIsLoading(true);
 
       const [scores, games] = await Promise.all([
@@ -80,7 +80,7 @@ export const Controls: React.FC<ControlProps> = ({
       const weekValues = weeks.map(w => ({ label: w.weekName, value: w.weekId }));
 
       setWeeks(weekValues);
-      updateWeek(weekValues[0], newYear);
+      updateWeek(weekValues[0]);
     },
     [setWeeks, setYear, updateWeek, setIsLoading]
   );
