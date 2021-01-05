@@ -2,7 +2,9 @@ import json
 import sqlite3
 from sqlite3 import Cursor
 from flask import request
-from typing import Dict, List, Tuple, Any, Union
+from typing import Dict, List, Tuple, Any, Union, Type, Generic, TypeVar, Optional, cast
+
+T = TypeVar('T', str, int)
 
 
 def sql_result_values(dictList: List[Dict]) -> List:
@@ -44,8 +46,8 @@ def get_team_structure(result: List[Dict[str, str]], fields: List[str]) -> List[
     return response
 
 
-def try_get_param(name: str) -> Tuple[Any, str]:
-    val = request.args.get(name)
+def try_get_param(name: str, arg_type: Type) -> Tuple[Optional[T], str]:
+    val: Optional[T] = request.args.get(name, type=arg_type)
     error_response = ''
     if val == None:
         error_response = json.dumps(

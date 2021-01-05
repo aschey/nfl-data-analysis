@@ -20,7 +20,7 @@ def get_years() -> str:
 
 @app.route('/weeks')
 def get_weeks() -> Union[str, Tuple[str, int]]:
-    year, error = try_get_param('year')
+    year, error = try_get_param('year', int)
     if year == None:
         return error, 400
 
@@ -33,7 +33,7 @@ def get_weeks() -> Union[str, Tuple[str, int]]:
 
 @app.route('/games')
 def get_games() -> Union[str, Tuple[str, int]]:
-    week_id, error = try_get_param('weekId')
+    week_id, error = try_get_param('weekId', int)
     if week_id == None:
         return error, 400
 
@@ -64,7 +64,7 @@ def get_games() -> Union[str, Tuple[str, int]]:
 
 @app.route('/scores')
 def get_scores() -> Union[str, Tuple[str, int]]:
-    week_id, error = try_get_param('weekId')
+    week_id, error = try_get_param('weekId', int)
     if week_id == None:
         return error, 400
 

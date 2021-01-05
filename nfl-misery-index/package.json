@@ -1,14 +1,15 @@
 {
-  "name": "using-typescript",
+  "name": "nfl-misery-index",
   "version": "1.0.0",
-  "description": "Gatsby example site demonstrating how to use TypeScript with Gatsby",
-  "author": "fabien0102 <fabien0102@gmail.com>",
-  "license": "MIT",
+  "description": "NFL Misery Index",
+  "author": "aschey",
+  "license": "GPL-3.0",
   "scripts": {
     "start": "gatsby develop",
     "develop": "gatsby develop",
     "build": "gatsby build",
     "serve": "gatsby build && gatsby serve",
+    "profile": "gatsby build --profile && gatsby serve",
     "type-check": "tsc --noEmit",
     "lint": "eslint . --ignore-path .gitignore --ext .ts,.tsx,.js"
   },
