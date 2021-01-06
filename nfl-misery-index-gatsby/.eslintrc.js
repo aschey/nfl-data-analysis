@@ -17,9 +17,5 @@ module.exports = {
     quotes: 'off',
     indent: ['error', 2, { SwitchCase: 1 }],
     'react/jsx-pascal-case': 'off',
-    'react/react-in-jsx-scope': 'off',
-  },
-  globals: {
-    React: 'writable',
   },
 };
