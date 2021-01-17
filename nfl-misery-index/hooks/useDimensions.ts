@@ -28,12 +28,3 @@ export const useDimensions = (node: HTMLElement, liveMeasure = true): DOMRect | 
 
   return dimensions;
 };
-// export const useDimensions = () => {
-//   const ref = useRef<HTMLElement>();
-//   const [dimensions, setDimensions] = useState({ width: 0, height: 0, right: 0, bottom: 0 });
-//   useLayoutEffect(() => {
-//     setDimensions(ref.current.getBoundingClientRect());
-//   }, [ref.current]);
-//   console.log('test');
-//   return { ref, dimensions };
-// };
