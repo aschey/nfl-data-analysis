@@ -1,7 +1,8 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 
-import React from 'react';
+import { useDimensions } from '../hooks/useDimensions';
+import React, { useRef } from 'react';
 import { Card, jsx, Styled } from 'theme-ui';
 import { Score } from '../models/score';
 import { Team } from '../models/team';
@@ -28,6 +29,9 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
   team1,
   team2,
 }) => {
+  const tableRef = useRef<HTMLTableElement>();
+  const tableDims = useDimensions(tableRef.current);
+
   const updateIndex = (i: number) => {
     if (enableHover) {
       setOverrideIndex(i + 1);
@@ -39,12 +43,14 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
     <Card
       sx={{
         width: '100%',
-        height: '100%',
+        height: `min(100%, ${tableDims?.height ?? 0 + 3}px)`,
         overflowY: 'auto',
         padding: 0,
       }}
     >
       <Styled.table
+        // types are messed up for styled components so we need to cast it to any here
+        ref={tableRef as any}
         onMouseLeave={() => {
           setOverrideIndex(undefined);
           setHoveredIndex(undefined);
