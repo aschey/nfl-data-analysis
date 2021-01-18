@@ -1,11 +1,18 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 
-import { jsx, useThemeUI, Select as MobileSelect, SxStyleProp, Box } from 'theme-ui';
-import Select, { Styles, ValueType } from 'react-select';
-import { isMobile, setOpacity } from '../util/util';
-import { useEffect, useState } from 'react';
-import { Value } from '../models/value';
+import {
+  jsx,
+  useThemeUI,
+  Select as MobileSelect,
+  SxStyleProp,
+  Box,
+} from "theme-ui";
+import { useEffect, useState } from "react";
+import Select, { Styles, ValueType } from "react-select";
+import { isMobile, setOpacity } from "../util/util";
+import { Value } from "../models/value";
+import { border, hover, selected } from "../theme/theme";
 
 interface AdaptiveSelectProps<T> {
   value: Value<T> | undefined;
@@ -15,7 +22,10 @@ interface AdaptiveSelectProps<T> {
   width: number;
 }
 
-export const AdaptiveSelect: <T>(props: AdaptiveSelectProps<T>) => React.ReactElement<AdaptiveSelectProps<T>> = <T,>({
+export const AdaptiveSelect: <T>(
+  props: AdaptiveSelectProps<T>,
+  // eslint-disable-next-line comma-spacing
+) => React.ReactElement<AdaptiveSelectProps<T>> = <T,>({
   value,
   onChange,
   options,
@@ -32,20 +42,28 @@ export const AdaptiveSelect: <T>(props: AdaptiveSelectProps<T>) => React.ReactEl
     control: (base, state) => ({
       ...base,
       background: theme.colors?.background,
-      borderColor: theme.colors ? (theme.colors['border'] as string) : '',
-      boxShadow: state.isFocused ? `0 0 0 1px ${theme.colors?.primary}` : undefined,
-      ':hover': {
+      borderColor: theme.colors ? (theme.colors[border] as string) : "",
+      boxShadow: state.isFocused
+        ? `0 0 0 1px ${theme.colors?.primary}`
+        : undefined,
+      ":hover": {
         borderColor: theme.colors?.primary,
       },
     }),
-    indicatorSeparator: base => ({ ...base, background: setOpacity(theme.colors?.text ?? '', 0.5) }),
-    dropdownIndicator: base => ({ ...base, color: setOpacity(theme.colors?.text ?? '', 0.8) }),
-    menu: base => ({
+    indicatorSeparator: (base) => ({
+      ...base,
+      background: setOpacity(theme.colors?.text ?? "", 0.5),
+    }),
+    dropdownIndicator: (base) => ({
+      ...base,
+      color: setOpacity(theme.colors?.text ?? "", 0.8),
+    }),
+    menu: (base) => ({
       ...base,
       background: theme.colors?.background,
     }),
-    singleValue: base => ({ ...base, color: theme.colors?.text }),
-    input: base => ({
+    singleValue: (base) => ({ ...base, color: theme.colors?.text }),
+    input: (base) => ({
       ...base,
       caretColor: theme.colors?.text,
       color: theme.colors?.text,
@@ -54,11 +72,14 @@ export const AdaptiveSelect: <T>(props: AdaptiveSelectProps<T>) => React.ReactEl
       if (!theme.colors) {
         return base;
       }
+
       return {
         ...base,
-        backgroundColor: state.isSelected ? (theme.colors['selected'] as string) : theme.colors?.background,
-        ':hover': {
-          background: theme.colors['hover'],
+        backgroundColor: state.isSelected
+          ? (theme.colors[selected] as string)
+          : theme.colors?.background,
+        ":hover": {
+          background: theme.colors[hover],
         },
       };
     },
@@ -70,16 +91,28 @@ export const AdaptiveSelect: <T>(props: AdaptiveSelectProps<T>) => React.ReactEl
         return (
           <MobileSelect
             value={value?.label}
-            onChange={e => onChange(options.find(o => o.label.toString() === e.target.value) ?? options[0])}
+            onChange={(e) =>
+              onChange(
+                options.find((o) => o.label.toString() === e.target.value) ??
+                  options[0],
+              )
+            }
           >
-            {options.map((o, i) => (
-              <option key={i}>{o.label}</option>
+            {options.map((o) => (
+              <option key={o.label}>{o.label}</option>
             ))}
           </MobileSelect>
         );
       case false:
-        return <Select styles={selectStyles} value={value} onChange={onChange} options={options} />;
-      case null:
+        return (
+          <Select
+            styles={selectStyles}
+            value={value}
+            onChange={onChange}
+            options={options}
+          />
+        );
+      default:
         return null;
     }
   };

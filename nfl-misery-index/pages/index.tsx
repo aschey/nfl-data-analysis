@@ -1,23 +1,22 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 
-import { jsx } from 'theme-ui';
-import { useEffect, useState } from 'react';
-import { ScoreLine } from '../components/ScoreLine';
-import { Score } from '../models/score';
-import { Serie } from '@nivo/line';
-import { Box, Flex, Styled } from 'theme-ui';
-import { flatMap, flow, map } from 'lodash/fp';
-import { Controls } from '../components/Controls';
-import { ScoreTable } from '../components/ScoreTable';
-import { Value } from '../models/value';
-import { GameTeam } from '../models/gameTeam';
-import { Team } from '../models/team';
-import { Overlay } from '../components/Overlay';
-import { usePrevious } from '../hooks/usePrevious';
-import { getJson } from '../util/fetchUtil';
-import { Week } from '../models/week';
-import { Game } from '../models/game';
+import { jsx, Box, Flex, Styled } from "theme-ui";
+import { useEffect, useState } from "react";
+import { Serie } from "@nivo/line";
+import { flatMap, flow, map } from "lodash/fp";
+import { Score } from "../models/score";
+import { ScoreLine } from "../components/ScoreLine";
+import { Controls } from "../components/Controls";
+import { ScoreTable } from "../components/ScoreTable";
+import { Value } from "../models/value";
+import { GameTeam } from "../models/gameTeam";
+import { Team } from "../models/team";
+import { Overlay } from "../components/Overlay";
+import { usePrevious } from "../hooks/usePrevious";
+import { getJson } from "../util/fetchUtil";
+import { Week } from "../models/week";
+import { Game } from "../models/game";
 
 interface IndexProps {
   initCurrentGames: Value<GameTeam>[];
@@ -26,12 +25,20 @@ interface IndexProps {
   initYears: Value<number>[];
 }
 
-const Index: React.FC<IndexProps> = ({ initCurrentGames, initAllScores, initWeeks, initYears }) => {
+const Index: React.FC<IndexProps> = ({
+  initCurrentGames,
+  initAllScores,
+  initWeeks,
+  initYears,
+}) => {
   const [chartData, setChartData] = useState<Serie[]>([]);
   const [gameData, setGameData] = useState<Score[]>([]);
   const [allScores, setAllScores] = useState<Score[]>([]);
   const [weeks, setWeeks] = useState<Value<number>[]>([]);
-  const [week, setWeek] = useState<Value<number>>({ label: 'Week 1', value: 0 });
+  const [week, setWeek] = useState<Value<number>>({
+    label: "Week 1",
+    value: 0,
+  });
   const [currentGames, setCurrentGames] = useState<Value<GameTeam>[]>([]);
   const [currentGame, setCurrentGame] = useState<Value<GameTeam>>();
   const [isTeam1, setIsTeam1] = useState(true);
@@ -40,21 +47,25 @@ const Index: React.FC<IndexProps> = ({ initCurrentGames, initAllScores, initWeek
   const prevGame = usePrevious(currentGame);
 
   const [primaryTeam, setPrimaryTeam] = useState<Team>({
-    originalCity: '',
-    city: '',
-    originalMascot: '',
-    mascot: '',
+    originalCity: "",
+    city: "",
+    originalMascot: "",
+    mascot: "",
     id: 0,
   });
   const [secondaryTeam, setSecondaryTeam] = useState<Team>({
-    originalCity: '',
-    city: '',
-    originalMascot: '',
-    mascot: '',
+    originalCity: "",
+    city: "",
+    originalMascot: "",
+    mascot: "",
     id: 0,
   });
-  const [hoveredIndex, setHoveredIndex] = useState<number | undefined>(undefined);
-  const [overrideIndex, setOverrideIndex] = useState<number | undefined>(undefined);
+  const [hoveredIndex, setHoveredIndex] = useState<number | undefined>(
+    undefined,
+  );
+  const [overrideIndex, setOverrideIndex] = useState<number | undefined>(
+    undefined,
+  );
   const [enableHover, setEnableHover] = useState(true);
 
   const selectHeight = 38;
@@ -62,14 +73,13 @@ const Index: React.FC<IndexProps> = ({ initCurrentGames, initAllScores, initWeek
   const controlHeightTwoRows = selectHeight * 2 + 10;
 
   useEffect(() => {
-    //setIsLoading(true);
     setCurrentGames(initCurrentGames);
     setAllScores(initAllScores);
     setWeeks(initWeeks);
     setWeek(initWeeks[0]);
     setCurrentGames(initCurrentGames);
     setCurrentGame(initCurrentGames[0]);
-  }, []);
+  }, [initAllScores, initCurrentGames, initWeeks]);
 
   useEffect(() => {
     // Only update if current game has changed
@@ -79,33 +89,35 @@ const Index: React.FC<IndexProps> = ({ initCurrentGames, initAllScores, initWeek
 
     setEnableHover(false);
 
-    const scores = allScores.filter(s => s.gameId === currentGame.value.game.gameId);
+    const scores = allScores.filter(
+      (s) => s.gameId === currentGame.value.game.gameId,
+    );
     scores.unshift({
       gameId: currentGame.value.game.gameId,
       quarter: 1,
       team1: { gameScore: 0, miseryIndex: 0 },
       team2: { gameScore: 0, miseryIndex: 0 },
-      detail: '',
-      time: '',
+      detail: "",
+      time: "",
       scoringTeamId: 0,
       scoreOrder: 1.0,
     });
 
-    const game = currentGame.value.game;
+    const { game } = currentGame.value;
     const isTeam1Val = currentGame.value.team.id === game.team1.id;
     setIsTeam1(isTeam1Val);
     setPrimaryTeam(isTeam1Val ? game.team1 : game.team2);
     setSecondaryTeam(isTeam1Val ? game.team2 : game.team1);
     setGameData(scores);
-    const lineData = scores.map(g => ({
+    const lineData = scores.map((g) => ({
       x: g.scoreOrder,
       y: isTeam1Val ? g.team1.miseryIndex : g.team2.miseryIndex,
     }));
     setIsLoading(false);
     setChartData([
       {
-        key: 'data',
-        id: 'data',
+        key: "data",
+        id: "data",
         data: lineData,
       },
     ]);
@@ -113,22 +125,26 @@ const Index: React.FC<IndexProps> = ({ initCurrentGames, initAllScores, initWeek
 
   const onAnimationEnd = () => setEnableHover(true);
 
-  const cardItemPadding = ['10px 10px 0 10px', '10px 10px 0 10px', '50px 10px 0 10px'];
+  const cardItemPadding = [
+    "10px 10px 0 10px",
+    "10px 10px 0 10px",
+    "50px 10px 0 10px",
+  ];
 
   return (
     <Overlay isLoading={isLoading}>
       <Styled.div
         sx={{
-          position: 'fixed',
+          position: "fixed",
           top: 0,
           left: 0,
-          width: '100%',
+          width: "100%",
           height: [
             `calc(100% - ${controlHeightTwoRows}px)`,
             `calc(100% - ${controlHeightTwoRows}px)`,
             `calc(100% - ${controlHeight}px)`,
           ],
-          padding: '10px 0',
+          padding: "10px 0",
         }}
       >
         <Controls
@@ -146,18 +162,17 @@ const Index: React.FC<IndexProps> = ({ initCurrentGames, initAllScores, initWeek
         />
         <Flex
           sx={{
-            width: '100%',
-            height: '100%',
-            flexDirection: ['column', 'column', 'row'],
+            width: "100%",
+            height: "100%",
+            flexDirection: ["column", "column", "row"],
           }}
         >
           <Flex
             sx={{
               fontSize: 14,
               padding: cardItemPadding,
-              width: ['100%', '100%', 1000],
-              height: ['40%', '40%', '100%'],
-              alignSelf: ['center', 'center', 'flex-start'],
+              width: ["100%", "100%", 1000],
+              height: ["40%", "40%", "100%"],
             }}
           >
             <ScoreTable
@@ -173,8 +188,8 @@ const Index: React.FC<IndexProps> = ({ initCurrentGames, initAllScores, initWeek
           </Flex>
           <Box
             sx={{
-              width: '100%',
-              height: ['60%', '60%', '100%'],
+              width: "100%",
+              height: ["60%", "60%", "100%"],
               padding: cardItemPadding,
             }}
           >
@@ -196,10 +211,10 @@ const Index: React.FC<IndexProps> = ({ initCurrentGames, initAllScores, initWeek
 };
 
 export const getStaticProps = async (): Promise<{ props: IndexProps }> => {
-  const years = await getJson<number[]>('/years');
-  const yearVals = years.map(y => ({ label: y.toString(), value: y }));
+  const years = await getJson<number[]>("/years");
+  const yearVals = years.map((y) => ({ label: y.toString(), value: y }));
   const weeks = await getJson<Week[]>(`/weeks?year=2020`);
-  const weekValues = weeks.map(w => ({ label: w.weekName, value: w.weekId }));
+  const weekValues = weeks.map((w) => ({ label: w.weekName, value: w.weekId }));
 
   const [scores, games] = await Promise.all([
     getJson<Score[]>(`/scores?weekId=${weeks[0].weekId}`),
@@ -207,7 +222,7 @@ export const getStaticProps = async (): Promise<{ props: IndexProps }> => {
   ]);
 
   const matchups = flow(
-    map<Game, Value<GameTeam>[]>(g => [
+    map<Game, Value<GameTeam>[]>((g) => [
       {
         label: `${g.team1.originalMascot} (vs ${g.team2.originalMascot})`,
         value: { team: g.team1, game: g },
@@ -217,7 +232,7 @@ export const getStaticProps = async (): Promise<{ props: IndexProps }> => {
         value: { team: g.team2, game: g },
       },
     ]),
-    flatMap(g => g)
+    flatMap((g) => g),
   )(games);
 
   return {

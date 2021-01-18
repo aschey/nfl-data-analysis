@@ -1,9 +1,10 @@
-import { PointSymbolProps, Serie } from '@nivo/line';
-import { normal } from 'color-blend';
-import React from 'react';
-import { animated, config, Spring } from 'react-spring';
-import { useThemeUI } from 'theme-ui';
-import { formatRgba, getIsPositive, parseRgba } from '../util/util';
+import { PointSymbolProps, Serie } from "@nivo/line";
+import { normal } from "color-blend";
+import React from "react";
+import { animated, config, Spring } from "react-spring";
+import { useThemeUI } from "theme-ui";
+import { highlightNegative, highlightPositive } from "../theme/theme";
+import { formatRgba, getIsPositive, parseRgba } from "../util/util";
 
 interface CustomSymbolProps extends PointSymbolProps {
   data: Serie[];
@@ -19,23 +20,24 @@ export const LineSymbol: React.FC<CustomSymbolProps> = ({
 }: CustomSymbolProps) => {
   const { theme } = useThemeUI();
 
-  if (!theme.colors) {
-    theme.colors = {} as any;
-  }
   const curData = data[0].data;
-  const index = curData.findIndex(d => parseFloat((d.x as string) ?? '0') === (datum.x ?? 0));
+  const index = curData.findIndex(
+    (d) => parseFloat((d.x as string) ?? "0") === (datum.x ?? 0),
+  );
   const yVal = parseFloat(curData[index].y as string);
   const isSelected = index === overrideIndex;
   const isPositive = getIsPositive(
     yVal,
-    index < curData.length - 1 ? parseFloat(curData[index + 1].y as string) : yVal
+    index < curData.length - 1
+      ? parseFloat(curData[index + 1].y as string)
+      : yVal,
   );
 
-  const positiveColor = theme.colors['highlightPositive'] as string;
-  const negativeColor = theme.colors['highlightNegative'] as string;
+  const positiveColor = theme.colors[highlightPositive] as string;
+  const negativeColor = theme.colors[highlightNegative] as string;
   const positive = parseRgba(positiveColor);
   const negative = parseRgba(negativeColor);
-  const background = parseRgba(theme.colors?.background ?? '');
+  const background = parseRgba(theme.colors?.background ?? "");
   const base = { r: 200, g: 200, b: 200, a: 1 };
 
   const blendedG = normal(background, { ...positive, a: 0.15 });
@@ -50,11 +52,11 @@ export const LineSymbol: React.FC<CustomSymbolProps> = ({
 
   return (
     <Spring
-      from={{ size: size * 0.5, dash: '0 50', fill: startColor, opacity: 0.0 }}
-      to={{ size: size * 2, dash: '12 3', fill: endColor, opacity: 1.0 }}
+      from={{ size: size * 0.5, dash: "0 50", fill: startColor, opacity: 0.0 }}
+      to={{ size: size * 2, dash: "12 3", fill: endColor, opacity: 1.0 }}
       config={{ ...config.gentle, mass: 0.8 }}
     >
-      {props => (
+      {(props) => (
         <animated.g>
           <animated.circle
             fill={isSelected ? props.fill : theme.colors?.background}
@@ -62,15 +64,15 @@ export const LineSymbol: React.FC<CustomSymbolProps> = ({
             strokeWidth={borderWidth}
             strokeDasharray={isSelected ? props.dash : undefined}
             stroke={isPositive ? positiveColor : negativeColor}
-          ></animated.circle>
+          />
           {isSelected && (
             <animated.text
-              textAnchor='middle'
+              textAnchor="middle"
               stroke={formatRgba(fg)}
               strokeWidth={1}
               fontSize={8}
               opacity={props.opacity}
-              style={{ transform: 'translate(0, 3px)' }}
+              style={{ transform: "translate(0, 3px)" }}
             >
               {datum.y}
             </animated.text>

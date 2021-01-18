@@ -1,30 +1,28 @@
-import { useState, useEffect } from 'react';
+import { useState, useLayoutEffect, useRef } from "react";
 
-const getDimensionObject = (node: HTMLElement) => {
-  return node.getBoundingClientRect();
-};
+export const useDimensions = <T>(data: T = null, liveMeasure = true) => {
+  const [dimensions, setDimensions] = useState<number>(0);
+  const node = useRef<HTMLElement>();
 
-export const useDimensions = (node: HTMLElement, liveMeasure = true): DOMRect | null => {
-  const [dimensions, setDimensions] = useState<DOMRect | null>(null);
+  useLayoutEffect(() => {
+    const measure = () =>
+      window.requestAnimationFrame(() => {
+        setDimensions(node.current?.clientHeight ?? 0);
+      });
 
-  useEffect(() => {
-    if (!node) {
-      return;
+    if (node) {
+      measure();
+      if (liveMeasure) {
+        window.addEventListener("resize", measure);
+        window.addEventListener("scroll", measure);
+      }
     }
 
-    const measure = () => window.requestAnimationFrame(() => setDimensions(getDimensionObject(node)));
-    measure();
+    return () => {
+      window.removeEventListener("resize", measure);
+      window.removeEventListener("scroll", measure);
+    };
+  }, [node, liveMeasure, data]);
 
-    if (liveMeasure) {
-      window.addEventListener('resize', measure);
-      window.addEventListener('scroll', measure);
-
-      return () => {
-        window.removeEventListener('resize', measure);
-        window.removeEventListener('scroll', measure);
-      };
-    }
-  }, [node]);
-
-  return dimensions;
+  return { dimensions, node };
 };
