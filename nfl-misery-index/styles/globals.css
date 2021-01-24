@@ -18,3 +18,8 @@
 ::-webkit-scrollbar-corner {
   background: rgba(0, 0, 0, 0);
 }
+
+/* temporary workaround for https://github.com/davidhu2000/react-spinners/issues/341 */
+._loading_overlay_content {
+  display: inherit;
+}
