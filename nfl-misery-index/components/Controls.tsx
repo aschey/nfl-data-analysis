@@ -10,6 +10,7 @@ import { Score } from "../models/score";
 import { Value } from "../models/value";
 import { Week } from "../models/week";
 import { getJson } from "../util/fetchUtil";
+import { getMatchups, getScores, getWeeks } from "../util/gameDataUtil";
 import { AdaptiveSelect } from "./AdaptiveSelect";
 
 interface ControlProps {
@@ -48,28 +49,14 @@ export const Controls: React.FC<ControlProps> = ({
     async (newWeek: Value<number>) => {
       setIsLoading(true);
 
-      const [scores, games] = await Promise.all([
-        getJson<Score[]>(`/scores?weekId=${newWeek.value}`),
-        getJson<Game[]>(`/games?weekId=${newWeek.value}`),
+      const [scores, matchups] = await Promise.all([
+        getScores(newWeek.value),
+        getMatchups(newWeek.value),
       ]);
       setAllScores(scores);
       setWeek(newWeek);
-
-      const matchups = flow(
-        map<Game, Value<GameTeam>[]>((g) => [
-          {
-            label: `${g.team1.originalMascot} (vs ${g.team2.originalMascot})`,
-            value: { team: g.team1, game: g },
-          },
-          {
-            label: `${g.team2.originalMascot} (vs ${g.team1.originalMascot})`,
-            value: { team: g.team2, game: g },
-          },
-        ]),
-        flatMap((g) => g),
-      )(games);
-
       setCurrentGames(matchups);
+
       if (matchups.length === 0) {
         return;
       }
@@ -82,11 +69,8 @@ export const Controls: React.FC<ControlProps> = ({
     async (newYear: Value<number>) => {
       setIsLoading(true);
       setYear(newYear);
-      const newWeeks = await getJson<Week[]>(`/weeks?year=${newYear.value}`);
-      const weekValues = newWeeks.map((w) => ({
-        label: w.weekName,
-        value: w.weekId,
-      }));
+
+      const weekValues = await getWeeks(newYear.value);
 
       setWeeks(weekValues);
       updateWeek(weekValues[0]);

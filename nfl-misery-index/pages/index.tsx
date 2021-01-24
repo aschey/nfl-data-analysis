@@ -17,6 +17,7 @@ import { usePrevious } from "../hooks/usePrevious";
 import { getJson } from "../util/fetchUtil";
 import { Week } from "../models/week";
 import { Game } from "../models/game";
+import { getMatchups, getScores, getWeeks } from "../util/gameDataUtil";
 
 interface IndexProps {
   initCurrentGames: Value<GameTeam>[];
@@ -213,33 +214,15 @@ const Index: React.FC<IndexProps> = ({
 export const getStaticProps = async (): Promise<{ props: IndexProps }> => {
   const years = await getJson<number[]>("/years");
   const yearVals = years.map((y) => ({ label: y.toString(), value: y }));
-  const weeks = await getJson<Week[]>(`/weeks?year=2020`);
-  const weekValues = weeks.map((w) => ({ label: w.weekName, value: w.weekId }));
-
-  const [scores, games] = await Promise.all([
-    getJson<Score[]>(`/scores?weekId=${weeks[0].weekId}`),
-    getJson<Game[]>(`/games?weekId=${weeks[0].weekId}`),
-  ]);
-
-  const matchups = flow(
-    map<Game, Value<GameTeam>[]>((g) => [
-      {
-        label: `${g.team1.originalMascot} (vs ${g.team2.originalMascot})`,
-        value: { team: g.team1, game: g },
-      },
-      {
-        label: `${g.team2.originalMascot} (vs ${g.team1.originalMascot})`,
-        value: { team: g.team2, game: g },
-      },
-    ]),
-    flatMap((g) => g),
-  )(games);
+  const weeks = await getWeeks(years[0]);
+  const scores = await getScores(weeks[0].value);
+  const matchups = await getMatchups(weeks[0].value);
 
   return {
     props: {
       initAllScores: scores,
       initCurrentGames: matchups,
-      initWeeks: weekValues,
+      initWeeks: weeks,
       initYears: yearVals,
     },
   };
