@@ -53,14 +53,14 @@ const findZero = (
       bn = mn;
     } else if (f(bn) * fmn < 0) {
       an = mn;
+    } else {
+      return 0;
     }
-
-    return 0;
   }
   return 0;
 };
 
-const getTangeantX = (
+const getTangentX = (
   t0: number,
   t1: number,
   t2: number,
@@ -71,7 +71,7 @@ const getTangeantX = (
   (p0.x - p1.x) / (t0 - t1) -
   (p0.x - p2.x) / (t0 - t2) +
   (p1.x - p2.x) / (t1 - t2);
-const getTangeantY = (
+const getTangentY = (
   t0: number,
   t1: number,
   t2: number,
@@ -98,10 +98,10 @@ const catmullRomDistance = (
   const t3 = t2 + Math.pow(pointDistance(p2, p3), alpha);
 
   const tDiff = t2 - t1;
-  const m1x = tDiff * getTangeantX(t0, t1, t2, p0, p1, p2);
-  const m1y = tDiff * getTangeantY(t0, t1, t2, p0, p1, p2);
-  const m2x = tDiff * getTangeantX(t1, t2, t3, p1, p2, p3);
-  const m2y = tDiff * getTangeantY(t1, t2, t3, p1, p2, p3);
+  const m1x = tDiff * getTangentX(t0, t1, t2, p0, p1, p2);
+  const m1y = tDiff * getTangentY(t0, t1, t2, p0, p1, p2);
+  const m2x = tDiff * getTangentX(t1, t2, t3, p1, p2, p3);
+  const m2y = tDiff * getTangentY(t1, t2, t3, p1, p2, p3);
 
   const xCoeffs: CubicCoefficients = {
     a: 2 * p1.x - 2 * p2.x + m1x + m2x,
