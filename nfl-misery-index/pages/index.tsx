@@ -4,7 +4,6 @@
 import { jsx, Box, Flex, Styled } from "theme-ui";
 import { useEffect, useState } from "react";
 import { Serie } from "@nivo/line";
-import { flatMap, flow, map } from "lodash/fp";
 import { Score } from "../models/score";
 import { ScoreLine } from "../components/ScoreLine";
 import { Controls } from "../components/Controls";
@@ -15,8 +14,6 @@ import { Team } from "../models/team";
 import { Overlay } from "../components/Overlay";
 import { usePrevious } from "../hooks/usePrevious";
 import { getJson } from "../util/fetchUtil";
-import { Week } from "../models/week";
-import { Game } from "../models/game";
 import { getMatchups, getScores, getWeeks } from "../util/gameDataUtil";
 
 interface IndexProps {
