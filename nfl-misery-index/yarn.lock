@@ -403,7 +403,7 @@
     "@react-spring/web" "9.2.4"
     lodash "^4.17.21"
 
-"@nivo/axes@0.73.0":
+"@nivo/axes@0.73.0", "@nivo/axes@^0.73.0":
   version "0.73.0"
   resolved "https://registry.yarnpkg.com/@nivo/axes/-/axes-0.73.0.tgz#d4982bda3c21d318507e4c61b9cce31549f8c894"
   integrity sha512-tyB+PqQTW117q9E5vz1jVTywDG6mjqD/RvtVGeqAwHziHAQxpSVb+r0UUtTFOgyaddEbLDaOXPqjD3l6Npo89g==

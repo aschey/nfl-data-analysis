@@ -9,6 +9,7 @@ import {
   CustomLayerProps,
   DatumValue,
 } from "@nivo/line";
+import { AxisTickProps, AxisValue } from "@nivo/axes";
 import { Score } from "../models/score";
 import { HighlightLine } from "./HighlightLine";
 import { LineSymbol } from "./LineSymbol";
@@ -47,8 +48,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
 }) => {
   const { theme } = useThemeUI();
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const renderTick = (tickData: any) => {
+  const renderTick = (tickData: AxisTickProps<AxisValue>) => {
     let labelVal = "";
     if (
       tickData.value === 5 &&
@@ -119,7 +119,6 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
         axisTop={null}
         axisRight={null}
         axisBottom={{
-          // orient: "bottom",
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
@@ -130,7 +129,6 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
           renderTick,
         }}
         axisLeft={{
-          // orient: "left",
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,

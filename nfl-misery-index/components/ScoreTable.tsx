@@ -28,8 +28,6 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
   team1,
   team2,
 }) => {
-  // const tableRef = useRef<HTMLTableElement>();
-  // const { dimensions: tableDims, node: tableRef } = useDimensions(gameData);
   const updateIndex = (i: number) => {
     if (enableHover) {
       setOverrideIndex(i + 1);
@@ -46,13 +44,6 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
       }}
     >
       <Themed.table
-        // types are messed up for styled components so we need to cast it to any here
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        // ref={(r) => {
-        //   if (!tableRef.current) {
-        //     tableRef.current = r;
-        //   }
-        // }}
         onMouseLeave={() => {
           setOverrideIndex(undefined);
           setHoveredIndex(undefined);
