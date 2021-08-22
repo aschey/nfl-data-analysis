@@ -95,10 +95,7 @@ export const Controls: React.FC<ControlProps> = ({
           width={310}
           options={currentGames}
           value={currentGame}
-          onChange={(value) => {
-            setIsLoading(true);
-            setCurrentGame(value as Value<GameTeam>);
-          }}
+          onChange={(value) => setCurrentGame(value as Value<GameTeam>)}
         />
       </Flex>
     </form>
