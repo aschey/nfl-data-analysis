@@ -33,8 +33,6 @@ custom:
     default:
       enabled: true
       prewarm: true
-      events:
-        - schedule: cron(*/5 * * * *)
       concurrency: 1
 plugins:
   - serverless-python-requirements
