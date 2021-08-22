@@ -4,7 +4,7 @@ service: nfl-misery-index
 
 provider:
   name: aws
-  runtime: python3.9
+  runtime: python3.8
   apiGateway:
     shouldStartNameWithService: true
   iamRoleStatements:
