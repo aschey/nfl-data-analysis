@@ -4,7 +4,7 @@ service: nfl-misery-index
 
 provider:
   name: aws
-  runtime: python3.8
+  runtime: python3.9
   apiGateway:
     shouldStartNameWithService: true
   iamRoleStatements:
@@ -30,8 +30,9 @@ custom:
   pythonRequirements:
     dockerizePip: non-linux
   warmup:
-    defaultWarmer:
+    default:
       enabled: true
+      prewarm: true
       events:
         - schedule: cron(*/5 * * * *)
       concurrency: 1
