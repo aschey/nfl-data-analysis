@@ -13,7 +13,7 @@ export const ClientOnly: React.FC<ClientOnlyProps> = ({ children }) => {
   }, []);
 
   if (!hasMounted) {
-    return null;
+    return undefined;
   }
 
   return <>{children}</>;

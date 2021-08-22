@@ -23,7 +23,6 @@ interface AdaptiveSelectProps<T> {
 
 export const AdaptiveSelect: <T>(
   props: AdaptiveSelectProps<T>,
-  // eslint-disable-next-line comma-spacing
 ) => React.ReactElement<AdaptiveSelectProps<T>> = <T,>({
   value,
   onChange,
@@ -32,7 +31,7 @@ export const AdaptiveSelect: <T>(
   width,
 }: AdaptiveSelectProps<T>) => {
   const { theme } = useThemeUI();
-  const [isMobileBrowser, setIsMobileBrowser] = useState<boolean | null>(null);
+  const [isMobileBrowser, setIsMobileBrowser] = useState<boolean>(undefined);
   useEffect(() => {
     setIsMobileBrowser(isMobile());
   }, []);
@@ -112,7 +111,7 @@ export const AdaptiveSelect: <T>(
           />
         );
       default:
-        return null;
+        return undefined;
     }
   };
 

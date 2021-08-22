@@ -1,7 +1,7 @@
 import { useState, useLayoutEffect, useRef, MutableRefObject } from "react";
 
 export const useDimensions = <T>(
-  data: T = null,
+  data: T = undefined,
   liveMeasure = true,
 ): { dimensions: number; node: MutableRefObject<HTMLElement> } => {
   const [dimensions, setDimensions] = useState<number>(0);

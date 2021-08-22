@@ -116,8 +116,8 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
           stacked: false,
           reverse: false,
         }}
-        axisTop={null}
-        axisRight={null}
+        axisTop={undefined}
+        axisRight={undefined}
         axisBottom={{
           tickSize: 5,
           tickPadding: 5,
