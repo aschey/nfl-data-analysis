@@ -5,20 +5,19 @@ import {
   jsx,
   useThemeUI,
   Select as MobileSelect,
-  SxStyleProp,
+  ThemeUIStyleObject,
   Box,
 } from "theme-ui";
 import { useEffect, useState } from "react";
 import Select, { Styles, ValueType } from "react-select";
 import { isMobile, setOpacity } from "../util/util";
 import { Value } from "../models/value";
-import { border, hover, selected } from "../theme/theme";
 
 interface AdaptiveSelectProps<T> {
   value: Value<T> | undefined;
   onChange: (value: ValueType<Value<T>, boolean>) => void;
   options: Value<T>[];
-  sxStyles?: SxStyleProp;
+  sxStyles?: ThemeUIStyleObject;
   width: number;
 }
 
@@ -41,32 +40,32 @@ export const AdaptiveSelect: <T>(
   const selectStyles: Partial<Styles<Value<T>, false>> = {
     control: (base, state) => ({
       ...base,
-      background: theme.colors?.background,
-      borderColor: theme.colors ? (theme.colors[border] as string) : "",
+      background: theme.colors.background as string,
+      borderColor: theme.colors.border as string,
       boxShadow: state.isFocused
-        ? `0 0 0 1px ${theme.colors?.primary}`
+        ? `0 0 0 1px ${theme.colors.primary}`
         : undefined,
       ":hover": {
-        borderColor: theme.colors?.primary,
+        borderColor: theme.colors.primary as string,
       },
     }),
     indicatorSeparator: (base) => ({
       ...base,
-      background: setOpacity(theme.colors?.text ?? "", 0.5),
+      background: setOpacity(theme.colors.text as string, 0.5),
     }),
     dropdownIndicator: (base) => ({
       ...base,
-      color: setOpacity(theme.colors?.text ?? "", 0.8),
+      color: setOpacity(theme.colors.text as string, 0.8),
     }),
     menu: (base) => ({
       ...base,
-      background: theme.colors?.background,
+      background: theme.colors.background as string,
     }),
-    singleValue: (base) => ({ ...base, color: theme.colors?.text }),
+    singleValue: (base) => ({ ...base, color: theme.colors.text as string }),
     input: (base) => ({
       ...base,
-      caretColor: theme.colors?.text,
-      color: theme.colors?.text,
+      caretColor: theme.colors.text as string,
+      color: theme.colors.text as string,
     }),
     option: (base, state) => {
       if (!theme.colors) {
@@ -76,10 +75,10 @@ export const AdaptiveSelect: <T>(
       return {
         ...base,
         backgroundColor: state.isSelected
-          ? (theme.colors[selected] as string)
-          : theme.colors?.background,
+          ? (theme.colors.selected as string)
+          : (theme.colors.background as string),
         ":hover": {
-          background: theme.colors[hover],
+          background: theme.colors.hover as string,
         },
       };
     },
@@ -93,7 +92,7 @@ export const AdaptiveSelect: <T>(
             value={value?.label}
             onChange={(e) =>
               onChange(
-                options.find((o) => o.label.toString() === e.target.value) ??
+                options.find((o) => (o.label as string) === e.target.value) ??
                   options[0],
               )
             }

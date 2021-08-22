@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 
-import { jsx, Box, Flex, Styled } from "theme-ui";
+import { jsx, Box, Flex, Themed } from "theme-ui";
 import { useEffect, useState } from "react";
 import { Serie } from "@nivo/line";
 import { Score } from "../models/score";
@@ -131,7 +131,7 @@ const Index: React.FC<IndexProps> = ({
 
   return (
     <Overlay isLoading={isLoading}>
-      <Styled.div
+      <Themed.div
         sx={{
           position: "fixed",
           top: 0,
@@ -203,7 +203,7 @@ const Index: React.FC<IndexProps> = ({
             />
           </Box>
         </Flex>
-      </Styled.div>
+      </Themed.div>
     </Overlay>
   );
 };

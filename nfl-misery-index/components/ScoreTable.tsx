@@ -2,7 +2,7 @@
 /** @jsx jsx */
 
 import React from "react";
-import { Card, jsx, Styled } from "theme-ui";
+import { Card, jsx, Themed } from "theme-ui";
 import { Score } from "../models/score";
 import { Team } from "../models/team";
 import { getIsPositive } from "../util/util";
@@ -45,7 +45,7 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
         padding: 0,
       }}
     >
-      <Styled.table
+      <Themed.table
         // types are messed up for styled components so we need to cast it to any here
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         // ref={(r) => {
@@ -59,62 +59,61 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
         }}
       >
         <thead>
-          <Styled.tr>
-            <Styled.th
+          <Themed.tr>
+            <Themed.th
               sx={{ width: ["15%", "15%", "15%"], paddingLeft: "5px" }}
             >
               Quarter
-            </Styled.th>
-            <Styled.th sx={{ width: ["25%", "20%", "20%"] }}>Team</Styled.th>
-            <Styled.th
+            </Themed.th>
+            <Themed.th sx={{ width: ["25%", "20%", "20%"] }}>Team</Themed.th>
+            <Themed.th
               sx={{
                 width: ["0%", "45%", "45%"],
                 display: ["none", "table-cell", "table-cell"],
               }}
             >
               Play
-            </Styled.th>
-            <Styled.th sx={{ width: ["20%", "15%", "15%"] }}>
+            </Themed.th>
+            <Themed.th sx={{ width: ["20%", "15%", "15%"] }}>
               {team1.originalMascot}
-            </Styled.th>
-            <Styled.th sx={{ width: ["20%", "15%", "15%"] }}>
+            </Themed.th>
+            <Themed.th sx={{ width: ["20%", "15%", "15%"] }}>
               {team2.originalMascot}
-            </Styled.th>
-            <Styled.th sx={{ width: ["20%", "10%", "10%"] }}>Index</Styled.th>
-          </Styled.tr>
+            </Themed.th>
+            <Themed.th sx={{ width: ["20%", "10%", "10%"] }}>Index</Themed.th>
+          </Themed.tr>
         </thead>
         <tbody>
           {allScores.map((d, i) => {
             const score = (isTeam1 ? d.team1 : d.team2).miseryIndex;
             let nextScore = score;
             if (i < allScores.length - 1) {
-              nextScore = (isTeam1
-                ? allScores[i + 1].team1
-                : allScores[i + 1].team2
+              nextScore = (
+                isTeam1 ? allScores[i + 1].team1 : allScores[i + 1].team2
               ).miseryIndex;
             }
             return (
-              <Styled.tr
+              <Themed.tr
                 key={d.scoreOrder}
                 sx={{
                   bg: i + 1 === hoveredIndex ? "hover" : "background",
                 }}
                 onMouseMove={() => updateIndex(i)}
               >
-                <Styled.td sx={{ paddingLeft: "5px" }}>
+                <Themed.td sx={{ paddingLeft: "5px" }}>
                   {d.quarter < 5 ? d.quarter : "OT"}
-                </Styled.td>
-                <Styled.td>
+                </Themed.td>
+                <Themed.td>
                   {d.scoringTeamId === team1.id
                     ? team1.originalMascot
                     : team2.originalMascot}
-                </Styled.td>
-                <Styled.td sx={{ display: ["none", "flex", "flex"] }}>
+                </Themed.td>
+                <Themed.td sx={{ display: ["none", "flex", "flex"] }}>
                   {d.detail}
-                </Styled.td>
-                <Styled.td>{(isTeam1 ? d.team1 : d.team2).gameScore}</Styled.td>
-                <Styled.td>{(isTeam1 ? d.team2 : d.team1).gameScore}</Styled.td>
-                <Styled.td
+                </Themed.td>
+                <Themed.td>{(isTeam1 ? d.team1 : d.team2).gameScore}</Themed.td>
+                <Themed.td>{(isTeam1 ? d.team2 : d.team1).gameScore}</Themed.td>
+                <Themed.td
                   sx={{
                     color: getIsPositive(score, nextScore)
                       ? "highlightPositive"
@@ -122,12 +121,12 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
                   }}
                 >
                   {score}
-                </Styled.td>
-              </Styled.tr>
+                </Themed.td>
+              </Themed.tr>
             );
           })}
         </tbody>
-      </Styled.table>
+      </Themed.table>
     </Card>
   );
 };

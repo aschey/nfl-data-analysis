@@ -3,7 +3,12 @@
 
 import { Card, jsx, useThemeUI } from "theme-ui";
 import { max } from "lodash";
-import { ResponsiveLine, Serie, CustomLayerProps } from "@nivo/line";
+import {
+  ResponsiveLine,
+  Serie,
+  CustomLayerProps,
+  DatumValue,
+} from "@nivo/line";
 import { Score } from "../models/score";
 import { HighlightLine } from "./HighlightLine";
 import { LineSymbol } from "./LineSymbol";
@@ -52,7 +57,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
     ) {
       labelVal = "OT";
     } else if (tickData.value < 5) {
-      labelVal = tickData.value.toString();
+      labelVal = tickData.value as string;
     }
     return (
       <text
@@ -62,7 +67,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
         style={{
           fontFamily: "sans-serif",
           fontSize: 11,
-          fill: theme.colors?.text,
+          fill: theme.rawColors.text as string,
         }}
       >
         {labelVal}
@@ -76,7 +81,13 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
     <HighlightLine
       mode={catmull ? "catmullRom" : "linear"}
       onAnimationEnd={onAnimationEnd}
-      {...props}
+      {...{
+        ...props,
+        // eslint-disable-next-line react/destructuring-assignment
+        xScale: props.xScale as unknown as (x: DatumValue) => number,
+        // eslint-disable-next-line react/destructuring-assignment
+        yScale: props.yScale as unknown as (y: DatumValue) => number,
+      }}
     />
   );
 
@@ -108,7 +119,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
         axisTop={null}
         axisRight={null}
         axisBottom={{
-          orient: "bottom",
+          // orient: "bottom",
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
@@ -119,7 +130,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
           renderTick,
         }}
         axisLeft={{
-          orient: "left",
+          // orient: "left",
           tickSize: 5,
           tickPadding: 5,
           tickRotation: 0,
@@ -152,12 +163,18 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
           "legends",
         ]}
         theme={{
-          background: theme.colors?.background,
-          textColor: theme.colors?.text,
-          crosshair: { line: { stroke: theme.colors?.text } },
-          legends: { text: { fill: theme.colors?.text } },
-          grid: { line: { stroke: setOpacity(theme.colors?.text ?? "", 0.2) } },
-          markers: { lineColor: setOpacity(theme.colors?.text ?? "", 0.7) },
+          background: theme.rawColors.background as string,
+          textColor: theme.rawColors.text as string,
+          crosshair: { line: { stroke: theme.rawColors.text as string } },
+          legends: { text: { fill: theme.rawColors.text as string } },
+          grid: {
+            line: {
+              stroke: setOpacity(theme.rawColors.text as string, 0.2),
+            },
+          },
+          markers: {
+            lineColor: setOpacity(theme.rawColors.text as string, 0.7),
+          },
         }}
         onMouseMove={(point) => {
           setIndex(point.index);
@@ -178,7 +195,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
           return (
             <div
               style={{
-                background: theme.colors?.secondary,
+                background: theme.colors.secondary as string,
                 borderRadius: 5,
                 padding: 5,
                 fontSize: 12,

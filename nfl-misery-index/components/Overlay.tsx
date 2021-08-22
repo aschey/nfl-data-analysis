@@ -15,7 +15,15 @@ export const Overlay: React.FC<{
   return (
     <LoadingOverlay
       active={isLoading}
-      spinner={<RingLoader color={theme.colors?.text} />}
+      spinner={
+        <RingLoader
+          color={theme.colors?.text as string}
+          size="4em"
+          loading
+          css=""
+          speedMultiplier={1}
+        />
+      }
       styles={{
         wrapper: (base: Record<string, unknown>) => ({
           ...base,
@@ -29,7 +37,7 @@ export const Overlay: React.FC<{
         }),
         overlay: (base: Record<string, unknown>) => ({
           ...base,
-          background: setOpacity(theme.colors?.background ?? "", 0.6),
+          background: setOpacity(theme.rawColors.background as string, 0.6),
         }),
       }}
     >

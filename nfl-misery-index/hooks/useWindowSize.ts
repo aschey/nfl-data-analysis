@@ -5,7 +5,6 @@ export const useWindowSize = (): { width: number; height: number } => {
   const [height, setHeight] = useState(0);
 
   useEffect(() => {
-    // Handler to call on window resize
     const handleResize = () => {
       setWidth(window.innerWidth);
       setHeight(window.innerHeight);

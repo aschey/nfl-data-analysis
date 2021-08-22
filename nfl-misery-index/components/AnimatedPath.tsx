@@ -1,13 +1,14 @@
-import { ComputedDatum, CustomLayerProps } from "@nivo/line";
+import { ComputedDatum } from "@nivo/line";
 import { animated } from "react-spring";
 import React from "react";
 import { useThemeUI } from "theme-ui";
+import { DatumValue } from "@nivo/core";
 import { useAnimatedPath } from "../hooks/useAnimatedPath";
-import { highlightNegative, highlightPositive } from "../theme/theme";
+import { HighlightLineProps } from "./HighlightLine";
 
 interface AnimatedPathProps {
   data: ComputedDatum[];
-  layerProps: CustomLayerProps;
+  layerProps: HighlightLineProps;
   positiveDistances: number[];
   negativeDistances: number[];
   onAnimationEnd: () => void;
@@ -31,13 +32,15 @@ export const AnimatedPath: React.FC<AnimatedPathProps> = ({
   negativeDistances,
   onAnimationEnd,
 }) => {
-  const { lineGenerator, xScale, yScale } = layerProps;
+  const { lineGenerator } = layerProps;
   const { theme } = useThemeUI();
+  const xScale = layerProps.xScale as unknown as (x: DatumValue) => DatumValue;
+  const yScale = layerProps.yScale as unknown as (y: DatumValue) => DatumValue;
 
   const line = lineGenerator(
     data.map((d) => ({
-      x: xScale(d?.data?.x ?? 0),
-      y: yScale(d?.data?.y ?? 0),
+      x: xScale(d?.data.x ?? 0),
+      y: yScale(d?.data.y ?? 0),
     })),
   );
 
@@ -56,7 +59,7 @@ export const AnimatedPath: React.FC<AnimatedPathProps> = ({
         d={path}
         strokeDasharray={dashPositive}
         fill="none"
-        stroke={theme.colors[highlightPositive] as string}
+        stroke={theme.colors.highlightPositive as string}
         style={{
           strokeWidth: 2,
         }}
@@ -65,7 +68,7 @@ export const AnimatedPath: React.FC<AnimatedPathProps> = ({
         d={path}
         strokeDasharray={dashNegative}
         fill="none"
-        stroke={theme.colors[highlightNegative] as string}
+        stroke={theme.colors.highlightNegative as string}
         style={{
           strokeWidth: 2,
         }}

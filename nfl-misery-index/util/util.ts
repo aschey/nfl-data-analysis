@@ -1,4 +1,4 @@
-import { RGBA } from 'color-blend/dist/types';
+import { RGBA } from "color-blend/dist/types";
 
 export const parseRgba = (rgba: string): RGBA => {
   const matches = rgba.match(/\d{1,3}/g)?.map(parseFloat);
@@ -9,12 +9,16 @@ export const parseRgba = (rgba: string): RGBA => {
   return { r, g, b, a };
 };
 
-export const formatRgba = (rgba: RGBA): string => `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`;
+export const formatRgba = (rgba: RGBA): string =>
+  `rgba(${rgba.r},${rgba.g},${rgba.b},${rgba.a})`;
 
-export const setOpacity = (rgba: string, a: number): string => rgba.replace('1)', `${a})`);
+export const setOpacity = (rgba: string, a: number): string =>
+  rgba.replace("1)", `${a})`);
 
-export const getIsPositive = (yVal: number, yNext: number): boolean => yVal > 0 || (yVal === 0 && yNext > 0);
+export const getIsPositive = (yVal: number, yNext: number): boolean =>
+  yVal > 0 || (yVal === 0 && yNext > 0);
 
 export const isMobile = (): boolean =>
-  navigator.userAgent.match(/iPhone|iPad|iPod|Android|BlackBerry|Opera Mini|IEMobile|CRiOS|OPiOS|Mobile|FxiOS/i) !=
-  null;
+  navigator.userAgent.match(
+    /iPhone|iPad|iPod|Android|BlackBerry|Opera Mini|IEMobile|CRiOS|OPiOS|Mobile|FxiOS/i,
+  ) != null;

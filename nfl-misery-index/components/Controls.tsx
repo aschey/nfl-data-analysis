@@ -1,15 +1,11 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 
-import { flatMap, flow, map } from "lodash/fp";
 import { useCallback, useState } from "react";
 import { Flex, jsx } from "theme-ui";
-import { Game } from "../models/game";
 import { GameTeam } from "../models/gameTeam";
 import { Score } from "../models/score";
 import { Value } from "../models/value";
-import { Week } from "../models/week";
-import { getJson } from "../util/fetchUtil";
 import { getMatchups, getScores, getWeeks } from "../util/gameDataUtil";
 import { AdaptiveSelect } from "./AdaptiveSelect";
 

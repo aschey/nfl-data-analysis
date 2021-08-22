@@ -1,4 +1,4 @@
-import { TeamScore } from './teamScore';
+import { TeamScore } from "./teamScore";
 
 export interface Score {
   gameId: number;

@@ -1,19 +1,15 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import { Theme } from "theme-ui";
 import { setOpacity } from "../util/util";
+
+const makeTheme = <T extends Theme>(t: T) => t;
 
 const textColor = "rgba(193,193,199,1)";
 
-export const highlightPositive = "highlightPositive";
-export const highlightNegative = "highlightNegative";
-export const border = "border";
-export const hover = "hover";
-export const selected = "selected";
-
-const styles = {
+const theme = makeTheme({
   space: [0, 4, 8, 16, 32, 64, 128, 256, 512],
   fonts: {
-    body:
-      'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
+    body: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif',
     heading: "inherit",
     monospace: "Menlo, monospace",
   },
@@ -34,11 +30,11 @@ const styles = {
     primary: "rgba(53,170,196,1)",
     secondary: "rgba(23,27,36,1)",
     muted: "rgba(246,246,246,1)",
-    [selected]: "rgba(54,63,84,1)",
-    [hover]: "rgba(36,42,56,1)",
-    [border]: setOpacity(textColor, 0.2),
-    [highlightPositive]: "rgba(50,168,142,1)",
-    [highlightNegative]: "rgba(168,99,50,1)",
+    selected: "rgba(54,63,84,1)",
+    hover: "rgba(36,42,56,1)",
+    border: setOpacity(textColor, 0.2),
+    highlightPositive: "rgba(50,168,142,1)",
+    highlightNegative: "rgba(168,99,50,1)",
   },
   styles: {
     root: {
@@ -148,9 +144,9 @@ const styles = {
   select: {
     borderColor: "border",
     "&:focus": {
-      outline: (t) => `${t.colors.primary} auto 1px`,
+      outline: (t: Theme) => `${t.colors.primary} auto 1px`,
     },
   },
-};
+});
 
-export default styles;
+export default theme;

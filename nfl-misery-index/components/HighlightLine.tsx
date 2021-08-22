@@ -1,5 +1,4 @@
-import { ComputedSerie, CustomLayerProps, Datum } from "@nivo/line";
-import { ScaleFunc } from "@nivo/scales";
+import { ComputedSerie, CustomLayerProps, Datum, DatumValue } from "@nivo/line";
 import React, { useMemo } from "react";
 import { AnimatedPath } from "./AnimatedPath";
 
@@ -179,8 +178,8 @@ const linearDistance = (
 
 const getDistances = (
   series: ComputedSerie[],
-  xScale: ScaleFunc,
-  yScale: ScaleFunc,
+  xScale: (x: DatumValue) => number,
+  yScale: (y: DatumValue) => number,
   mode: "catmullRom" | "linear",
 ) => {
   const positiveDistances: number[] = [0];
@@ -250,9 +249,12 @@ const getDistances = (
   return [negativeDistances, positiveDistances];
 };
 
-interface HighlightLineProps extends CustomLayerProps {
+export interface HighlightLineProps
+  extends Omit<CustomLayerProps, "xScale" | "yScale"> {
   mode: "catmullRom" | "linear";
   onAnimationEnd: () => void;
+  xScale: (x: DatumValue) => number;
+  yScale: (y: DatumValue) => number;
 }
 
 export const HighlightLine: React.FC<HighlightLineProps> = (
