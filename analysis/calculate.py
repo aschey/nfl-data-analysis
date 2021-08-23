@@ -1,5 +1,5 @@
 import math
-from typing import Callable, List
+from typing import List, Union
 from numpy import diff
 from itertools import takewhile
 
@@ -14,10 +14,22 @@ class Scorer:
         self.previous_quarter_diffs: List[int] = []
         self.current_quarter_diff: int = 0
 
-    def calculate(self, team1_score: int, team2_score: int, quarter: int, final: bool):
+    def calculate(
+        self,
+        team1_score: int,
+        team2_score: int,
+        quarter: int,
+        quarter_time_remaining: Union[str, None],
+        final: bool,
+    ):
         diff = team1_score - team2_score
         self.max_pos_diff = max(self.max_pos_diff, diff)
         self.max_neg_diff = min(self.max_neg_diff, diff)
+        total_time = quarter * 15.0
+        if quarter_time_remaining is not None:
+            minutes, seconds = quarter_time_remaining.split(":")
+            quarter_mins = 15.0 - (float(minutes) + float(seconds) / 60)
+            total_time += quarter_mins
 
         if quarter > self.current_quarter or final:
             self.current_quarter = quarter
@@ -39,7 +51,7 @@ class Scorer:
         dividend = 1 + math.e ** (-growth * (x - math.log(max_val) / growth))
         return (max_val + 1) / dividend - 1
 
-    def g(self, all_diffs: List[int], quarter: int, multiplier: int) -> float:
+    def g(self, all_diffs: List[int], total_time: float, multiplier: int) -> float:
         # get slope of all score diffs (negative slope means decreasing margin and vice versa)
         derivative = diff(all_diffs)
         if len(derivative) == 0:
@@ -52,13 +64,13 @@ class Scorer:
         avg = math.sqrt(sum((v * (i + 1)) ** 2 for i, v in enumerate(run))) / max(
             len(run), 1
         )
-        ret = (avg * (quarter / max(quarter, 4))) ** 1.5
+        ret = (avg * (total_time / max(total_time, 60))) ** 1.5
         return multiplier * ret
 
     def f(
         self,
         score_diff: int,
-        quarter: int,
+        total_time: float,
         max_pos_diff: int,
         max_neg_diff: int,
         all_diffs: List[int],
@@ -74,15 +86,18 @@ class Scorer:
             deficit_diff = max_pos_diff
             extreme_func = min
 
+        quarter_time = total_time / 15
         # current lead or current deficit
         s = multiplier * self.sigmoid(
-            multiplier * score_diff, 50, 0.3 + (0.03 * quarter)
+            multiplier * score_diff, 50, 0.3 + (0.03 * quarter_time)
         )
         # current lead relative to max lead or current deficit relative to max deficit
         d1 = multiplier * self.sigmoid(
-            score_diff / extreme_func(lead_diff, multiplier), 10 * quarter, 10 * quarter
+            score_diff / extreme_func(lead_diff, multiplier),
+            10 * quarter_time,
+            10 * quarter_time,
         )
         # maximum deficit overcome (if winning) or total deficit from previous max lead (if losing)
-        d2 = score_diff - deficit_diff + self.g(all_diffs, quarter, multiplier)
+        d2 = score_diff - deficit_diff + self.g(all_diffs, total_time, multiplier)
 
         return s + d1 + d2
