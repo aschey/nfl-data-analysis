@@ -1,44 +1,47 @@
-from flask import Flask, request
+from flask import Flask
 from flask_cors import CORS
 import json
 from typing import Tuple, Union
-from helpers import get_connection, sql_result_values, \
-    get_team_structure, try_get_param
+from helpers import get_connection, sql_result_values, get_team_structure, try_get_param
 
 app = Flask(__name__)
 CORS(app)
 
 
-@app.route('/years')
+@app.route("/years")
 def get_years() -> str:
     c = get_connection()
     db_response = c.execute(
-        '''select distinct year from week order by year desc''').fetchall()
+        """select distinct year from week order by year desc"""
+    ).fetchall()
     result = sql_result_values(db_response)
     return json.dumps(result)
 
 
-@app.route('/weeks')
+@app.route("/weeks")
 def get_weeks() -> Union[str, Tuple[str, int]]:
-    year, error = try_get_param('year', int)
+    year, error = try_get_param("year", int)
     if year == None:
         return error, 400
 
     c = get_connection()
     result = c.execute(
-        '''select week_id, week_name from week where year = ? order by week_order''', (year,)).fetchall()
+        """select week_id, week_name from week where year = ? order by week_order""",
+        (year,),
+    ).fetchall()
 
     return json.dumps(result)
 
 
-@app.route('/games')
+@app.route("/games")
 def get_games() -> Union[str, Tuple[str, int]]:
-    week_id, error = try_get_param('weekId', int)
+    week_id, error = try_get_param("weekId", int)
     if week_id == None:
         return error, 400
 
     c = get_connection()
-    result = c.execute('''
+    result = c.execute(
+        """
     select
         t1.original_city team1_original_city, 
         t1.original_mascot team1_original_mascot, 
@@ -55,21 +58,24 @@ def get_games() -> Union[str, Tuple[str, int]]:
     inner join team t1 on t1.team_id = g.team1_id
     inner join team t2 on t2.team_id = g.team2_id
     where g.week_id = ?
-    ''', (week_id,)).fetchall()
+        """,
+        (week_id,),
+    ).fetchall()
 
-    fields = ['originalCity', 'originalMascot', 'city', 'mascot', 'id']
+    fields = ["originalCity", "originalMascot", "city", "mascot", "id"]
     response = get_team_structure(result, fields)
     return json.dumps(response)
 
 
-@app.route('/scores')
+@app.route("/scores")
 def get_scores() -> Union[str, Tuple[str, int]]:
-    week_id, error = try_get_param('weekId', int)
+    week_id, error = try_get_param("weekId", int)
     if week_id == None:
         return error, 400
 
     c = get_connection()
-    result = c.execute('''
+    result = c.execute(
+        """
     with max_score as
     (
         select max(s.score_order), s.score_id 
@@ -95,9 +101,11 @@ def get_scores() -> Union[str, Tuple[str, int]]:
     left outer join max_score ms on ms.score_id = s.score_id
     where g.week_id = $1
     order by g.game_id, score_order
-    ''', (week_id,)).fetchall()
+        """,
+        (week_id,),
+    ).fetchall()
 
-    fields = ['gameScore', 'miseryIndex']
+    fields = ["gameScore", "miseryIndex"]
     response = get_team_structure(result, fields)
 
     return json.dumps(response)

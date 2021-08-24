@@ -38,6 +38,7 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
   };
 
   const allScores = gameData.slice(1);
+  const hasTime = allScores[0]?.time != null;
   return (
     <Card
       sx={{
@@ -54,12 +55,10 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
       >
         <thead>
           <Themed.tr>
-            <Themed.th
-              sx={{ width: ["10%", "10%", "10%"], paddingLeft: "5px" }}
-            >
+            <Themed.th sx={{ width: hasTime ? "10%" : "15%", paddingLeft: "5px" }}>
               Quarter
             </Themed.th>
-            <Themed.th sx={{ width: ["10%", "10%", "10%"] }}>Time</Themed.th>
+            {hasTime && <Themed.th sx={{ width: "10%" }}>Time</Themed.th>}
             <Themed.th sx={{ width: ["25%", "20%", "20%"] }}>Team</Themed.th>
             <Themed.th
               sx={{
@@ -104,11 +103,13 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
                 <Themed.td sx={{ paddingLeft: "5px", ...defaultSx }}>
                   {d.quarter < 5 ? d.quarter : "OT"}
                 </Themed.td>
-                <Themed.td
-                  sx={{ paddingLeft: "5px", whiteSpace: "pre", ...defaultSx }}
-                >
-                  {d.time.padStart(5, " ")}
-                </Themed.td>
+                {hasTime && (
+                  <Themed.td
+                    sx={{ paddingLeft: "5px", whiteSpace: "pre", ...defaultSx }}
+                  >
+                    {d.time?.padStart(5, " ")}
+                  </Themed.td>
+                )}
                 <Themed.td sx={defaultSx}>
                   {d.scoringTeamId === team1.id
                     ? team1.originalMascot
