@@ -70,6 +70,14 @@ def get_scores() -> Union[str, Tuple[str, int]]:
 
     c = get_connection()
     result = c.execute('''
+    with max_score as
+    (
+        select max(s.score_order), s.score_id 
+        from score s
+        inner join game g on g.game_id = s.game_id
+        where g.week_id = $1
+        group by g.game_id, quarter
+    )
     select 
         g.game_id,
         s.quarter,
@@ -80,10 +88,13 @@ def get_scores() -> Union[str, Tuple[str, int]]:
         s.team2_game_score, 
         round(s.team1_misery_index, 2) team1_misery_index, 
         round(s.team2_misery_index, 2) team2_misery_index,
-        s.score_order
+        s.score_order,
+        case when ms.score_id is null then false else true end is_last_of_quarter
     from score s
-	inner join game g on g.game_id = s.game_id
-    where g.week_id = ?
+    inner join game g on g.game_id = s.game_id
+    left outer join max_score ms on ms.score_id = s.score_id
+    where g.week_id = $1
+    order by g.game_id, score_order
     ''', (week_id,)).fetchall()
 
     fields = ['gameScore', 'miseryIndex']

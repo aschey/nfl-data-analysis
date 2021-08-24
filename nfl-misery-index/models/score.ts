@@ -7,6 +7,7 @@ export interface Score {
   scoringTeamId: number;
   detail: string;
   scoreOrder: number;
+  isLastOfQuarter: boolean;
   team1: TeamScore;
   team2: TeamScore;
 }
