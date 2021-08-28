@@ -19,7 +19,7 @@ const success = async <T>(response: Response): Promise<T> => {
   return data;
 };
 
-const baseUrl = process.env.API_URL ?? "https://www.aschey.tech/api";
+const baseUrl = "/api";
 
 export const getJson = async <T>(
   url: string,
