@@ -19,7 +19,7 @@ const success = async <T>(response: Response): Promise<T> => {
   return data;
 };
 
-const baseUrl = "https://aschey.tech/api";
+const baseUrl = "https://www.aschey.tech/api";
 
 export const getJson = async <T>(url: string): Promise<T> => {
   const response = await fetch(baseUrl + url, { method: "GET", ...options });
