@@ -1,11 +1,22 @@
 from flask import Flask, request
+from flask.wrappers import Response
 from flask_cors import CORS
 import json
 from typing import Tuple, Union
 from helpers import get_connection, sql_result_values, get_team_structure, try_get_param
 
 app = Flask(__name__)
-CORS(app)
+CORS(
+    app,
+    max_age=7200,
+)
+
+
+@app.after_request
+def add_cache_header(resp: Response):
+    resp.cache_control.max_age = 7200
+    resp.content_type = "application/json"
+    return resp
 
 
 @app.get("/years")
