@@ -19,7 +19,7 @@ const success = async <T>(response: Response): Promise<T> => {
   return data;
 };
 
-const baseUrl = "https://api.aschey.tech/nfl";
+const baseUrl = "http://localhost:3000/api";
 
 export const getJson = async <T>(url: string): Promise<T> => {
   const response = await fetch(baseUrl + url, { method: "GET", ...options });
