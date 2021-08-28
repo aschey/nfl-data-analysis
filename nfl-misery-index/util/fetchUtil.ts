@@ -19,9 +19,15 @@ const success = async <T>(response: Response): Promise<T> => {
   return data;
 };
 
-const baseUrl = "https://www.aschey.tech/api";
+const baseUrl = process.env.API_URL ?? "https://www.aschey.tech/api";
 
-export const getJson = async <T>(url: string): Promise<T> => {
-  const response = await fetch(baseUrl + url, { method: "GET", ...options });
+export const getJson = async <T>(
+  url: string,
+  overrideBaseUrl: string = undefined,
+): Promise<T> => {
+  const response = await fetch((overrideBaseUrl ?? baseUrl) + url, {
+    method: "GET",
+    ...options,
+  });
   return success<T>(response);
 };

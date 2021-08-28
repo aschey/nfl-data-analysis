@@ -3,7 +3,9 @@ module.exports = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://api.aschey.tech/nfl/:path*",
+        destination: `${
+          process.env.API_URL ?? "https://api.aschey.tech/nfl"
+        }/:path*`,
       },
     ];
   },

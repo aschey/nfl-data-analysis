@@ -209,7 +209,10 @@ const Index: React.FC<IndexProps> = ({
 };
 
 export const getStaticProps = async (): Promise<{ props: IndexProps }> => {
-  const years = await getJson<number[]>("/years");
+  const years = await getJson<number[]>(
+    "/years",
+    process.env.API_URL ?? "https://api.aschey.tech/nfl",
+  );
   const yearVals = years.map((y) => ({ label: y.toString(), value: y }));
   const weeks = await getWeeks(years[0]);
   const scores = await getScores(weeks[0].value);
