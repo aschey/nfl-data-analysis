@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 
 @app.after_request
-def add_cache_header(resp: Response):
+def add_headers(resp: Response) -> Response:
     resp.cache_control.max_age = 60
     resp.content_type = "application/json"
     return resp

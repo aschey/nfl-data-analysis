@@ -40,6 +40,8 @@ custom:
       enabled: true
       prewarm: true
       concurrency: 1
+      events:
+        - schedule: rate(4 minutes)
   customDomain:
     domainName: ${self:custom.domains.${self:custom.stage}}
     basePath: 'nfl'
