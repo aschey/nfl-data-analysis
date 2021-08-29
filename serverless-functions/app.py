@@ -1,14 +1,20 @@
-from flask import Flask
-from flask_cors import CORS
+from flask import Flask, request
+from flask.wrappers import Response
 import json
 from typing import Tuple, Union
 from helpers import get_connection, sql_result_values, get_team_structure, try_get_param
 
 app = Flask(__name__)
-CORS(app)
 
 
-@app.route("/years")
+@app.after_request
+def add_cache_header(resp: Response):
+    resp.cache_control.max_age = 60
+    resp.content_type = "application/json"
+    return resp
+
+
+@app.get("/years")
 def get_years() -> str:
     c = get_connection()
     db_response = c.execute(
@@ -18,7 +24,7 @@ def get_years() -> str:
     return json.dumps(result)
 
 
-@app.route("/weeks")
+@app.get("/weeks")
 def get_weeks() -> Union[str, Tuple[str, int]]:
     year, error = try_get_param("year", int)
     if year == None:
@@ -33,7 +39,7 @@ def get_weeks() -> Union[str, Tuple[str, int]]:
     return json.dumps(result)
 
 
-@app.route("/games")
+@app.get("/games")
 def get_games() -> Union[str, Tuple[str, int]]:
     week_id, error = try_get_param("weekId", int)
     if week_id == None:
@@ -67,7 +73,7 @@ def get_games() -> Union[str, Tuple[str, int]]:
     return json.dumps(response)
 
 
-@app.route("/scores")
+@app.get("/scores")
 def get_scores() -> Union[str, Tuple[str, int]]:
     week_id, error = try_get_param("weekId", int)
     if week_id == None:

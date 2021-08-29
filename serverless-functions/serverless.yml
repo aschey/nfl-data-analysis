@@ -7,6 +7,8 @@ provider:
   runtime: python3.8
   apiGateway:
     shouldStartNameWithService: true
+  environment:
+    API_GATEWAY_BASE_PATH: ${self:custom.customDomain.basePath}
   iamRoleStatements:
     - Effect: 'Allow'
       Action:
@@ -21,8 +23,12 @@ functions:
         enabled: prod
     events:
       - http: 'ANY /'
-      - http: 'ANY {proxy+}'
+      - http: 'ANY /{proxy+}'
 custom:
+  stage: ${opt:stage, self:provider.stage}
+  domains:
+    dev: dev-api.aschey.tech
+    prod: api.aschey.tech
   wsgi:
     app: app.app
     pythonBin: python3
@@ -34,7 +40,14 @@ custom:
       enabled: true
       prewarm: true
       concurrency: 1
+  customDomain:
+    domainName: ${self:custom.domains.${self:custom.stage}}
+    basePath: 'nfl'
+    createRoute53Record: false
+    certificateName: '*.aschey.tech'
+    stage: '${self:custom.stage}'
 plugins:
   - serverless-python-requirements
   - serverless-plugin-warmup
   - serverless-wsgi
+  - serverless-domain-manager
