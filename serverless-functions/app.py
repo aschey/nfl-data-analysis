@@ -98,8 +98,8 @@ def get_scores() -> Union[str, Tuple[str, int]]:
         s.detail, 
         s.team1_game_score,
         s.team2_game_score, 
-        round(s.team1_misery_index, 2) team1_misery_index, 
-        round(s.team2_misery_index, 2) team2_misery_index,
+        s.team1_misery_index, 
+        s.team2_misery_index,
         s.score_order,
         case when ms.score_id is null then false else true end is_last_of_quarter
     from score s

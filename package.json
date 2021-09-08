@@ -1,0 +1,9 @@
+{
+    "private": true,
+    "workspaces": ["nfl-misery-index", "serverless-functions"],
+    "scripts": {
+      "dev": "mono-run dev --ui row",
+      "start": "mono-run start --ui row"
+    },
+    "devDependencies": {"monorepo-run": "https://github.com/Akryum/monorepo-run"}
+  }

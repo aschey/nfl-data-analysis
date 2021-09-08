@@ -217,7 +217,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
                       : "highlightNegative",
                   }}
                 >
-                  {` ${score}`}
+                  {` ${score.toFixed(2)}`}
                 </span>
               </div>
             </div>

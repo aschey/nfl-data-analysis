@@ -1,7 +1,7 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card, jsx, Themed, useThemeUI } from "theme-ui";
 import { Score } from "../models/score";
 import { Team } from "../models/team";
@@ -39,6 +39,21 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
 
   const allScores = gameData.slice(1);
   const hasTime = allScores[0]?.time != null;
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).getScores = () => {
+      // eslint-disable-next-line no-console
+      console.log(
+        allScores
+          .map(
+            (s) =>
+              `s.calculate(${s.team1.gameScore}, ${s.team2.gameScore}, ${s.quarter}, '${s.time}', False)`,
+          )
+          .join("\n"),
+      );
+    };
+  }, [allScores]);
   return (
     <Card
       sx={{
@@ -55,7 +70,9 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
       >
         <thead>
           <Themed.tr>
-            <Themed.th sx={{ width: hasTime ? "10%" : "15%", paddingLeft: "5px" }}>
+            <Themed.th
+              sx={{ width: hasTime ? "10%" : "15%", paddingLeft: "5px" }}
+            >
               Quarter
             </Themed.th>
             {hasTime && <Themed.th sx={{ width: "10%" }}>Time</Themed.th>}
@@ -74,7 +91,11 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
             <Themed.th sx={{ width: ["20%", "15%", "15%"] }}>
               {team2.originalMascot}
             </Themed.th>
-            <Themed.th sx={{ width: ["20%", "10%", "10%"] }}>Index</Themed.th>
+            <Themed.th
+              sx={{ width: ["20%", "10%", "10%"], textAlign: "right" }}
+            >
+              Index
+            </Themed.th>
           </Themed.tr>
         </thead>
         <tbody>
@@ -131,10 +152,11 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
                     color: getIsPositive(score, nextScore)
                       ? "highlightPositive"
                       : "highlightNegative",
+                    textAlign: "right",
                     ...defaultSx,
                   }}
                 >
-                  {score}
+                  {score.toFixed(2)}
                 </Themed.td>
               </Themed.tr>
             );
