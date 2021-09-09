@@ -1,7 +1,11 @@
 {
-  "name": "nfl-misery-index",
+  "name": "nfl-misery-index-api",
   "description": "",
   "version": "0.1.0",
+  "scripts": {
+    "dev": "FLASK_ENV=development flask run",
+    "start": "flask run"
+  },
   "devDependencies": {
     "serverless-plugin-warmup": "^5.3.1",
     "serverless-python-requirements": "^5.1.1",

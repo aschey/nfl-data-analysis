@@ -99,6 +99,7 @@ const Index: React.FC<IndexProps> = ({
       time: "",
       scoringTeamId: 0,
       scoreOrder: 1.0,
+      isLastOfQuarter: false,
     });
 
     const { game } = currentGame.value;

@@ -1,11 +1,11 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 
-import React from "react";
-import { Card, jsx, Themed } from "theme-ui";
+import React, { useEffect } from "react";
+import { Card, jsx, Themed, useThemeUI } from "theme-ui";
 import { Score } from "../models/score";
 import { Team } from "../models/team";
-import { getIsPositive } from "../util/util";
+import { getIsPositive, setOpacity } from "../util/util";
 
 interface ScoreTableProps {
   gameData: Score[];
@@ -28,13 +28,32 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
   team1,
   team2,
 }) => {
+  const { theme } = useThemeUI();
+
   const updateIndex = (i: number) => {
     if (enableHover) {
       setOverrideIndex(i + 1);
       setHoveredIndex(i + 1);
     }
   };
+
   const allScores = gameData.slice(1);
+  const hasTime = allScores[0]?.time != null;
+
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window as any).getScores = () => {
+      // eslint-disable-next-line no-console
+      console.log(
+        allScores
+          .map(
+            (s) =>
+              `s.calculate(${s.team1.gameScore}, ${s.team2.gameScore}, ${s.quarter}, '${s.time}', False)`,
+          )
+          .join("\n"),
+      );
+    };
+  }, [allScores]);
   return (
     <Card
       sx={{
@@ -52,10 +71,11 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
         <thead>
           <Themed.tr>
             <Themed.th
-              sx={{ width: ["15%", "15%", "15%"], paddingLeft: "5px" }}
+              sx={{ width: hasTime ? "10%" : "15%", paddingLeft: "5px" }}
             >
               Quarter
             </Themed.th>
+            {hasTime && <Themed.th sx={{ width: "10%" }}>Time</Themed.th>}
             <Themed.th sx={{ width: ["25%", "20%", "20%"] }}>Team</Themed.th>
             <Themed.th
               sx={{
@@ -71,7 +91,11 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
             <Themed.th sx={{ width: ["20%", "15%", "15%"] }}>
               {team2.originalMascot}
             </Themed.th>
-            <Themed.th sx={{ width: ["20%", "10%", "10%"] }}>Index</Themed.th>
+            <Themed.th
+              sx={{ width: ["20%", "10%", "10%"], textAlign: "right" }}
+            >
+              Index
+            </Themed.th>
           </Themed.tr>
         </thead>
         <tbody>
@@ -83,6 +107,12 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
                 isTeam1 ? allScores[i + 1].team1 : allScores[i + 1].team2
               ).miseryIndex;
             }
+            const defaultSx = {
+              borderBottomColor:
+                d.isLastOfQuarter && i < allScores.length - 1
+                  ? setOpacity(theme.rawColors.text as string, 0.8)
+                  : undefined,
+            };
             return (
               <Themed.tr
                 key={d.scoreOrder}
@@ -91,27 +121,42 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
                 }}
                 onMouseMove={() => updateIndex(i)}
               >
-                <Themed.td sx={{ paddingLeft: "5px" }}>
+                <Themed.td sx={{ paddingLeft: "5px", ...defaultSx }}>
                   {d.quarter < 5 ? d.quarter : "OT"}
                 </Themed.td>
-                <Themed.td>
+                {hasTime && (
+                  <Themed.td
+                    sx={{ paddingLeft: "5px", whiteSpace: "pre", ...defaultSx }}
+                  >
+                    {d.time?.padStart(5, " ")}
+                  </Themed.td>
+                )}
+                <Themed.td sx={defaultSx}>
                   {d.scoringTeamId === team1.id
                     ? team1.originalMascot
                     : team2.originalMascot}
                 </Themed.td>
-                <Themed.td sx={{ display: ["none", "flex", "flex"] }}>
+                <Themed.td
+                  sx={{ display: ["none", "flex", "flex"], ...defaultSx }}
+                >
                   {d.detail}
                 </Themed.td>
-                <Themed.td>{(isTeam1 ? d.team1 : d.team2).gameScore}</Themed.td>
-                <Themed.td>{(isTeam1 ? d.team2 : d.team1).gameScore}</Themed.td>
+                <Themed.td sx={defaultSx}>
+                  {(isTeam1 ? d.team1 : d.team2).gameScore}
+                </Themed.td>
+                <Themed.td sx={defaultSx}>
+                  {(isTeam1 ? d.team2 : d.team1).gameScore}
+                </Themed.td>
                 <Themed.td
                   sx={{
                     color: getIsPositive(score, nextScore)
                       ? "highlightPositive"
                       : "highlightNegative",
+                    textAlign: "right",
+                    ...defaultSx,
                   }}
                 >
-                  {score}
+                  {score.toFixed(2)}
                 </Themed.td>
               </Themed.tr>
             );

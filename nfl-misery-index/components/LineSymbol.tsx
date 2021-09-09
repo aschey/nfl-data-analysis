@@ -74,7 +74,7 @@ export const LineSymbol: React.FC<CustomSymbolProps> = ({
               opacity={props.opacity}
               style={{ transform: "translate(0, 3px)" }}
             >
-              {datum.y}
+              {(datum.y as number).toFixed(2)}
             </animated.text>
           )}
         </animated.g>

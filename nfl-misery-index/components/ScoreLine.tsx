@@ -75,7 +75,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
     );
   };
 
-  const catmull = true;
+  const catmull = false;
 
   const LineWrapper: React.FC<CustomLayerProps> = (props) => (
     <HighlightLine
@@ -101,7 +101,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
       <ResponsiveLine
         data={data}
         key="line"
-        curve={catmull ? "catmullRom" : "linear"}
+        curve="linear"
         margin={{
           right: 50,
           top: 25,
@@ -116,8 +116,6 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
           stacked: false,
           reverse: false,
         }}
-        axisTop={undefined}
-        axisRight={undefined}
         axisBottom={{
           tickSize: 5,
           tickPadding: 5,
@@ -219,7 +217,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
                       : "highlightNegative",
                   }}
                 >
-                  {` ${score}`}
+                  {` ${score.toFixed(2)}`}
                 </span>
               </div>
             </div>
