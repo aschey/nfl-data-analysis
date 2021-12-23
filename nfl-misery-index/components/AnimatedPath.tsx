@@ -46,7 +46,7 @@ export const AnimatedPath: React.FC<AnimatedPathProps> = ({
 
   const path = useAnimatedPath(line, onAnimationEnd);
   if (!theme.colors) {
-    return <></>;
+    return null;
   }
 
   const dashPositive = getDashArray(positiveDistances, negativeDistances);

@@ -8,8 +8,12 @@ import {
   Serie,
   CustomLayerProps,
   DatumValue,
+  PointSymbolProps,
+  PointTooltipProps,
 } from "@nivo/line";
-import { AxisTickProps, AxisValue } from "@nivo/axes";
+import { AxisTickProps } from "@nivo/axes";
+import { ScaleValue } from "@nivo/scales";
+import { memo } from "react";
 import { Score } from "../models/score";
 import { HighlightLine } from "./HighlightLine";
 import { LineSymbol } from "./LineSymbol";
@@ -36,6 +40,23 @@ const getMax = (data: Serie[]) => {
   return val;
 };
 
+const catmull = false;
+const getLineWrapper = (onAnimationEnd: () => void) => {
+  const LineWrapper: React.FC<CustomLayerProps> = (props) => (
+    <HighlightLine
+      mode={catmull ? "catmullRom" : "linear"}
+      onAnimationEnd={onAnimationEnd}
+      {...{
+        ...props,
+        xScale: props.xScale as unknown as (x: DatumValue) => number,
+        yScale: props.yScale as unknown as (y: DatumValue) => number,
+      }}
+    />
+  );
+
+  return LineWrapper;
+};
+
 export const ScoreLine: React.FC<ScoreLineProps> = ({
   data,
   scoreData,
@@ -48,7 +69,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
 }) => {
   const { theme } = useThemeUI();
 
-  const renderTick = (tickData: AxisTickProps<AxisValue>) => {
+  const renderTick = (tickData: AxisTickProps<ScaleValue>) => {
     let labelVal = "";
     if (
       tickData.value === 5 &&
@@ -75,21 +96,57 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
     );
   };
 
-  const catmull = false;
+  const PointSymbol: React.FC<PointSymbolProps> = memo((props) => (
+    <LineSymbol {...props} data={data} overrideIndex={overrideIndex} />
+  ));
 
-  const LineWrapper: React.FC<CustomLayerProps> = (props) => (
-    <HighlightLine
-      mode={catmull ? "catmullRom" : "linear"}
-      onAnimationEnd={onAnimationEnd}
-      {...{
-        ...props,
-        // eslint-disable-next-line react/destructuring-assignment
-        xScale: props.xScale as unknown as (x: DatumValue) => number,
-        // eslint-disable-next-line react/destructuring-assignment
-        yScale: props.yScale as unknown as (y: DatumValue) => number,
-      }}
-    />
-  );
+  const Tooltip: React.FC<PointTooltipProps> = memo(({ point }) => {
+    const index = parseInt(point.id.split(".")[1], 10);
+    const current = scoreData[index];
+    const score = isTeam1
+      ? current.team1.miseryIndex
+      : current.team2.miseryIndex;
+    let nextScore = score;
+    if (index < scoreData.length - 1) {
+      nextScore = isTeam1
+        ? scoreData[index + 1].team1.miseryIndex
+        : scoreData[index + 1].team2.miseryIndex;
+    }
+    return (
+      <div
+        style={{
+          background: theme.colors.secondary as string,
+          borderRadius: 5,
+          padding: 5,
+          fontSize: 12,
+          marginTop: 100,
+        }}
+      >
+        <div>
+          {`${team1.originalMascot}: ${
+            (isTeam1 ? current.team1 : current.team2).gameScore
+          }`}
+        </div>
+        <div>
+          {`${team2.originalMascot}: ${
+            (isTeam1 ? current.team2 : current.team1).gameScore
+          }`}
+        </div>
+        <div>
+          Misery Index:
+          <span
+            sx={{
+              color: getIsPositive(score, nextScore)
+                ? "highlightPositive"
+                : "highlightNegative",
+            }}
+          >
+            {` ${score.toFixed(2)}`}
+          </span>
+        </div>
+      </div>
+    );
+  });
 
   return (
     <Card
@@ -142,9 +199,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
         pointLabel="y"
         pointLabelYOffset={-12}
         enableSlices={false}
-        pointSymbol={(props) => (
-          <LineSymbol {...props} data={data} overrideIndex={overrideIndex} />
-        )}
+        pointSymbol={PointSymbol}
         useMesh
         layers={[
           "grid",
@@ -152,7 +207,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
           "axes",
           "areas",
           "crosshair",
-          LineWrapper,
+          getLineWrapper(onAnimationEnd),
           "points",
           "slices",
           "mesh",
@@ -176,53 +231,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
           setIndex(point.index);
         }}
         onMouseLeave={() => setIndex(undefined)}
-        tooltip={({ point }) => {
-          const index = parseInt(point.id.split(".")[1], 10);
-          const current = scoreData[index];
-          const score = isTeam1
-            ? current.team1.miseryIndex
-            : current.team2.miseryIndex;
-          let nextScore = score;
-          if (index < scoreData.length - 1) {
-            nextScore = isTeam1
-              ? scoreData[index + 1].team1.miseryIndex
-              : scoreData[index + 1].team2.miseryIndex;
-          }
-          return (
-            <div
-              style={{
-                background: theme.colors.secondary as string,
-                borderRadius: 5,
-                padding: 5,
-                fontSize: 12,
-                marginTop: 100,
-              }}
-            >
-              <div>
-                {`${team1.originalMascot}: ${
-                  (isTeam1 ? current.team1 : current.team2).gameScore
-                }`}
-              </div>
-              <div>
-                {`${team2.originalMascot}: ${
-                  (isTeam1 ? current.team2 : current.team1).gameScore
-                }`}
-              </div>
-              <div>
-                Misery Index:
-                <span
-                  sx={{
-                    color: getIsPositive(score, nextScore)
-                      ? "highlightPositive"
-                      : "highlightNegative",
-                  }}
-                >
-                  {` ${score.toFixed(2)}`}
-                </span>
-              </div>
-            </div>
-          );
-        }}
+        tooltip={Tooltip}
         legends={[
           {
             data: [],

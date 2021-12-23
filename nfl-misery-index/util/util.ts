@@ -1,3 +1,4 @@
+// eslint-disable-next-line import/no-unresolved
 import { RGBA } from "color-blend/dist/types";
 
 export const parseRgba = (rgba: string): RGBA => {

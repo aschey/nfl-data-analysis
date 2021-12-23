@@ -19,10 +19,10 @@ interface CubicParams extends CubicCoefficients {
 }
 
 const pointDistance = (p1: Point, p2: Point) =>
-  Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+  Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
 
 const computeCubic = ({ a, b, c, d, x }: CubicParams) =>
-  a * Math.pow(x, 3) + b * Math.pow(x, 2) + c * x + d;
+  a * x ** 3 + b * x ** 2 + c * x + d;
 
 const findZero = (
   { a, b, c, d }: CubicCoefficients,
@@ -92,9 +92,9 @@ const catmullRomDistance = (
   const t0 = 0.0;
   // default alpha in d3-shape
   const alpha = 0.5;
-  const t1 = t0 + Math.pow(pointDistance(p0, p1), alpha);
-  const t2 = t1 + Math.pow(pointDistance(p1, p2), alpha);
-  const t3 = t2 + Math.pow(pointDistance(p2, p3), alpha);
+  const t1 = t0 + pointDistance(p0, p1) ** alpha;
+  const t2 = t1 + pointDistance(p1, p2) ** alpha;
+  const t3 = t2 + pointDistance(p2, p3) ** alpha;
 
   const tDiff = t2 - t1;
   const m1x = tDiff * getTangentX(t0, t1, t2, p0, p1, p2);
@@ -138,7 +138,7 @@ const catmullRomDistance = (
     const t = j / amount;
     const px = computeCubic({ ...xCoeffs, x: t });
     const py = computeCubic({ ...yCoeffs, x: t });
-    total += Math.sqrt(Math.pow(px - prevX, 2) + Math.pow(py - prevY, 2));
+    total += Math.sqrt((px - prevX) ** 2 + (py - prevY) ** 2);
 
     prevX = px;
     prevY = py;
@@ -170,10 +170,10 @@ const linearDistance = (
     const b = p1.y - m * p1.x;
     const intercept = (yZero - b) / m;
     return toZero
-      ? Math.sqrt(Math.pow(intercept - p1.x, 2) + Math.pow(yZero - p1.y, 2))
-      : Math.sqrt(Math.pow(p2.x - intercept, 2) + Math.pow(p2.y - yZero, 2));
+      ? Math.sqrt((intercept - p1.x) ** 2 + (yZero - p1.y) ** 2)
+      : Math.sqrt((p2.x - intercept) ** 2 + (p2.y - yZero) ** 2);
   }
-  return Math.sqrt(Math.pow(p2.x - p1.x, 2) + Math.pow(p2.y - p1.y, 2));
+  return Math.sqrt((p2.x - p1.x) ** 2 + (p2.y - p1.y) ** 2);
 };
 
 const getDistances = (
@@ -262,12 +262,11 @@ export const HighlightLine: React.FC<HighlightLineProps> = (
 ) => {
   const [negativeDistances, positiveDistances] = useMemo(
     () => getDistances(props.series, props.xScale, props.yScale, props.mode),
-    // eslint-disable-next-line react/destructuring-assignment, react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [props.innerHeight, props.innerWidth, props.mode, props.data],
   );
   return (
     <>
-      {/* eslint-disable-next-line react/destructuring-assignment */}
       {props.series.map(({ id, data }) => (
         <AnimatedPath
           data={data}

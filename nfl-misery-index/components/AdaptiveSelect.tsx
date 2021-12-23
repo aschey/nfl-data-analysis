@@ -9,13 +9,13 @@ import {
   Box,
 } from "theme-ui";
 import { useEffect, useState } from "react";
-import Select, { Styles, ValueType } from "react-select";
+import Select, { StylesConfig } from "react-select";
 import { isMobile, setOpacity } from "../util/util";
 import { Value } from "../models/value";
 
 interface AdaptiveSelectProps<T> {
   value: Value<T> | undefined;
-  onChange: (value: ValueType<Value<T>, boolean>) => void;
+  onChange: (value: Value<T>) => void;
   options: Value<T>[];
   sxStyles?: ThemeUIStyleObject;
   width: number;
@@ -36,7 +36,7 @@ export const AdaptiveSelect: <T>(
     setIsMobileBrowser(isMobile());
   }, []);
 
-  const selectStyles: Partial<Styles<Value<T>, false>> = {
+  const selectStyles: Partial<StylesConfig<Value<T>, false>> = {
     control: (base, state) => ({
       ...base,
       background: theme.colors.background as string,
@@ -106,7 +106,7 @@ export const AdaptiveSelect: <T>(
           <Select
             styles={selectStyles}
             value={value}
-            onChange={onChange}
+            onChange={(newValue, _) => onChange(newValue)}
             options={options}
           />
         );

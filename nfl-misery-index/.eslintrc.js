@@ -53,5 +53,11 @@ module.exports = {
     "react/jsx-curly-newline": "off",
     "react/jsx-props-no-spreading": "off",
     "function-paren-newline": 0,
+    "react/function-component-definition": [
+      1,
+      { namedComponents: "arrow-function" },
+    ],
+    "react/jsx-no-useless-fragment": [1, { allowExpressions: true }],
+    "react/destructuring-assignment": 0,
   },
 };
