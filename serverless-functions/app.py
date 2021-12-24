@@ -100,6 +100,12 @@ def get_scores() -> Union[str, Tuple[str, int]]:
         s.team2_game_score, 
         s.team1_misery_index, 
         s.team2_misery_index,
+        s.team1_score_index,
+        s.team2_score_index,
+        s.team1_max_deficit,
+        s.team2_max_deficit,
+        s.team1_comeback_index,
+        s.team2_comeback_index,
         s.score_order,
         case when ms.score_id is null then false else true end is_last_of_quarter
     from score s
@@ -111,7 +117,7 @@ def get_scores() -> Union[str, Tuple[str, int]]:
         (week_id,),
     ).fetchall()
 
-    fields = ["gameScore", "miseryIndex"]
+    fields = ["gameScore", "miseryIndex", "scoreIndex", "maxDeficit", "comebackIndex"]
     response = get_team_structure(result, fields)
 
     return json.dumps(response)
