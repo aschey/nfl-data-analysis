@@ -2,7 +2,8 @@
 /** @jsx jsx */
 
 import React, { useEffect } from "react";
-import { Card, jsx, Themed, useThemeUI } from "theme-ui";
+import { Button, Card, jsx, Themed, useThemeUI } from "theme-ui";
+import { MdOpenInNew } from "react-icons/md";
 import { Score } from "../models/score";
 import { Team } from "../models/team";
 import { getIsPositive, setOpacity } from "../util/util";
@@ -96,6 +97,7 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
             >
               Index
             </Themed.th>
+            <Themed.th />
           </Themed.tr>
         </thead>
         <tbody>
@@ -157,6 +159,21 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
                   }}
                 >
                   {score.toFixed(2)}
+                </Themed.td>
+                <Themed.td
+                  sx={{
+                    padding: 0,
+                    paddingRight: 1,
+                    paddingLeft: 1,
+                    ...defaultSx,
+                  }}
+                >
+                  <Button
+                    variant="secondary"
+                    sx={{ padding: "2px 4px", lineHeight: "normal" }}
+                  >
+                    <MdOpenInNew style={{ marginTop: "2px" }} />
+                  </Button>
                 </Themed.td>
               </Themed.tr>
             );

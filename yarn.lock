@@ -1082,7 +1082,7 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
-"@babel/runtime@^7.12.5", "@babel/runtime@^7.16.3", "@babel/runtime@^7.8.4":
+"@babel/runtime@^7.12.5", "@babel/runtime@^7.14.0", "@babel/runtime@^7.16.3", "@babel/runtime@^7.8.4":
   version "7.16.5"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.16.5.tgz"
   integrity sha512-TXWihFIS3Pyv5hzR7j6ihmeLkZfrXGxAr5UfSl8CHf+6q/wpiYDkUau0czckpYG8QmnCIuPpdLtuA9VmuGGyMA==
@@ -1827,6 +1827,14 @@
     "@theme-ui/core" "0.12.1"
     "@theme-ui/css" "0.12.1"
     deepmerge "^4.2.2"
+
+"@theme-ui/color@^0.12.1":
+  version "0.12.1"
+  resolved "https://registry.yarnpkg.com/@theme-ui/color/-/color-0.12.1.tgz#c4af16448ada9cb1e0854ce332e91ae05d6764cf"
+  integrity sha512-2TyuydLabp3VQaDz/U7PsWHAEuOkKV4BMiDZ+C4Lu3pgX7tb9418JrbkakEFiAyWzsE872VkuUAIFQzb+Rw21g==
+  dependencies:
+    "@theme-ui/css" "0.12.1"
+    polished "^4.0.5"
 
 "@theme-ui/components@0.12.1":
   version "0.12.1"
@@ -5071,6 +5079,13 @@ platform@1.3.6:
   resolved "https://registry.npmjs.org/platform/-/platform-1.3.6.tgz"
   integrity sha512-fnWVljUchTro6RiCFvCXBbNhJc2NijN7oIQxbwsyL0buWJPG85v81ehlHI9fXrJsMNgTofEoWIQeClKpgxFLrg==
 
+polished@^4.0.5:
+  version "4.1.3"
+  resolved "https://registry.yarnpkg.com/polished/-/polished-4.1.3.tgz#7a3abf2972364e7d97770b827eec9a9e64002cfc"
+  integrity sha512-ocPAcVBUOryJEKe0z2KLd1l9EBa1r5mSwlKpExmrLzsnIzJo4axsoU9O2BjOTkDGDT4mZ0WFE5XKTlR3nLnZOA==
+  dependencies:
+    "@babel/runtime" "^7.14.0"
+
 postcss@8.2.15:
   version "8.2.15"
   resolved "https://registry.npmjs.org/postcss/-/postcss-8.2.15.tgz"
@@ -5205,6 +5220,11 @@ react-dom@^17.0.2:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     scheduler "^0.20.2"
+
+react-icons@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.3.1.tgz#2fa92aebbbc71f43d2db2ed1aed07361124e91ca"
+  integrity sha512-cB10MXLTs3gVuXimblAdI71jrJx8njrJZmNMEMC+sQu5B/BIOmlsAjskdqpn81y8UBVEGuHODd7/ci5DvoSzTQ==
 
 react-is@17.0.2:
   version "17.0.2"

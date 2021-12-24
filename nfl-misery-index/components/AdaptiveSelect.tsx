@@ -42,10 +42,10 @@ export const AdaptiveSelect: <T>(
       background: theme.colors.background as string,
       borderColor: theme.colors.border as string,
       boxShadow: state.isFocused
-        ? `0 0 0 1px ${theme.colors.primary}`
+        ? `0 0 0 1px ${theme.colors.highlight}`
         : undefined,
       ":hover": {
-        borderColor: theme.colors.primary as string,
+        borderColor: theme.colors.highlight as string,
       },
     }),
     indicatorSeparator: (base) => ({
