@@ -5,5 +5,5 @@
       "dev": "mono-run dev --ui row",
       "start": "mono-run start --ui row"
     },
-    "devDependencies": {"monorepo-run": "https://github.com/Akryum/monorepo-run"}
+    "devDependencies": {"monorepo-run": "git+https://github.com/Akryum/monorepo-run"}
   }

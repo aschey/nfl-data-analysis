@@ -1241,7 +1241,7 @@
   resolved "https://registry.npmjs.org/@emotion/memoize/-/memoize-0.7.5.tgz"
   integrity sha512-igX9a37DR2ZPGYtV6suZ6whr8pTFtyHL3K/oLUotxpSVO2ASaprmAe2Dkq7tBo7CRY7MMDrAa9nuQP9/YG8FxQ==
 
-"@emotion/react@^11.1.6", "@emotion/react@^11.6.0":
+"@emotion/react@^11.1.1", "@emotion/react@^11.1.4", "@emotion/react@^11.6.0":
   version "11.7.1"
   resolved "https://registry.yarnpkg.com/@emotion/react/-/react-11.7.1.tgz#3f800ce9b20317c13e77b8489ac4a0b922b2fe07"
   integrity sha512-DV2Xe3yhkF1yT4uAUoJcYL1AmrnO5SVsdfvu+fBuS7IbByDeTVx9+wFmvx9Idzv7/78+9Mgx2Hcmr7Fex3tIyw==
@@ -4639,9 +4639,9 @@ minimist@^1.2.0, minimist@^1.2.5:
   resolved "https://registry.npmjs.org/minimist/-/minimist-1.2.5.tgz"
   integrity sha512-FM9nNUYrRBAELZQT3xeZQ7fmMOBg6nWNmJKTcgsJeaLstP/UODVpGsr5OhXhhXg6f+qtJ8uiZ+PUxkDWcgIXLw==
 
-"monorepo-run@https://github.com/Akryum/monorepo-run":
+"monorepo-run@git+https://github.com/Akryum/monorepo-run":
   version "0.4.2"
-  resolved "git+ssh://git@github.com/Akryum/monorepo-run.git#a306519c292e24754eb1ac2d226a316967fe43d2"
+  resolved "git+https://github.com/Akryum/monorepo-run#a306519c292e24754eb1ac2d226a316967fe43d2"
   dependencies:
     ansi-escapes "^4.2.1"
     cac "^6.5.3"

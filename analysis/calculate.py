@@ -9,13 +9,13 @@ show_output = False
 
 
 class ScoreOutput:
-    def __init__(self, score_diff_normalized: float, deficit_diff: float, run: float):
-        self.score_diff_normalized = score_diff_normalized
-        self.deficit_diff = deficit_diff
-        self.run = run
+    def __init__(self, score_index: float, max_deficit: float, comeback_index: float):
+        self.score_index = score_index
+        self.max_deficit = max_deficit
+        self.comeback_index = comeback_index
 
     def get_score(self):
-        return self.score_diff_normalized + self.deficit_diff + self.run
+        return self.score_index + self.max_deficit + self.comeback_index
 
 
 class Scorer:
@@ -39,6 +39,17 @@ class Scorer:
         quarter: int,
         quarter_time_remaining: Union[str, None],
     ):
+        if show_output:
+            print(
+                "team1_score",
+                team1_score,
+                "team2_score",
+                team2_score,
+                "quarter",
+                quarter,
+                "quarter_time_remaining",
+                quarter_time_remaining,
+            )
         # Default to halfway through the quarter if time is not known
         if quarter_time_remaining is None:
             quarter_time_remaining = "7:50"
@@ -52,8 +63,8 @@ class Scorer:
         # Default to 0.01 in this case to prevent division by zero errors
         total_time = max((quarter - 1) * MINS_IN_QUARTER + quarter_mins, 0.01)
 
-        if show_output:
-            print(team1_score, team2_score, total_time)
+        # if show_output:
+        #     print(team1_score, team2_score, total_time)
 
         current_diff = team1_score - team2_score
 
@@ -114,12 +125,12 @@ class Scorer:
     def _calculate_score(self, score_diff: float, total_time: float) -> ScoreOutput:
         if score_diff > 0 or (score_diff == 0 and self.prev_score < 0):
             multiplier = 1
-            deficit_diff = -1 * self.max_neg_diff
-            score_index = self.max_neg_index
+            max_deficit = -1 * self.max_neg_diff
+            max_index = self.max_neg_index
         else:
             multiplier = -1
-            deficit_diff = -1 * self.max_pos_diff
-            score_index = self.max_pos_index
+            max_deficit = -1 * self.max_pos_diff
+            max_index = self.max_pos_index
 
         # Lead at this point where you aren't worried about losing
         comfortable_lead = max(
@@ -128,29 +139,36 @@ class Scorer:
             ),
             1,
         )
-        score_diff_normalized = multiplier * self._sigmoid(
+        score_index = multiplier * self._sigmoid(
             abs(score_diff), MAX_LEAD_POINTS, 10 / comfortable_lead
         )
 
-        self.all_diffs.append(score_diff_normalized)
+        self.all_diffs.append(score_index)
 
         # maximum deficit overcome (if winning) or total deficit from previous max lead (if losing)
-        run = self._weighted_run(total_time, score_index)
-        max_deficit = deficit_diff + run
+        comeback_index = self._weighted_run(total_time, max_index)
+        # max_deficit = deficit_diff + comeback_index
 
         score = ScoreOutput(
-            score_diff_normalized=score_diff_normalized,
-            deficit_diff=deficit_diff,
-            run=run,
+            score_index=score_index,
+            max_deficit=max_deficit,
+            comeback_index=comeback_index,
         )
         if show_output:
             print(
+                "score_diff",
                 score_diff,
-                score_diff_normalized,
+                "score_index",
+                score_index,
+                "comfortable_lead",
                 comfortable_lead,
+                "max_deficit",
                 max_deficit,
-                deficit_diff,
-                run,
+                "max_deficit",
+                max_deficit,
+                "comeback_index",
+                comeback_index,
+                "score",
                 score.get_score(),
             )
             print()
