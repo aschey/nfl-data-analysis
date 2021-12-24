@@ -712,7 +712,7 @@
   resolved "https://registry.yarnpkg.com/@theme-ui/color-modes/-/color-modes-0.10.0.tgz#85071f16d7d4458f3dab5a7af8b9ea459da4dcd0"
   integrity sha512-6sZaagCFK48p2YjecLljFwPkiB3/R9dMNKUQC3+fnaH3N9FcsflNWpjKAYhtQ5QLKvYacFdqczT4YaMtGwKb/Q==
   dependencies:
-    "@emotion/react" "^11.1.1"
+    "@emotion/react" "^11.1.6"
     "@theme-ui/core" "0.10.0"
     "@theme-ui/css" "0.10.0"
     deepmerge "^4.2.2"
@@ -722,7 +722,7 @@
   resolved "https://registry.yarnpkg.com/@theme-ui/components/-/components-0.10.0.tgz#c1aa9cade71e5a6cf7c19f9e0ade900122ef23f9"
   integrity sha512-zPA+16fP+R140kns+3FBhybsPzNjcCWHgXcwIPjww1dfDnlXRa7al9Nz4Y8zyWvk1wNiGqUa09Y1sabK6EYspQ==
   dependencies:
-    "@emotion/react" "^11.1.1"
+    "@emotion/react" "^11.1.6"
     "@emotion/styled" "^11.0.0"
     "@styled-system/color" "^5.1.2"
     "@styled-system/should-forward-prop" "^5.1.2"
@@ -735,7 +735,7 @@
   resolved "https://registry.yarnpkg.com/@theme-ui/core/-/core-0.10.0.tgz#2373d53368da5fa561915414ade070a9de0e9678"
   integrity sha512-3DeTHGqyqIi05JCsJ+G+fqW6YsX/oGJiaAvMgLfd86tGdJOnDseEBQG41oDFHSWtQSJDpBcoFgAWMGITmYdH+g==
   dependencies:
-    "@emotion/react" "^11.1.1"
+    "@emotion/react" "^11.1.6"
     "@theme-ui/css" "0.10.0"
     "@theme-ui/parse-props" "0.10.0"
     deepmerge "^4.2.2"
@@ -745,7 +745,7 @@
   resolved "https://registry.yarnpkg.com/@theme-ui/css/-/css-0.10.0.tgz#871f63334fb138491406c32f8347d53b19846a9b"
   integrity sha512-Up3HqXoy2ERn/9gVxApCSl2n9vwtHBwPrYlMyEjX0YPs/rxmo+Aqe3kAxO+SG9idMw08mtdaDfMIFaPsBE5ovA==
   dependencies:
-    "@emotion/react" "^11.1.1"
+    "@emotion/react" "^11.1.6"
     csstype "^3.0.5"
 
 "@theme-ui/mdx@0.10.0":
@@ -753,7 +753,7 @@
   resolved "https://registry.yarnpkg.com/@theme-ui/mdx/-/mdx-0.10.0.tgz#14124cb194df8023f7253391900d8d17a6011a92"
   integrity sha512-IcDrQONVrOFQFCFdyrlNoTTKmhw7ELtrLktRYmmWtCEz+KHpBiEVdxNo2yvz/05zF2BPGKOqu4wkMpUR13wNSQ==
   dependencies:
-    "@emotion/react" "^11.1.1"
+    "@emotion/react" "^11.1.6"
     "@emotion/styled" "^11.0.0"
     "@mdx-js/react" "^1.6.22"
     "@theme-ui/core" "0.10.0"
@@ -764,7 +764,7 @@
   resolved "https://registry.yarnpkg.com/@theme-ui/parse-props/-/parse-props-0.10.0.tgz#8d2f4f3b3edafd925c3872ddd559e2b62006f43f"
   integrity sha512-UfcLyThXYsB9azc8qbsZVgbF7xf+GLF2Hhy+suyjwQ3XSVOx97B5ZsuzCNUGbggtBw4dXayJgRmMz0FHyp0L8Q==
   dependencies:
-    "@emotion/react" "^11.1.1"
+    "@emotion/react" "^11.1.6"
     "@theme-ui/css" "0.10.0"
 
 "@theme-ui/theme-provider@0.10.0":
@@ -772,7 +772,7 @@
   resolved "https://registry.yarnpkg.com/@theme-ui/theme-provider/-/theme-provider-0.10.0.tgz#16586af579bef804f1e4997a131134d2465bfd5d"
   integrity sha512-1AVsegjEAw7uidr0/qJMoKktKbdXuXRjfukI9712GZleft3dzoHhkQUO7IefXjbafyu/plzo/WTXkbz0A4uhmA==
   dependencies:
-    "@emotion/react" "^11.1.1"
+    "@emotion/react" "^11.1.6"
     "@theme-ui/color-modes" "0.10.0"
     "@theme-ui/core" "0.10.0"
     "@theme-ui/css" "0.10.0"
@@ -3549,7 +3549,7 @@ react-select@^4.3.1:
   dependencies:
     "@babel/runtime" "^7.12.0"
     "@emotion/cache" "^11.4.0"
-    "@emotion/react" "^11.1.1"
+    "@emotion/react" "^11.1.6"
     memoize-one "^5.0.0"
     prop-types "^15.6.0"
     react-input-autosize "^3.0.0"
@@ -3560,7 +3560,7 @@ react-spinners@^0.11.0:
   resolved "https://registry.yarnpkg.com/react-spinners/-/react-spinners-0.11.0.tgz#186fd150cc9f7ab1436227f70d5d113b47e9e43d"
   integrity sha512-rDZc0ABWn/M1OryboGsWVmIPg8uYWl0L35jPUhr40+Yg+syVPjeHwvnB7XWaRpaKus3M0cG9BiJA+ZB0dAwWyw==
   dependencies:
-    "@emotion/react" "^11.1.4"
+    "@emotion/react" "^11.1.6"
 
 react-spring@^9.2.4:
   version "9.2.4"

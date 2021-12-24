@@ -8,6 +8,16 @@ MAX_LEAD_POINTS = 60.0
 show_output = False
 
 
+class ScoreOutput:
+    def __init__(self, score_diff_normalized: float, deficit_diff: float, run: float):
+        self.score_diff_normalized = score_diff_normalized
+        self.deficit_diff = deficit_diff
+        self.run = run
+
+    def get_score(self):
+        return self.score_diff_normalized + self.deficit_diff + self.run
+
+
 class Scorer:
     def __init__(self):
         self.max_pos_diff: float = 0
@@ -60,7 +70,7 @@ class Scorer:
             current_diff,
             total_time,
         )
-        self.prev_score = new_score
+        self.prev_score = new_score.get_score()
         self.current_index += 1
         return new_score
 
@@ -101,7 +111,7 @@ class Scorer:
         ret = avg * (total_time / max(total_time, TOTAL_MINS))
         return ret
 
-    def _calculate_score(self, score_diff: float, total_time: float) -> float:
+    def _calculate_score(self, score_diff: float, total_time: float) -> ScoreOutput:
         if score_diff > 0 or (score_diff == 0 and self.prev_score < 0):
             multiplier = 1
             deficit_diff = -1 * self.max_neg_diff
@@ -128,7 +138,11 @@ class Scorer:
         run = self._weighted_run(total_time, score_index)
         max_deficit = deficit_diff + run
 
-        score = score_diff_normalized + max_deficit
+        score = ScoreOutput(
+            score_diff_normalized=score_diff_normalized,
+            deficit_diff=deficit_diff,
+            run=run,
+        )
         if show_output:
             print(
                 score_diff,
@@ -137,7 +151,7 @@ class Scorer:
                 max_deficit,
                 deficit_diff,
                 run,
-                score,
+                score.get_score(),
             )
             print()
 

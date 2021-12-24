@@ -49,7 +49,7 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
         allScores
           .map(
             (s) =>
-              `s.calculate(${s.team1.gameScore}, ${s.team2.gameScore}, ${s.quarter}, '${s.time}', False)`,
+              `s.calculate(${s.team1.gameScore}, ${s.team2.gameScore}, ${s.quarter}, '${s.time}')`,
           )
           .join("\n"),
       );

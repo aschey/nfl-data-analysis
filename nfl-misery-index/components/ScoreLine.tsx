@@ -57,6 +57,14 @@ const getLineWrapper = (onAnimationEnd: () => void) => {
   return LineWrapper;
 };
 
+const getPointSymbol = (data: Serie[], overrideIndex: number) => {
+  const PointSymbol: React.FC<PointSymbolProps> = (props) => (
+    <LineSymbol {...props} data={data} overrideIndex={overrideIndex} />
+  );
+
+  return PointSymbol;
+};
+
 export const ScoreLine: React.FC<ScoreLineProps> = ({
   data,
   scoreData,
@@ -95,10 +103,6 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
       </text>
     );
   };
-
-  const PointSymbol: React.FC<PointSymbolProps> = memo((props) => (
-    <LineSymbol {...props} data={data} overrideIndex={overrideIndex} />
-  ));
 
   const Tooltip: React.FC<PointTooltipProps> = memo(({ point }) => {
     const index = parseInt(point.id.split(".")[1], 10);
@@ -199,7 +203,7 @@ export const ScoreLine: React.FC<ScoreLineProps> = ({
         pointLabel="y"
         pointLabelYOffset={-12}
         enableSlices={false}
-        pointSymbol={PointSymbol}
+        pointSymbol={getPointSymbol(data, overrideIndex)}
         useMesh
         layers={[
           "grid",
