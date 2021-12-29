@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Theme } from "theme-ui";
 import { alpha } from "@theme-ui/color";
+import { withModalTheme } from "@mattjennings/react-modal";
 import { setOpacity } from "../util/util";
 
 const makeTheme = <T extends Theme>(t: T) => t;
@@ -163,4 +164,18 @@ const theme = makeTheme({
   },
 });
 
-export default theme;
+const modalTheme = withModalTheme(theme);
+
+const exportTheme = {
+  ...modalTheme,
+  ...{
+    modals: {
+      ...modalTheme.modals,
+      content: {
+        ...modalTheme.modals.content,
+        overflowY: "auto",
+      },
+    },
+  },
+};
+export default exportTheme;
