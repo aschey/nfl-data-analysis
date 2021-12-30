@@ -191,6 +191,7 @@ const getDistances = (
     x: xScale(datum.x ?? 0),
     y: yScale(datum.y ?? 0),
   });
+  let neutralDistance = 0;
   for (const serie of series) {
     for (let i = 0; i < serie.data.length - 1; i++) {
       const p1 = getPoint(serie.data[i].data);
@@ -213,11 +214,14 @@ const getDistances = (
       let totalDistance = 0;
 
       if (crossesZeroAscending || crossesZeroDescending) {
-        distanceToZero = distanceFunc(splinePoints, yZero, true, false);
+        distanceToZero =
+          neutralDistance + distanceFunc(splinePoints, yZero, true, false);
         distanceFromZero = distanceFunc(splinePoints, yZero, false, true);
       } else {
-        totalDistance = distanceFunc(splinePoints, yZero, false, false);
+        totalDistance =
+          neutralDistance + distanceFunc(splinePoints, yZero, false, false);
       }
+      neutralDistance = 0;
 
       if (crossesZeroAscending) {
         positiveDistances[positiveDistances.length - 1] += distanceToZero;
@@ -243,9 +247,12 @@ const getDistances = (
         negativeDistances[negativeDistances.length - 1] += totalDistance;
       } else if (p2.y < yZero || (p2.y === yZero && p1.y < yZero)) {
         positiveDistances[positiveDistances.length - 1] += totalDistance;
+      } else {
+        neutralDistance = totalDistance;
       }
     }
   }
+
   return [negativeDistances, positiveDistances];
 };
 

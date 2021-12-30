@@ -17,6 +17,7 @@ interface ScoreTableProps {
   enableHover: boolean;
   team1: Team;
   team2: Team;
+  isDetailView: boolean;
 }
 
 export const ScoreTable: React.FC<ScoreTableProps> = ({
@@ -28,6 +29,7 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
   enableHover,
   team1,
   team2,
+  isDetailView,
 }) => {
   const { theme } = useThemeUI();
 
@@ -72,28 +74,72 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
         <thead>
           <Themed.tr>
             <Themed.th
-              sx={{ width: hasTime ? "10%" : "15%", paddingLeft: "5px" }}
+              sx={{
+                // width: hasTime ? "10%" : "15%",
+                paddingLeft: "5px",
+              }}
             >
               Quarter
             </Themed.th>
-            {hasTime && <Themed.th sx={{ width: "10%" }}>Time</Themed.th>}
+            {hasTime && (
+              <Themed.th
+              // sx={{ width: "10%" }}
+              >
+                Time
+              </Themed.th>
+            )}
             <Themed.th sx={{ width: ["25%", "20%", "20%"] }}>Team</Themed.th>
             <Themed.th
               sx={{
-                width: ["0%", "45%", "45%"],
+                // width: ["0%", "25%", "25%"],
                 display: ["none", "table-cell", "table-cell"],
               }}
             >
               Play
             </Themed.th>
-            <Themed.th sx={{ width: ["20%", "15%", "15%"] }}>
+            <Themed.th
+            // sx={{ width: ["10%", "10%", "10%"] }}
+            >
               {team1.originalMascot}
             </Themed.th>
-            <Themed.th sx={{ width: ["20%", "15%", "15%"] }}>
+            <Themed.th
+            // sx={{ width: ["10%", "10%", "10%"] }}
+            >
               {team2.originalMascot}
             </Themed.th>
+            {isDetailView && (
+              <>
+                <Themed.th
+                  sx={{
+                    // width: ["30%", "20%", "20%"],
+                    textAlign: "right",
+                  }}
+                >
+                  Score Index
+                </Themed.th>
+                <Themed.th
+                  sx={{
+                    // width: ["20%", "10%", "10%"],
+                    textAlign: "right",
+                  }}
+                >
+                  Comeback Index
+                </Themed.th>
+                <Themed.th
+                  sx={{
+                    // width: ["20%", "10%", "10%"],
+                    textAlign: "right",
+                  }}
+                >
+                  Max Deficit
+                </Themed.th>
+              </>
+            )}
             <Themed.th
-              sx={{ width: ["20%", "10%", "10%"], textAlign: "right" }}
+              sx={{
+                // width: ["20%", "10%", "10%"],
+                textAlign: "right",
+              }}
             >
               Index
             </Themed.th>
@@ -102,12 +148,13 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
         </thead>
         <tbody>
           {allScores.map((d, i) => {
-            const score = (isTeam1 ? d.team1 : d.team2).miseryIndex;
-            let nextScore = score;
+            const teamScore = isTeam1 ? d.team1 : d.team2;
+            // const score = team.miseryIndex;
+            let nextScore = teamScore;
             if (i < allScores.length - 1) {
-              nextScore = (
-                isTeam1 ? allScores[i + 1].team1 : allScores[i + 1].team2
-              ).miseryIndex;
+              nextScore = isTeam1
+                ? allScores[i + 1].team1
+                : allScores[i + 1].team2;
             }
             const defaultSx = {
               borderBottomColor:
@@ -149,31 +196,66 @@ export const ScoreTable: React.FC<ScoreTableProps> = ({
                 <Themed.td sx={defaultSx}>
                   {(isTeam1 ? d.team2 : d.team1).gameScore}
                 </Themed.td>
+                {isDetailView && (
+                  <>
+                    <Themed.td
+                      sx={{
+                        color: getIsPositive(
+                          teamScore.scoreIndex,
+                          nextScore.scoreIndex,
+                        )
+                          ? "highlightPositive"
+                          : "highlightNegative",
+                        textAlign: "right",
+                        ...defaultSx,
+                      }}
+                    >
+                      {teamScore.scoreIndex.toFixed(2)}
+                    </Themed.td>
+                    <Themed.td
+                      sx={{
+                        color: getIsPositive(
+                          teamScore.comebackIndex,
+                          nextScore.comebackIndex,
+                        )
+                          ? "highlightPositive"
+                          : "highlightNegative",
+                        textAlign: "right",
+                        ...defaultSx,
+                      }}
+                    >
+                      {teamScore.comebackIndex.toFixed(2)}
+                    </Themed.td>
+                    <Themed.td
+                      sx={{
+                        color: getIsPositive(
+                          teamScore.maxDeficit,
+                          nextScore.maxDeficit,
+                        )
+                          ? "highlightPositive"
+                          : "highlightNegative",
+                        textAlign: "right",
+                        ...defaultSx,
+                      }}
+                    >
+                      {teamScore.maxDeficit.toFixed(2)}
+                    </Themed.td>
+                  </>
+                )}
                 <Themed.td
                   sx={{
-                    color: getIsPositive(score, nextScore)
+                    color: getIsPositive(
+                      teamScore.miseryIndex,
+                      nextScore.miseryIndex,
+                    )
                       ? "highlightPositive"
                       : "highlightNegative",
                     textAlign: "right",
+                    fontWeight: "bold",
                     ...defaultSx,
                   }}
                 >
-                  {score.toFixed(2)}
-                </Themed.td>
-                <Themed.td
-                  sx={{
-                    padding: 0,
-                    paddingRight: 1,
-                    paddingLeft: 1,
-                    ...defaultSx,
-                  }}
-                >
-                  <Button
-                    variant="secondary"
-                    sx={{ padding: "2px 4px", lineHeight: "normal" }}
-                  >
-                    <MdOpenInNew style={{ marginTop: "2px" }} />
-                  </Button>
+                  {teamScore.miseryIndex.toFixed(2)}
                 </Themed.td>
               </Themed.tr>
             );
