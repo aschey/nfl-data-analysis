@@ -1,5 +1,4 @@
 module.exports = {
-  basePath: "/nfl",
   async rewrites() {
     return [
       {
