@@ -5,6 +5,10 @@ module.exports = {
         source: "/api/:path*",
         destination: `${process.env.API_URL}/:path*`,
       },
+      {
+        source: "/nfl/:path*",
+        destination: "/:path*"
+      }
     ];
   },
 };
