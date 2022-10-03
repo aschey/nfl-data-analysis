@@ -59,5 +59,6 @@ module.exports = {
     ],
     "react/jsx-no-useless-fragment": [1, { allowExpressions: true }],
     "react/destructuring-assignment": 0,
+    "react/no-unknown-property": "off"
   },
 };
