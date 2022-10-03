@@ -19,7 +19,7 @@ const success = async <T>(response: Response): Promise<T> => {
   return data;
 };
 
-const baseUrl = "/nfl/api";
+const baseUrl = "/api";
 
 export const getJson = async <T>(
   url: string,
